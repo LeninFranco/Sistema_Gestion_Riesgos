@@ -1,0 +1,186 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+<div class="row pt-2">
+    <h2>Planes de seguridad</h2>
+</div>
+
+<!-- Div Riesgos sin planes -->
+
+
+<!--    Condicional si no existen riesgos sin planes -->
+   
+<!--
+        Mostrar los riesgos con planes, si no hay riesgos sin planes no se muestra su sección 
+-->
+
+<div class="row pt-2">
+    
+   
+    <!--    Condicional si existen riesgos sin planes -->
+   <div class="table-responsive p-3 bg-body-tertiary rounded-2">
+    <h5 class="text-center text-danger">Riesgos sin planes asignados</h5>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Clave del riesgo</th>
+                    <th>Umbral total</th> <!-- Custom sort?? -->
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- for para cada riesgo-->
+                <tr>
+                    <td>Ejemplo clave riesgo</td>
+                    <td style="background-color: yellow; color: black;">Medio</td>
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target=""><i class="fa fa-plus"></i> Añadir plan
+                        </button>            
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ejemplo clave riesgo2 </td>
+                    <td style="background-color: red; color: black;">Crítico</td>
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target=""><i class="fa fa-plus"></i> Añadir plan
+                        </button>            
+                    </td>
+                </tr>
+                <!-- endfor para cada riesgo-->
+            </tbody>
+        </table>
+   </div>
+</div>
+
+<!-- Spacer -->
+
+<hr>
+
+<!-- Div Riesgos con planes -->
+
+<div class="row pt-2 p-3 bg-body-tertiary rounded-2">
+    <h5 class="text-center">Riesgos con plan asignado</h5>
+   
+    <div class="table-responsive">
+        <table class="table table-hover "">
+            <thead>
+                <tr>
+                    <th>Clave del riesgo</th>
+                    <th>Umbral total</th> <!-- Custom sort?? -->
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            <!-- for para cada riesgo-->
+                <tr>
+                    <td>Ejemplo clave riesgo3</td>
+                    <td style="background-color: yellow; color: black;">Medio</td>
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target=""><i class="fa fa-plus"></i> Añadir plan
+                        </button>            
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <table class="table mb-0 table-secondary">
+                            <thead>
+                                <tr>
+                                    <th>Nombre del plan</th>
+                                    <th>Tiempo estimado</th> <!-- Custom sort?? -->
+                                    <th>Estado</th> <!-- Custom sort?? -->
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <!-- for para cada plan-->
+                                <tr>
+                                    <td>Ejemplo plan 1</td>
+                                    <td>9 días</td>
+                                    <td class="bg-warning">Pospuesto</td>
+                                    <td>
+                                        <a href="" class="btn btn-success"><i
+                                            class="fa fa-pencil"></i></a>
+                                        <a href="" class="btn btn-danger btn-delete"><i
+                                            class="fa fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ejemplo plan 2</td>
+                                    <td>Para el 22 de abril, en 61 días</td>
+                                    <td class="bg-secondary">Inviable</td>
+                                    <td>
+                                        <a href="" class="btn btn-success"><i
+                                            class="fa fa-pencil"></i></a>
+                                        <a href="" class="btn btn-danger btn-delete"><i
+                                            class="fa fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                            <!-- endfor para cada plan-->
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            <!-- endfor para cada riesgo-->
+
+            <!-- for para cada riesgo-->
+            <tr>
+                <td>Ejemplo clave riesgo4</td>
+                <td style="background-color: orange; color: black;">Alto</td>
+                <td>
+                    <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                        data-bs-target=""><i class="fa fa-plus"></i> Añadir plan
+                    </button>            
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table class="table mb-0 table-secondary">
+                        <thead>
+                            <tr>
+                                <th>Nombre del plan</th>
+                                <th>Tiempo estimado</th> <!-- Custom sort?? -->
+                                <th>Estado</th> <!-- Custom sort?? -->
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- for para cada plan-->
+                            <tr>
+                                <td>Ejemplo plan 3</td>
+                                <td>Para el 2 de febrero</td>
+                                <td class="bg-success">Hecho</td>
+                                <td>
+                                    <a href="" class="btn btn-success"><i
+                                        class="fa fa-pencil"></i></a>
+                                    <a href="" class="btn btn-danger btn-delete"><i
+                                        class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ejemplo plan 4</td>
+                                <td>31 de marzo, 39 días</td>
+                                <td class="bg-info">En proceso</td>
+                                <td>
+                                    <a href="" class="btn btn-success"><i
+                                        class="fa fa-pencil"></i></a>
+                                    <a href="" class="btn btn-danger btn-delete"><i
+                                        class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        <!-- endfor para cada plan-->
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        <!-- endfor para cada riesgo-->
+
+            </tbody>
+        </table>
+   </div>
+</div>
+{% endblock %}
