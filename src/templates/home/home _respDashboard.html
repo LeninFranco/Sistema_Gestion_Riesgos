@@ -1,0 +1,39 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+<div class="row pt-2 text-justify">
+    <h2>{{proyecto.nombre}}</h2>
+    <p>{{proyecto.descripcion}}</p>
+    <br>
+    <p>En esta sección tendrá la capacidad de realizar su analisis de riesgos del proyecto actual.</p>
+    <p>Acciones como:</p>
+    <ol>
+        <li>
+            <p>Registrar y categorizar los activos relacionados con el proyecto de software, como
+                sistemas, datos, recursos humanos y recursos tecnológicos. Esto facilita la identificación de los
+                elementos críticos que deben protegerse.</p>
+        </li>
+        <li>
+            <p>Alta de los riesgos asociados a sus activos con las metricas necesarias para poder asignarles una
+                clasificación general y una priorización que le ayuda comprender la naturaleza de los riesgos y su
+                relevancia para el proyecto</p>
+        </li>
+        <li>
+            <p>Generar informes detallados sobre los riesgos detectados, sus categorías, prioridades y planes de
+                seguridad asociados. Estos informes facilitan la toma de decisiones informadas y la comunicación con los
+                stakeholders</p>
+        </li>
+        <li>
+            <p>Crea una bitácora de seguimiento que registra todas las actividades relacionadas con el análisis de
+                riesgos y el seguimiento de los riesgos. Esto facilita el seguimiento de las acciones y las
+                actualizaciones realizadas en respuesta a los riesgos. </p>
+        </li>
+        <li>
+            <p>Registra a todos los participantes del proyecto con el fin de asignarles la propiedad de un activo y/o en
+                la responsabilidad en el manejos de los riesgos</p>
+        </li>
+    </ol>
+</div>
+{% endblock %}
