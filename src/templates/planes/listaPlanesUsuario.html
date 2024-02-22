@@ -1,0 +1,159 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+<div class="row pt-2">
+    <h2>Planes de seguridad - Tareas</h2>
+</div>
+
+<!-- Div Riesgos con planes -->
+
+<div class="row pt-2">
+
+    <!-- for por cada plan -->
+    <div aria-label="breadcrumb">
+        <h4 class="text-center">
+            Ejemplo plan 1
+            <small class="text-muted">para el riesgo Ejemplo clave riesgo3</small>
+        </h4>
+        <!-- for por cada control-->
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-2">
+          <li class="breadcrumb-item">
+            <p class="fw-semibold text-decoration-none">
+                5. Controles oranizacionales <!-- Categoría de control, ISO 27K2, 27K1-->
+            </p>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            5.16 Gestión de identidades <!-- Subcategoría de control, ISO 27K2, 27K1-->
+          </li>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre de tarea</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- for para cada tarea-->
+                    <tr>
+                        <td>Tarea 1</td>
+                        <td>23 de febrero, 2 días</td>
+                        <td><a href="" class="btn btn-success"><i
+                            class="fa fa-check"></i> Marcar como completada </a></td>
+                    </tr>
+                    <!-- endfor para cada tarea-->
+                </tbody>
+            </table>          
+        </ol>
+
+        <!-- for por cada control-->
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-2">
+            <li class="breadcrumb-item">
+              <p class="fw-semibold text-decoration-none">
+                  10. Administración de las comunicaciones y operaciones
+              </p>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              10.2.3 Administración de entrega de servicios de terceros
+            </li>
+              <table class="table table-hover">
+                  <thead>
+                      <tr>
+                          <th>Nombre de tarea</th>
+                          <th>Fecha</th>
+                          <th>Acciones</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <!-- for para cada tarea-->
+                      <tr>
+                          <td>Tarea 2</td>
+                          <td>24 de febrero, 3 días</td>
+                          <td><a href="" class="btn btn-success"><i
+                              class="fa fa-check"></i> Marcar como completada </a></td>
+                      </tr>
+                      
+                      <!-- endfor para cada tarea-->
+                  </tbody>
+              </table>          
+          </ol>
+    </div>
+    <!-- endfor por cada plan -->
+
+
+    <!-- for por cada plan -->
+    <div aria-label="breadcrumb">
+        <h4 class="text-center">
+            Ejemplo plan 2
+            <small class="text-muted">para el riesgo Ejemplo clave riesgo4</small>
+        </h4>
+        <!-- for por cada control-->
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-2">
+          <li class="breadcrumb-item">
+            <p class="fw-semibold text-decoration-none">
+                5. Controles oranizacionales <!-- Categoría de control, ISO 27K2, 27K1-->
+            </p>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            5.16 Gestión de identidades <!-- Subcategoría de control, ISO 27K2, 27K1-->
+          </li>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Nombre de tarea</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- for para cada tarea-->
+                    <tr>
+                        <td>Tarea 1</td>
+                        <td>23 de febrero, 2 días</td>
+                        <td><a href="" class="btn btn-success"><i
+                            class="fa fa-check"></i> Marcar como completada </a></td>
+                    </tr>
+                    <!-- endfor para cada tarea-->
+                </tbody>
+            </table>          
+        </ol>
+
+        <!-- for por cada control-->
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-2">
+            <li class="breadcrumb-item">
+              <p class="fw-semibold text-decoration-none">
+                  10. Administración de las comunicaciones y operaciones
+              </p>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              10.2.3 Administración de entrega de servicios de terceros
+            </li>
+              <table class="table table-hover">
+                  <thead>
+                      <tr>
+                          <th>Nombre de tarea</th>
+                          <th>Fecha</th>
+                          <th>Acciones</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <!-- for para cada tarea-->
+                      <tr>
+                          <td>Tarea 2</td>
+                          <td>24 de febrero, 3 días</td>
+                          <td><a href="" class="btn btn-success"><i
+                              class="fa fa-check"></i> Marcar como completada </a></td>
+                      </tr>
+                      <!-- endfor para cada tarea-->
+                  </tbody>
+              </table>          
+          </ol>
+    </div>
+    <!-- endfor por cada plan -->
+
+
+
+</div>
+{% endblock %}

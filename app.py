@@ -9,6 +9,7 @@ from src.routes.activos import activos
 from src.routes.riesgos import riesgos
 from src.routes.participantes import participantes
 from src.routes.proyectosP import proyectosP
+from src.routes.planes import planes
 import os
 import secrets
 
@@ -28,6 +29,8 @@ app.register_blueprint(activos)
 app.register_blueprint(riesgos)
 app.register_blueprint(participantes)
 app.register_blueprint(proyectosP)
+app.register_blueprint(planes)
+
 
 db.init_app(app)
 bcrypt.init_app(app)
