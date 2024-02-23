@@ -16,10 +16,9 @@ class Activo(db.Model):
     sensibilidad = db.Column(db.Integer, nullable=False)
     idProyecto = db.Column(db.String(32), db.ForeignKey('Proyectos.idProyecto', ondelete='CASCADE'), nullable=False)
     idTipoActivo = db.Column(db.Integer, db.ForeignKey('TiposActivos.idTipoActivo', ondelete='CASCADE'), nullable=False)
-    idTipoUbicacion = db.Column(db.Integer, db.ForeignKey('TiposUbicacion.idTipoUbicacion', ondelete='CASCADE'), nullable=False)
     riesgos = db.relationship('Riesgo', backref='activo', cascade='all, delete-orphan')
 
-    def __init__(self, nombre, descripcion, confidencialidad, disponibilidad, integridad, idProyecto, idTipoActivo, idTipoUbicacion) -> None:
+    def __init__(self, nombre, descripcion, confidencialidad, disponibilidad, integridad, idProyecto, idTipoActivo) -> None:
         self.nombre = nombre
         self.descripcion = descripcion
         self.confidencialidad = confidencialidad
@@ -28,7 +27,6 @@ class Activo(db.Model):
         self.sensibilidad = 0
         self.idProyecto = idProyecto
         self.idTipoActivo = idTipoActivo
-        self.idTipoUbicacion = idTipoUbicacion
 
     def calcularSensibilidad(self) -> None:
         self.sensibilidad = self.confidencialidad + self.disponibilidad + self.integridad

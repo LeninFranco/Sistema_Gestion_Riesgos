@@ -15,6 +15,7 @@ def definirUmbral(factor: float) -> str:
 class Riesgo(db.Model):
     __tablename__ = 'Riesgos'
     idRiesgo = db.Column(db.String(32), primary_key=True, default=getDefaultID)
+    clave = db.Column(db.String(15), nullable=False)
     nombre = db.Column(db.String(45), nullable=False)
     descripcion = db.Column(db.String(100), nullable=False)
     amenaza = db.Column(db.String(45), nullable=False)
@@ -38,7 +39,8 @@ class Riesgo(db.Model):
     idTipoRiesgo = db.Column(db.String(32), db.ForeignKey('TiposRiesgo.idTipoRiesgo', ondelete='CASCADE'), nullable=False)
     idActivo = db.Column(db.String(32), db.ForeignKey('Activos.idActivo', ondelete='CASCADE'), nullable=False)
 
-    def __init__(self, nombre, descripcion, amenaza, nivelHabilidad, motivacion, oportunidad, tamaño, vulnerabilidad, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios, idTipoRiesgo, idActivo):
+    def __init__(self, clave, nombre, descripcion, amenaza, nivelHabilidad, motivacion, oportunidad, tamaño, vulnerabilidad, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios, idTipoRiesgo, idActivo):
+        self.clave = clave
         self.nombre = nombre
         self.descripcion = descripcion
         self.amenaza = amenaza

@@ -31,6 +31,12 @@
                     <form action="/anadir-riesgo" method="post" autocomplete="off">
                         <div class="row">
                             <div class="mb-3">
+                                <input type="text" name="clave" class="form-control" placeholder="Clave Identificación Riesgo"
+                                    required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
                                 <input type="text" name="nombre" class="form-control" placeholder="Nombre del riesgo"
                                     required autofocus>
                             </div>
@@ -267,6 +273,7 @@
     <div class="table-responsive">
         <table class="table">
             <thead>
+                <th>Clave ID</th>
                 <th>Nombre del Riesgo</th>
                 <th class="custom-sort">Probabilidad</th>
                 <th class="custom-sort">Impacto</th>
@@ -276,6 +283,7 @@
             <tbody>
                 {% for riesgo in riesgos_umbrales %}
                 <tr>
+                    <td>{{ riesgo[0].clave }}</td>
                     <td>{{ riesgo[0].nombre }}</td>
                     {% if riesgo[1] == 'Bajo' %}
                     <td style="background-color: green;">{{ riesgo[1] }}</td>

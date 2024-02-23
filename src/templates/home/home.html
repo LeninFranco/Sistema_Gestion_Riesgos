@@ -5,35 +5,131 @@
 {% block content %}
 <div class="row pt-2 text-justify">
     <h2>{{proyecto.nombre}}</h2>
-    <p>{{proyecto.descripcion}}</p>
-    <br>
-    <p>En esta sección tendrá la capacidad de realizar su analisis de riesgos del proyecto actual.</p>
-    <p>Acciones como:</p>
-    <ol>
-        <li>
-            <p>Registrar y categorizar los activos relacionados con el proyecto de software, como
-                sistemas, datos, recursos humanos y recursos tecnológicos. Esto facilita la identificación de los
-                elementos críticos que deben protegerse.</p>
-        </li>
-        <li>
-            <p>Alta de los riesgos asociados a sus activos con las metricas necesarias para poder asignarles una
-                clasificación general y una priorización que le ayuda comprender la naturaleza de los riesgos y su
-                relevancia para el proyecto</p>
-        </li>
-        <li>
-            <p>Generar informes detallados sobre los riesgos detectados, sus categorías, prioridades y planes de
-                seguridad asociados. Estos informes facilitan la toma de decisiones informadas y la comunicación con los
-                stakeholders</p>
-        </li>
-        <li>
-            <p>Crea una bitácora de seguimiento que registra todas las actividades relacionadas con el análisis de
-                riesgos y el seguimiento de los riesgos. Esto facilita el seguimiento de las acciones y las
-                actualizaciones realizadas en respuesta a los riesgos. </p>
-        </li>
-        <li>
-            <p>Registra a todos los participantes del proyecto con el fin de asignarles la propiedad de un activo y/o en
-                la responsabilidad en el manejos de los riesgos</p>
-        </li>
-    </ol>
-</div>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart', 'bar']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var dataPie = google.visualization.arrayToDataTable([
+                ['Riesgo', 'Cantidad'],
+                ['Riesgo Alto',     3],
+                ['Riesgo Critico',     3],
+                ['Riesgo Medio',    2],
+                ['Riesgo Bajo',     1],
+                ['Riesgo Insignificante',     1],
+            ]);
+
+            var optionsPie = {
+                title: 'Distribución de Riesgos'
+            };
+
+            var chartPie = new google.visualization.PieChart(document.getElementById('piechart'));
+            chartPie.draw(dataPie, optionsPie);
+
+            var dataBar = google.visualization.arrayToDataTable([
+                ['Elemento', 'Cantidad', { role: 'style' }],
+                ['Riesgo Critico', 3, 'color: red'],
+                ['Riesgo Alto', 3, 'color: orange'],
+                ['Riesgo Medio', 2, 'color: yellow'],
+                ['Riesgo Bajo', 1, 'color: green'],
+                ['Riesgo Insignificante', 1, 'color: lightseagreen']
+            ]);
+
+            var optionsBar = {
+                title: 'Impacto de Riesgos',
+                chartArea: {width: '50%'},
+                hAxis: {
+                    title: 'Total de Riesgos',
+                    minValue: 0
+                },
+                vAxis: {
+                    title: 'Riesgo'
+                }
+            };
+
+            var chartBar = new google.visualization.BarChart(document.getElementById('barchart'));
+            chartBar.draw(dataBar, optionsBar);
+        }
+    </script>
+    <style>
+        /* Añadiendo estilos básicos */
+        .matriz-riesgos, .matriz-riesgos th, .matriz-riesgos td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .riesgo {
+            color: white;
+        }
+        .insignificante {
+            background-color: lightseagreen;
+        }
+
+
+        .bajo {
+            background-color: green;
+        }
+
+        .medio {
+            background-color: yellow;
+            color: black; /* Mejorar contraste */
+        }
+
+        .alto {
+            background-color: orange;
+        }
+        .critico {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Riesgos Importantes</h2>
+<ul>
+    <li>Riesgo 1: Descripción breve del riesgo.</li>
+    <li>Riesgo 2: Descripción breve del riesgo.</li>
+    <li>Riesgo 3: Descripción breve del riesgo.</li>
+</ul>
+
+<h2>Matriz de Riesgos</h2>
+<table class="matriz-riesgos">
+    <thead>
+        <tr>
+            <th>Impacto / Probabilidad</th>
+            <th>Bajo</th>
+            <th>Medio</th>
+            <th>Alto</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Alto</td>
+            <td class="riesgo medio">Riesgo Medio</td>
+            <td class="riesgo alto">Riesgo Alto</td>
+            <td class="riesgo critico">Riesgo Critico</td>
+        </tr>
+        <tr>
+            <td>Medio</td>
+            <td class="riesgo bajo">Riesgo Bajo</td>
+            <td class="riesgo medio">Riesgo Medio</td>
+            <td class="riesgo alto">Riesgo Alto</td>
+        </tr>
+        <tr>
+            <td>Bajo</td>
+            <td class="riesgo insignificante">Riesgo Insignificante</td>
+            <td class="riesgo bajo">Riesgo Bajo</td>
+            <td class="riesgo medio">Riesgo Medio</td>
+        </tr>
+    </tbody>
+</table>
+
+<h2>Gráficas de Riesgos</h2>
+<div id="piechart" style="width: 900px; height: 500px;"></div>
+<div id="barchart" style="width: 900px; height: 500px;"></div>
+
+<div></div>
 {% endblock %}

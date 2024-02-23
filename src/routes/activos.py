@@ -4,7 +4,6 @@ from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
 from src.models.activos import Activo
 from src.models.tipo_activo import TipoActivo
-from src.models.tipo_ubicacion import TipoUbicacion
 
 activos = Blueprint('activos', __name__)
 
@@ -82,7 +81,7 @@ def vistaListaActivos():
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos
-    return render_template('activos/listaActivos.html', usuario=usuario, activos=activos, cdi=cdi, tiposActivo=TipoActivo.query.all(), tiposUbicacion=TipoUbicacion.query.all())
+    return render_template('activos/listaActivos.html', usuario=usuario, activos=activos, cdi=cdi, tiposActivo=TipoActivo.query.all())
 
 @activos.route('/modificar-activo/<string:idActivo>')
 def vistaModificacionActivos(idActivo):
@@ -94,7 +93,7 @@ def vistaModificacionActivos(idActivo):
     if not 'proyecto_id' in session:
         return redirect(url_for('proyectos.vistaListaProyectos'))
     activo = Activo.query.filter_by(idActivo=idActivo).first()
-    return render_template('activos/edicionActivos.html', usuario=usuario, activo=activo, cdi=cdi, tiposActivo=TipoActivo.query.all(), tiposUbicacion=TipoUbicacion.query.all())
+    return render_template('activos/edicionActivos.html', usuario=usuario, activo=activo, cdi=cdi, tiposActivo=TipoActivo.query.all())
 
 @activos.route('/anadir-activos', methods=['POST'])
 def añadirActivos():
@@ -105,7 +104,6 @@ def añadirActivos():
         disponibilidad = request.form['disponibilidad']
         integridad = request.form['integridad']
         idTipoActivo = request.form['idTipoActivo']
-        idTipoUbicacion = request.form['idTipoUbicacion']
         a = Activo(
             nombre=nombre,
             descripcion=descripcion,
@@ -113,7 +111,6 @@ def añadirActivos():
             disponibilidad=int(disponibilidad),
             integridad=int(integridad),
             idTipoActivo=int(idTipoActivo),
-            idTipoUbicacion=int(idTipoUbicacion),
             idProyecto=session['proyecto_id']
         )
         a.calcularSensibilidad()
@@ -133,7 +130,6 @@ def modificarActivos():
         disponibilidad = request.form['disponibilidad']
         integridad = request.form['integridad']
         idTipoActivo = request.form['idTipoActivo']
-        idTipoUbicacion = request.form['idTipoUbicacion']
         a = Activo.query.filter_by(idActivo=idActivo).first()
         a.nombre=nombre
         a.descripcion=descripcion
@@ -141,7 +137,6 @@ def modificarActivos():
         a.disponibilidad=int(disponibilidad)
         a.integridad=int(integridad)
         a.idTipoActivo=int(idTipoActivo)
-        a.idTipoUbicacion=int(idTipoUbicacion)
         a.calcularSensibilidad()
         db.session.commit()
         flash('success')

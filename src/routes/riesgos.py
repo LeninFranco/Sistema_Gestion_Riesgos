@@ -213,6 +213,7 @@ def vistaModificacionRiesgo(idRiesgo):
 @riesgos.route('/anadir-riesgo', methods=['POST'])
 def añadirRiesgo():
     if request.method == 'POST':
+        clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
         amenaza = request.form['amenaza']
@@ -232,6 +233,7 @@ def añadirRiesgo():
         idTipoRiesgo = request.form['idTipoRiesgo']
         idActivo = request.form['idActivo']
         r = Riesgo(
+            clave=clave,
             nombre=nombre,
             descripcion=descripcion,
             amenaza=amenaza,
@@ -263,6 +265,7 @@ def añadirRiesgo():
 def actualizarRiesgo():
     if request.method == 'POST':
         idRiesgo = request.form['idRiesgo']
+        clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
         amenaza = request.form['amenaza']
@@ -282,6 +285,7 @@ def actualizarRiesgo():
         idTipoRiesgo = request.form['idTipoRiesgo']
         idActivo = request.form['idActivo']
         r = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
+        r.clave=clave
         r.nombre=nombre
         r.descripcion=descripcion
         r.amenaza=amenaza

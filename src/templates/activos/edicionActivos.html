@@ -85,18 +85,6 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Tipo de Ubicación</label>
-                        <select name="idTipoUbicacion" class="form-select">
-                            {% for tipoUbicacion in tiposUbicacion %}
-                            {% if activo.idTipoUbicacion == tipoUbicacion.idTipoUbicacion %}
-                            <option value="{{tipoUbicacion.idTipoUbicacion}}" selected>{{tipoUbicacion.nombre}}</option>
-                            {% else %}
-                            <option value="{{tipoUbicacion.idTipoUbicacion}}">{{tipoUbicacion.nombre}}</option>
-                            {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <button type="submit" class="btn btn-dark bg-black w-100">Modificar</button>
                     </div>
                 </form>

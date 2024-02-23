@@ -70,14 +70,6 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Tipo de Ubicación</label>
-                                <select name="idTipoUbicacion" class="form-select">
-                                    {% for tipoUbicacion in tiposUbicacion %}
-                                    <option value="{{tipoUbicacion.idTipoUbicacion}}">{{tipoUbicacion.nombre}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
                         </div>
                         <div class="row">
                             <div class="col-6 mb-3">
@@ -145,7 +137,6 @@
             <div class="modal-body text-justify">
                 <p><b>Descripción: </b>{{activo.descripcion}}</p>
                 <p><b>Tipo de Activo: </b>{{activo.tipoActivo.nombre}}</p>
-                <p><b>Tipo de Ubicación: </b>{{activo.tipoUbicacion.nombre}}</p>
                 <p><b>Confidencialidad: </b>{{cdi['confidencialidad'][activo.confidencialidad]}}</p>
                 <p><b>Disponibilidad: </b>{{cdi['disponibilidad'][activo.disponibilidad]}}</p>
                 <p><b>Integridad: </b>{{cdi['integridad'][activo.integridad]}}</p>

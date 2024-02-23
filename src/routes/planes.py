@@ -12,18 +12,14 @@ def vistaListaPlanes():
     usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
     if usuario.rol == 1:
         return redirect(url_for('login.logoutUser'))
-    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
-    #responsables = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
-    return render_template('planes/listaPlanes.html', usuario=usuario, proyecto=proyecto)
+    return render_template('planes/listaPlanes.html', usuario=usuario)
 
 
-@planes.route('/listar-planes-usuario')
+@planes.route('/listar-planes-participante')
 def vistaListaPlanesUsuario():
     if not 'user_id' in session:
         return redirect(url_for('login.vistaLogin'))
     usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
-    if usuario.rol == 1:
+    if usuario.rol == 0:
         return redirect(url_for('login.logoutUser'))
-    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
-    #responsables = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
-    return render_template('planes/listaPlanesUsuario.html', usuario=usuario, proyecto=proyecto)
+    return render_template('vistas_participantes/listaPlanesUsuario.html', usuario=usuario)
