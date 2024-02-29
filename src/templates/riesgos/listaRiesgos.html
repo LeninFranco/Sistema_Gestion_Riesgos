@@ -17,8 +17,6 @@
     <h2>Riesgos</h2>
 </div>
 <div class="row pt-2">
-    <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal" data-bs-target="#VentanaAdd">Añadir
-        Riesgo</button>
     <div class="modal fade" id="VentanaAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -386,6 +384,19 @@
                 }
             ]
         });
+        
+        var addButton = $('<button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAdd">Añadir Riesgo</button>');
+
+        // Insertar el botón antes de la barra de búsqueda
+        $('.dataTables_filter').prepend(addButton);
+
+        // Ajustar manualmente el ancho del botón
+        addButton.width(784); // Ajusta el valor según sea necesario
+
+        var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
+        addButton.height(alturaBarraBusqueda - 18);
+
+        addButton.css('margin-right', '10px');
     });
 </script>
 {% endblock %}

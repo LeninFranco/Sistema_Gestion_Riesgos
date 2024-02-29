@@ -17,8 +17,6 @@
     <h2>Activos</h2>
 </div>
 <div class="row pt-2">
-    <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal" data-bs-target="#VentanaAdd">Añadir
-        Activo</button>
     <div class="modal fade" id="VentanaAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -114,6 +112,8 @@
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{activo.idActivo}}"><i class="fa fa-plus"></i></button>
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target=""><i class="fa fa-triangle-exclamation"></i></button>
                         <a href="/modificar-activo/{{activo.idActivo}}" class="btn btn-success"><i
                                 class="fa fa-pencil"></i></a>
                         <a href="/eliminar-activo/{{activo.idActivo}}" class="btn btn-danger btn-delete"><i
@@ -148,33 +148,45 @@
 {% endfor %}
 <script>
     $(document).ready(function () {
-    $('.table').DataTable({
-        "lengthChange": false,
-        "paging": false,
-        "info": false,
-        "language": {
-            "search": "",  // Eliminar el texto "Buscar:"
-            "searchPlaceholder": "Buscar Activo",  // Establecer el marcador de posición
-            "zeroRecords": "No se encontraron registros coincidentes"
-        },
-        "columnDefs": [
-            {
-                "orderable": false,
-                "searchable": true,
-                "targets": [0]
+        $('.table').DataTable({
+            "lengthChange": false,
+            "paging": false,
+            "info": false,
+            "language": {
+                "search": "",  // Eliminar el texto "Buscar:"
+                "searchPlaceholder": "Buscar Activo",  // Establecer el marcador de posición
+                "zeroRecords": "No se encontraron registros coincidentes"
             },
-            {
-                "orderable": true,
-                "searchable": false,
-                "targets": "custom-sort",
-            },
-            {
-                "orderable": false,
-                "searchable": false,
-                "targets": [-1]
-            }
-        ]
+            "columnDefs": [
+                {
+                    "orderable": false,
+                    "searchable": true,
+                    "targets": [0]
+                },
+                {
+                    "orderable": true,
+                    "searchable": false,
+                    "targets": "custom-sort",
+                },
+                {
+                    "orderable": false,
+                    "searchable": false,
+                    "targets": [-1]
+                }
+            ]
+        });
+        var addButton = $('<button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAdd">Añadir Activo</button>');
+
+        // Insertar el botón antes de la barra de búsqueda
+        $('.dataTables_filter').prepend(addButton);
+
+        // Ajustar manualmente el ancho del botón
+        addButton.width(784); // Ajusta el valor según sea necesario
+
+        var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
+        addButton.height(alturaBarraBusqueda - 18);
+
+        addButton.css('margin-right', '10px');
     });
-});
 </script>
 {% endblock %}

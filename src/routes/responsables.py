@@ -1,6 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, render_template, request, flash
 from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
+from src.utils.crypto import bcrypt
 from src.utils.db import db
 
 responsables = Blueprint('responsables', __name__)
@@ -31,7 +32,7 @@ def añadirResponsable():
                 apelidoMaterno=aMaterno,
                 correo=email,
                 telefono=telefono,
-                contrasena=password,
+                contrasena=bcrypt.generate_password_hash(password),
                 rol=1,
                 idJefe=session['user_id']
             )
@@ -65,12 +66,3 @@ def modificarResponsable():
         flash('success')
         flash('El participante fue modificado correctamente')
         return redirect(url_for('proyectos.vistaListaProyectos'))
-
-@responsables.route('/eliminar-responsable/<string:idResponsable>')
-def eliminarResponsable(idResponsable):
-    responsable = Usuario.query.filter_by(idUsuario=idResponsable).first()
-    db.session.delete(responsable)
-    db.session.commit()
-    flash('danger')
-    flash('El participante fue eliminado correctamente')
-    return redirect(url_for('proyectos.vistaListaProyectos'))
