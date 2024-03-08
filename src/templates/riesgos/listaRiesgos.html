@@ -271,10 +271,9 @@
     <div class="table-responsive">
         <table class="table">
             <thead>
-                <th>Clave ID</th>
-                <th>Nombre del Riesgo</th>
-                <th class="custom-sort">Probabilidad</th>
-                <th class="custom-sort">Impacto</th>
+                <th>Clave</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
                 <th class="custom-sort">Umbral Total</th>
                 <th>Acciones</th>
             </thead>
@@ -283,20 +282,7 @@
                 <tr>
                     <td>{{ riesgo[0].clave }}</td>
                     <td>{{ riesgo[0].nombre }}</td>
-                    {% if riesgo[1] == 'Bajo' %}
-                    <td style="background-color: green;">{{ riesgo[1] }}</td>
-                    {% elif riesgo[1] == 'Medio' %}
-                    <td style="background-color: yellow; color: black;">{{ riesgo[1] }}</td>
-                    {% else %}
-                    <td style="background-color: red">{{ riesgo[1] }}</td>
-                    {% endif %}
-                    {% if riesgo[2] == 'Bajo' %}
-                    <td style="background-color: green;">{{ riesgo[2] }}</td>
-                    {% elif riesgo[2] == 'Medio' %}
-                    <td style="background-color: yellow; color: black;">{{ riesgo[2] }}</td>
-                    {% else %}
-                    <td style="background-color: red;">{{ riesgo[2] }}</td>
-                    {% endif %}
+                    <td>{{riesgo[0].tipoRiesgo.nombre}}</td>
                     {% if riesgo[0].umbral == 'Insignificante' %}
                     <td style="background-color: blue;">{{ riesgo[0].umbral }}</td>
                     {% elif riesgo[0].umbral == 'Bajo' %}
@@ -362,7 +348,7 @@
             "info": false,
             "language": {
                 "search": "",  // Eliminar el texto "Buscar:"
-                "searchPlaceholder": "Buscar Riesgo",  // Establecer el marcador de posición
+                "searchPlaceholder": "Buscar Riesgo o Tipo",  // Establecer el marcador de posición
                 "zeroRecords": "No se encontraron registros coincidentes"
             },
             "columnDefs": [
@@ -370,6 +356,16 @@
                     "orderable": false, // Deshabilitar ordenamiento
                     "searchable": true, // Permitir búsqueda
                     "targets": [0] // Primera columna
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [1] // Primera columna
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [2] // Primera columna
                 },
                 {
                     "orderable": true,

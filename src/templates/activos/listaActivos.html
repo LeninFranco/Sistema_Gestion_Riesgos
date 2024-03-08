@@ -94,11 +94,12 @@
     <div class="table-responsive">
         <table class="table">
             <thead>
-                <th>Nombre del Activo</th>
-                <th class="custom-sort">Confidencialidad</th>
-                <th class="custom-sort">Disponibilidad</th>
-                <th class="custom-sort">Integridad</th>
-                <th class="custom-sort">Sensibilidad</th>
+                <th>Nombre</th>
+                <th class="custom-sort">Confid</th>
+                <th class="custom-sort">Disp</th>
+                <th class="custom-sort">Integ</th>
+                <th class="custom-sort">Sensib</th>
+                <th>Tipo</th>
                 <th>Acciones</th>
             </thead>
             <tbody>
@@ -109,6 +110,7 @@
                     <td>{{ activo.disponibilidad }}</td>
                     <td>{{ activo.integridad }}</td>
                     <td>{{ activo.sensibilidad }}</td>
+                    <td>{{activo.tipoActivo.nombre}}</td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{activo.idActivo}}"><i class="fa fa-plus"></i></button>
@@ -154,7 +156,7 @@
             "info": false,
             "language": {
                 "search": "",  // Eliminar el texto "Buscar:"
-                "searchPlaceholder": "Buscar Activo",  // Establecer el marcador de posición
+                "searchPlaceholder": "Buscar Activo o Tipo",  // Establecer el marcador de posición
                 "zeroRecords": "No se encontraron registros coincidentes"
             },
             "columnDefs": [
@@ -162,6 +164,11 @@
                     "orderable": false,
                     "searchable": true,
                     "targets": [0]
+                },
+                {
+                    "orderable": false,
+                    "searchable": true,
+                    "targets": [5]
                 },
                 {
                     "orderable": true,
