@@ -1,6 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, render_template, request, flash
 from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
+from src.models.responsables import Participantes
 from src.utils.db import db
 
 proyectos = Blueprint('proyectos', __name__)
@@ -12,9 +13,10 @@ def vistaListaProyectos():
     usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
     if usuario.rol == 1:
         return redirect(url_for('login.logoutUser'))
-    proyectos = usuario.proyectos
-    responsables = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
-    return render_template('proyectos/listaProyectos.html', usuario=usuario, proyectos=proyectos, responsables=responsables)
+    proyectos = []
+    for asociaciones in usuario.proyectos_asociados:
+        proyectos.append(asociaciones.proyecto)
+    return render_template('proyectos/listaProyectos.html', usuario=usuario, proyectos=proyectos)
 
 @proyectos.route('/editar-proyecto/<string:idProyecto>')
 def vistaEditarProyecto(idProyecto):
@@ -35,8 +37,10 @@ def añadirProyecto():
             descripcion = request.form['descripcion']
             p = Proyecto(clave=clave,nombre=nombre, descripcion=descripcion)
             db.session.add(p)
+            proyecto = Proyecto.query.filter_by(clave=clave).first()
             usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
-            p.usuarios.append(usuario)
+            asociacion = Participantes(usuario=usuario, proyecto=proyecto, estado='Dueño')
+            db.session.add(asociacion)
             db.session.commit()
             flash('success')
             flash('Proyecto creado correctamente')

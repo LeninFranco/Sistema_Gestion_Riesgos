@@ -1,6 +1,7 @@
 from flask import Blueprint, session, redirect, url_for, render_template, request, flash
 from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
+from src.models.responsables import Participantes
 from src.utils.db import db
 
 participantes = Blueprint('participantes', __name__)
@@ -16,12 +17,48 @@ def vistaListaParticipantes():
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
+    participantes_proyecto = []
+    for asociacion in proyecto.usuarios_asociados:
+        participantes_proyecto.append((asociacion.usuario, asociacion.estado))
     participantes_listado = []
     for participante in participantes_jefe:
-        if not participante in proyecto.usuarios:
+        if not participante in [x[0] for x in participantes_proyecto]:
             participantes_listado.append(participante)
-    participantes_proyecto = proyecto.usuarios
     return render_template('participantes/listaParticipantes.html', usuario=usuario, participantes_listado=participantes_listado, participantes_proyecto=participantes_proyecto)
+
+@participantes.route('/anadir-nuevo-participante', methods=['POST'])
+def crearParticipante():
+    if request.method == 'POST':
+        try:
+            nombre = request.form['nombre']
+            aPaterno = request.form['aPaterno']
+            aMaterno = request.form['aMaterno']
+            email = request.form['email']
+            telefono = request.form['tel']
+            departamento = request.form['departamento']
+            cargo = request.form['cargo']
+            password = request.form['password']
+            u = Usuario(
+                nombre=nombre,
+                apellidoPaterno=aPaterno,
+                apelidoMaterno=aMaterno,
+                correo=email,
+                telefono=telefono,
+                departamento=departamento,
+                cargo=cargo,
+                contrasena=password,
+                rol=1,
+                idJefe=session['user_id']
+            )
+            db.session.add(u)
+            db.session.commit()
+            flash('success')
+            flash('El participante fue añadido correctamente')
+        except:
+            db.session.rollback()
+            flash('danger')
+            flash('El correo o télefono que ingreso ya existe en el sistema')
+        return redirect(url_for('participantes.vistaListaParticipantes'))
 
 @participantes.route('/anadir-participante', methods=['POST'])
 def añadirParticipante():
@@ -29,7 +66,8 @@ def añadirParticipante():
         idParticipante = request.form['idParticipante']
         participante = Usuario.query.filter_by(idUsuario = idParticipante).first()
         proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
-        proyecto.usuarios.append(participante)
+        asociacion = Participantes(usuario=participante, proyecto=proyecto, estado="Activo")
+        db.session.add(asociacion)
         db.session.commit()
         flash("success")
         flash("El participante ha sido añadido al proyecto")
@@ -39,7 +77,8 @@ def añadirParticipante():
 def expulsarParticipante(idParticipante):
     participante = Usuario.query.filter_by(idUsuario = idParticipante).first()
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
-    proyecto.usuarios.remove(participante)
+    asociacion = Participantes.query.filter_by(usuario = participante, proyecto=proyecto).first()
+    db.session.delete(asociacion)
     db.session.commit()
     flash("success")
     flash("El participante ha sido expulsado del proyecto")

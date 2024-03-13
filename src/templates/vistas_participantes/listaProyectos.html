@@ -28,10 +28,10 @@
                 <th>Acciones</th>
             </thead>
             <tbody>
-                {% for proyecto in proyectos %}
+                {% for asociacion in asociaciones %}
                     <tr>
-                        <td>{{proyecto.clave}}</td>
-                        <td>{{proyecto.nombre}}</td>
+                        <td>{{asociacion.proyecto.clave}}</td>
+                        <td>{{asociacion.proyecto.nombre}}</td>
                         <td>
                             <a href="/listar-planes-participante" class="btn btn-primary"><i class="fa fa-right-to-bracket"></i></a>
                         </td>

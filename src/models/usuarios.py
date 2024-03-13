@@ -14,15 +14,19 @@ class Usuario(db.Model):
     correo = db.Column(db.String(50), unique=True, nullable=False)
     telefono = db.Column(db.String(15), unique=True, nullable=False)
     contrasena = db.Column(db.String(50), nullable=False)
+    departamento = db.Column(db.String(30), nullable=False)
+    cargo = db.Column(db.String(30), nullable=False)
     rol = db.Column(db.Integer, nullable=False)
     idJefe = db.Column(db.String(32), db.ForeignKey('Usuarios.idUsuario'))
 
-    def __init__(self, nombre, apellidoPaterno, apelidoMaterno, correo, telefono, contrasena, rol, idJefe=None) -> None:
+    def __init__(self, nombre, apellidoPaterno, apelidoMaterno, correo, telefono, departamento, cargo, contrasena, rol, idJefe=None) -> None:
         self.nombre = nombre
         self.apellidoPaterno = apellidoPaterno
         self.apellidoMaterno = apelidoMaterno
         self.correo = correo
         self.telefono = telefono
+        self.departamento = departamento
+        self.cargo = cargo
         self.contrasena = bcrypt.generate_password_hash(contrasena)
         self.rol = rol
         self.idJefe = idJefe

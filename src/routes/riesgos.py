@@ -4,7 +4,7 @@ from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
 from src.models.activos import Activo
 from src.models.riesgo import Riesgo
-from src.models.tipo_riesgo import TipoRiesgo
+from src.models.activos_riesgos import ActivosRiesgos
 
 riesgos = Blueprint('riesgos', __name__)
 
@@ -178,6 +178,12 @@ factores_de_impacto_empresarial = {
     }
 }
 
+tiposRiesgo = [
+    'Físico',
+    'Lógico',
+    'Organizacional'
+]
+
 @riesgos.route('/listar-riesgos')
 def vistaListaRiesgos():
     if not 'user_id' in session:
@@ -195,7 +201,7 @@ def vistaListaRiesgos():
     riesgos_umbrales = []
     for riesgo in riesgos:
         riesgos_umbrales.append((riesgo, definirUmbral(riesgo.probabilidad), definirUmbral(riesgo.impacto)))
-    return render_template('riesgos/listaRiesgos.html', usuario=usuario, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=TipoRiesgo.query.all(), activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    return render_template('riesgos/listaRiesgos.html', usuario=usuario, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/modificar-riesgo/<string:idRiesgo>')
 def vistaModificacionRiesgo(idRiesgo):
@@ -208,7 +214,7 @@ def vistaModificacionRiesgo(idRiesgo):
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
-    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=TipoRiesgo.query.all(), activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/anadir-riesgo', methods=['POST'])
 def añadirRiesgo():

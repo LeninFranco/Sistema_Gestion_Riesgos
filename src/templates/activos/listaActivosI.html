@@ -29,6 +29,12 @@
                     <form action="/anadir-activos" method="post" autocomplete="off">
                         <div class="row">
                             <div class="mb-3">
+                                <input type="text" name="clave" class="form-control" placeholder="Clave del Activo"
+                                    required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
                                 <input type="text" name="nombre" class="form-control" placeholder="Nombre del activo"
                                     required autofocus>
                             </div>
@@ -40,43 +46,51 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Confidencialidad</label>
-                                <select name="confidencialidad" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in cdi['confidencialidad'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="mb-3">
+                                <input type="text" name="propietario" class="form-control"
+                                    placeholder="Nombre del Propietario" required autofocus>
                             </div>
-                            <div class="col-6 mb-3">
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="ubicacion" class="form-control"
+                                    placeholder="Ubicación Física/Lógica del activo" required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
                                 <label class="form-label">Tipo de Activo</label>
-                                <select name="idTipoActivo" class="form-select" required>
-                                    {% for tipoActivo in tiposActivo %}
-                                    <option value="{{tipoActivo.idTipoActivo}}">{{tipoActivo.nombre}}</option>
+                                <select name="tipo" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in tiposActivo %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Disponibilidad</label>
-                                <select name="disponibilidad" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in cdi['disponibilidad'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                            <div class="mb-3">
+                                <label class="form-label">Frecuencia de Mantenimiento</label>
+                                <select name="frecM" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in frecuencia %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Integridad</label>
-                                <select name="integridad" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in cdi['integridad'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                            <div class="mb-3">
+                                <label class="form-label">Frecuencia de Renovación</label>
+                                <select name="frecR" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in frecuencia %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
                                     {% endfor %}
                                 </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Adquisición</label>
+                                <input type="date" name="fecha" class="form-control">
                             </div>
                         </div>
                         <div class="row">
@@ -94,32 +108,22 @@
     <div class="table-responsive">
         <table class="table">
             <thead>
+                <th>Clave</th>
                 <th>Nombre</th>
-                <th class="custom-sort">Confid</th>
-                <th class="custom-sort">Disp</th>
-                <th class="custom-sort">Integ</th>
-                <th class="custom-sort">Sensib</th>
                 <th>Tipo</th>
                 <th>Acciones</th>
             </thead>
             <tbody>
                 {% for activo in activos %}
                 <tr>
+                    <td>{{ activo.clave }}</td>
                     <td>{{ activo.nombre }}</td>
-                    <td>{{ activo.confidencialidad }}</td>
-                    <td>{{ activo.disponibilidad }}</td>
-                    <td>{{ activo.integridad }}</td>
-                    <td>{{ activo.sensibilidad }}</td>
-                    <td>{{activo.tipoActivo.nombre}}</td>
+                    <td>{{ activo.tipoActivo }}</td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{activo.idActivo}}"><i class="fa fa-plus"></i></button>
-                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                            data-bs-target=""><i class="fa fa-triangle-exclamation"></i></button>
                         <a href="/modificar-activo/{{activo.idActivo}}" class="btn btn-success"><i
                                 class="fa fa-pencil"></i></a>
-                        <a href="/eliminar-activo/{{activo.idActivo}}" class="btn btn-danger btn-delete"><i
-                                class="fa fa-trash"></i></a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -138,11 +142,12 @@
             </div>
             <div class="modal-body text-justify">
                 <p><b>Descripción: </b>{{activo.descripcion}}</p>
-                <p><b>Tipo de Activo: </b>{{activo.tipoActivo.nombre}}</p>
-                <p><b>Confidencialidad: </b>{{cdi['confidencialidad'][activo.confidencialidad]}}</p>
-                <p><b>Disponibilidad: </b>{{cdi['disponibilidad'][activo.disponibilidad]}}</p>
-                <p><b>Integridad: </b>{{cdi['integridad'][activo.integridad]}}</p>
-                <p><b>Sensibilidad: </b>{{cdi['sensibilidad'][activo.sensibilidad]}}</p>
+                <p><b>Propietario: </b>{{activo.propietario}}</p>
+                <p><b>Ubicación: </b>{{activo.ubicacion}}</p>
+                <p><b>Frecuencia Mantenimiento: </b>{{activo.frecMantenimiento}}</p>
+                <p><b>Frecuencia Renovación: </b>{{activo.frecRenovacion}}</p>
+                <p><b>Frecha de Adquisicón: </b>{{activo.fechaAdquisicion}}</p>
+                <p><b></b></p>
             </div>
         </div>
     </div>
@@ -167,13 +172,13 @@
                 },
                 {
                     "orderable": false,
-                    "searchable": true,
-                    "targets": [5]
+                    "searchable": false,
+                    "targets": [1]
                 },
                 {
-                    "orderable": true,
-                    "searchable": false,
-                    "targets": "custom-sort",
+                    "orderable": false,
+                    "searchable": true,
+                    "targets": [2]
                 },
                 {
                     "orderable": false,
@@ -196,4 +201,5 @@
         addButton.css('margin-right', '10px');
     });
 </script>
+
 {% endblock %}

@@ -37,7 +37,7 @@ def verificarContraseña():
 @password.route('/update-password', methods=['POST'])
 def actualizarContraseña():
     if request.method == 'POST':
-        password = request.form['password']
+        password = request.form['password-new']
         new_password = request.form['new-password']
         usuario = Usuario.query.filter_by(idUsuario=session['user_id']).first()
         if password == new_password:

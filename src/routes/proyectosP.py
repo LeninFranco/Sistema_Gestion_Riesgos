@@ -12,6 +12,6 @@ def vistaListaProyectos():
     usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
     if usuario.rol == 0:
         return redirect(url_for('login.logoutUser'))
-    proyectos = usuario.proyectos
-    return render_template('vistas_participantes/listaProyectos.html', usuario=usuario, proyectos=proyectos)
+    asociaciones = usuario.proyectos_asociados
+    return render_template('vistas_participantes/listaProyectos.html', usuario=usuario, asociaciones=asociaciones)
 

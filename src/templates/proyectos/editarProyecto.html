@@ -1,11 +1,13 @@
-{% extends "templateNoSideBar.html" %}
+{% extends "templateSideBarMain.html" %}
 
 {% block username %} {{usuario.nombre}} {% endblock %}
 
 {% block content %}
-<div class="row pt-2"></div>
-<div class="row pt-5">
+<div class="row pt-2">
     <div class="card">
+        <div class="card-header text-center">
+            <h2>Modificación de Proyectos</h2>
+        </div>
         <div class="card-body">
             <form action="/modificar-proyecto" method="post" autocomplete="off">
                 <div class="mb-3">

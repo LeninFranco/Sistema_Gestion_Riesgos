@@ -17,12 +17,63 @@
     <h2>Participantes</h2>
 </div>
 <div class="row pt-2">
+    <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal"
+        data-bs-target="#VentanaAdd2">Crear Cuenta de Participante</button>
+    <div class="modal fade" id="VentanaAdd2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Cuenta de Particicpante</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/anadir-nuevo-participante" method="post" autocomplete="off" id="formulario">
+                        <div class="mb-3">
+                            <input type="text" name="nombre" class="form-control" placeholder="Nombre(s)" required
+                                autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="aPaterno" class="form-control" placeholder="Apellido Paterno"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="aMaterno" class="form-control" placeholder="Apellido Materno"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" name="email" class="form-control" placeholder="E-Mail" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="tel" name="tel" class="form-control" placeholder="Télefono" required>
+                            <div class="form-text">Ejemplos: 55-1234-5678 ó 56-1234-5678</div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="departamento" class="form-control" placeholder="Departmamento"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="cargo" class="form-control" placeholder="Cargo" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" name="password" class="form-control" placeholder="Contraseña" required>
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row pt-2">
     <form action="/anadir-participante" method="post">
         <div class="row">
             <div class="col-8">
                 <select name="idParticipante" class="form-select" style="white-space: pre-line;" required>
                     {% for participante in participantes_listado %}
-                    <option value="{{participante.idUsuario}}">{{participante.nombre}} {{participante.apellidoPaterno}}</option>
+                    <option value="{{participante.idUsuario}}">{{participante.correo}}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -39,20 +90,26 @@
                 <th>Nombre</th>
                 <th>Correo</th>
                 <th>Teléfono</th>
+                <th>Departamento</th>
+                <th>Cargo</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </thead>
             <tbody>
                 {% for participante in participantes_proyecto %}
-                {% if participante.rol != 0 %}
+                {% if participante[0].rol != 0 %}
                 <tr>
-                    <td>{{ participante.nombre }}</td>
-                    <td>{{ participante.correo }}</td>
-                    <td>{{ participante.telefono }}</td>
+                    <td>{{ participante[0].nombre }}</td>
+                    <td>{{ participante[0].correo }}</td>
+                    <td>{{ participante[0].telefono }}</td>
+                    <td>{{ participante[0].departamento }}</td>
+                    <td>{{ participante[0].cargo }}</td>
+                    <td>{{ participante[1] }}</td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
-                            data-bs-target="#Ventana{{participante.idUsuario}}"><i class="fa fa-plus"></i></button>
-                        <a href="/expulsar-participante/{{participante.idUsuario}}" class="btn btn-danger btn-delete"><i
-                                class="fa fa-trash"></i></a>
+                            data-bs-target="#Ventana{{participante[0].idUsuario}}"><i class="fa fa-plus"></i></button>
+                        <a href="/expulsar-participante/{{participante[0].idUsuario}}"
+                            class="btn btn-danger btn-delete"><i class="fa fa-trash"></i></a>
                     </td>
                 </tr>
                 {% endif %}
@@ -62,8 +119,8 @@
     </div>
 </div>
 {% for participante in participantes_proyecto %}
-<div class="modal fade" id="Ventana{{participante.idUsuario}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-hidden="true">
+<div class="modal fade" id="Ventana{{participante[0].idUsuario}}" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -71,14 +128,19 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
-                <p><b>Nombre completo del Participante: </b>{{participante.nombre}}
-                    {{participante.apellidoPaterno}} {{participante.apellidoMaterno}}</p>
-                <p><b>Correo electrónico: </b>{{participante.correo}}</p>
-                <p><b>Teléfono: </b>{{participante.telefono}}</p>
+                <p><b>Nombre completo del Participante: </b>{{participante[0].nombre}}
+                    {{participante[0].apellidoPaterno}} {{participante[0].apellidoMaterno}}</p>
+                <p><b>Correo electrónico: </b>{{participante[0].correo}}</p>
+                <p><b>Teléfono: </b>{{participante[0].telefono}}</p>
+                <p><b>Departamento: </b>{{participante[0].departamento}}</p>
+                <p><b>Departamento: </b>{{participante[0].cargo}}</p>
                 <p>MAS DETALLES EN PROXIMAS VERSIONES</p>
             </div>
         </div>
     </div>
 </div>
 {% endfor %}
+<script>
+
+</script>
 {% endblock %}

@@ -16,6 +16,8 @@ with app.app_context():
         apelidoMaterno=aMaterno,
         correo=email,
         telefono=telefono,
+        departamento="Departamento de Gestión de Riesgos",
+        cargo="Gestor de Riesgos",
         contrasena=password,
         rol=0
     )

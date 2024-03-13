@@ -1,0 +1,137 @@
+{% extends "templateSideBarMain.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row pt-5" id="alertRow">
+    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+        {{messages[1]}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+<div class="row pt-2"></div>
+<div class="row">
+    <h3 class="text-center">Participantes</h3>
+    <div class="row pt-2">
+        <button type="button" class="btn btn-dark bg-black w-100"
+            data-bs-toggle="modal" data-bs-target="#VentanaAdd2">Añadir
+            Participante</button>
+        <div class="modal fade" id="VentanaAdd2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Registrar Particicpante</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/anadir-responsable" method="post" autocomplete="off" id="formulario">
+                            <div class="mb-3">
+                                <input type="text" name="nombre" class="form-control" placeholder="Nombre(s)" required
+                                    autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="aPaterno" class="form-control" placeholder="Apellido Paterno"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="aMaterno" class="form-control" placeholder="Apellido Materno"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" name="email" class="form-control" placeholder="E-Mail" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="tel" name="tel" class="form-control" placeholder="Télefono" required>
+                                <div class="form-text">Ejemplos: 55-1234-5678 ó 56-1234-5678</div>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="departamento" class="form-control" placeholder="Departmamento"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="cargo" class="form-control" placeholder="Cargo"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="password" class="form-control" placeholder="Contraseña"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Departamento</th>
+                    <th>Cargo</th>
+                    <th>Acciones</th>
+                </thead>
+                <tbody>
+                    {% for responsable in responsables %}
+                    <tr>
+                        <td>{{ responsable[0].nombre }}</td>
+                        <td>{{ responsable[0].correo }}</td>
+                        <td>{{ responsable[0].telefono }}</td>
+                        <td>{{ responsable[0].departamento }}</td>
+                        <td>{{ responsable[0].cargo }}</td>
+                        <td>
+                            <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                                data-bs-target="#Ventana{{responsable[0].idUsuario}}"><i class="fa fa-plus"></i></button>
+                            <a href="/edicion-responsable/{{responsable[0].idUsuario}}" class="btn btn-success"><i
+                                    class="fa fa-pencil"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% for responsable in responsables %}
+    <div class="modal fade" id="Ventana{{responsable[0].idUsuario}}" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Participante</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-justify">
+                    <p><b>Nombre completo del Participante: </b>{{responsable[0].nombre}}
+                        {{responsable[0].apellidoPaterno}} {{responsable[0].apellidoMaterno}}</p>
+                    <p><b>Correo electrónico: </b>{{responsable[0].correo}}</p>
+                    <p><b>Teléfono: </b>{{responsable[0].telefono}}</p>
+                    <p><b>Departamento: </b>{{responsable[0].departamento}}</p>
+                    <p><b>Cargo: </b>{{responsable[0].cargo}}</p>
+                    <p><b>Lista de Proyectos en los que participa (Claves): </b></p>
+                    {% if responsable[1] %}
+                    <ul>
+                        {% for asociacion in responsable[1] %}
+                            <li>{{asociacion.proyecto.clave}}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                        <p>No esta participando en ningún proyecto</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

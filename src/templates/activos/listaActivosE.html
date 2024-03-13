@@ -1,0 +1,111 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row pt-5" id="alertRow">
+    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+        {{messages[1]}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+<div class="row pt-2">
+    <h2>Evaluación de Activos</h2>
+</div>
+<div class="row pt-2">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <th>Clave</th>
+                <th>Nombre</th>
+                <th class="custom-sort">Confid</th>
+                <th class="custom-sort">Disp</th>
+                <th class="custom-sort">Integ</th>
+                <th class="custom-sort">Sensib</th>
+                <th>Acciones</th>
+            </thead>
+            <tbody>
+                {% for activo in activos %}
+                <tr>
+                    <td>{{ activo.clave }}</td>
+                    <td>{{ activo.nombre }}</td>
+                    <td>{{ activo.confidencialidad }}</td>
+                    <td>{{ activo.disponibilidad }}</td>
+                    <td>{{ activo.integridad }}</td>
+                    <td>{{ activo.sensibilidad }}</td>
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{activo.idActivo}}"><i class="fa fa-plus"></i></button>
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target=""><i class="fa fa-triangle-exclamation"></i></button>
+                        <a href="/evaluar-activo/{{activo.idActivo}}" class="btn btn-success"><i
+                                class="fa fa-pencil"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% for activo in activos %}
+<div class="modal fade" id="Ventana{{activo.idActivo}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Activo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <p><b>Clave: </b>{{activo.clave}}</p>
+                <p><b>Nombre: </b>{{activo.nombre}}</p>
+                <p><b>Confidencialidad: </b>{{cdi['confidencialidad'][activo.confidencialidad]}}</p>
+                <p><b>Disponibilidad: </b>{{cdi['disponibilidad'][activo.disponibilidad]}}</p>
+                <p><b>Integridad: </b>{{cdi['integridad'][activo.integridad]}}</p>
+                <p><b>Sensibilidad: </b>{{cdi['sensibilidad'][activo.sensibilidad]}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<script>
+    $(document).ready(function () {
+        $('.table').DataTable({
+            "lengthChange": false,
+            "paging": false,
+            "info": false,
+            "language": {
+                "search": "",  // Eliminar el texto "Buscar:"
+                "searchPlaceholder": "Buscar Activo o Tipo",  // Establecer el marcador de posición
+                "zeroRecords": "No se encontraron registros coincidentes"
+            },
+            "columnDefs": [
+                {
+                    "orderable": false,
+                    "searchable": true,
+                    "targets": [0]
+                },
+                {
+                    "orderable": false,
+                    "searchable": true,
+                    "targets": [1]
+                },
+                {
+                    "orderable": true,
+                    "searchable": false,
+                    "targets": "custom-sort",
+                },
+                {
+                    "orderable": false,
+                    "searchable": false,
+                    "targets": [-1]
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

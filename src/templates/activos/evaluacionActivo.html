@@ -1,0 +1,83 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+<div class="row pt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Modificación de Activos</h2>
+            </div>
+            <div class="card-body">
+                <form action="/evaluando-activos" method="post" autocomplete="off">
+                    <div class="mb-3">
+                        <input type="hidden" name="idactivo" class="form-control" value="{{activo.idActivo}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Activo</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Nombre del activo"
+                            value="{{activo.nombre}}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción del Activo</label>
+                        <textarea name="descripcion" cols="30" rows="10" class="form-control"
+                            placeholder="Descripción completa del activo(Sin saltos de linea)" readonly>{{activo.descripcion}}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="form-label">Confidencialidad</label>
+                        </div>
+                        <div class="row">
+                            <select name="confidencialidad" class="form-select" style="white-space: pre-line;" required>
+                                {% for valor, opcion in cdi['confidencialidad'].items() %}
+                                {% if activo.confidencialidad == valor %}
+                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                {% else %}
+                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="form-label">Disponibilidad</label>
+                        </div>
+                        <div class="row">
+                            <select name="disponibilidad" class="form-select" style="white-space: pre-line;" required>
+                                {% for valor, opcion in cdi['disponibilidad'].items() %}
+                                {% if activo.disponibilidad == valor %}
+                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                {% else %}
+                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <label class="form-label">Integridad</label>
+                        </div>
+                        <div class="row">
+                            <select name="integridad" class="form-select" style="white-space: pre-line;" required>
+                                {% for valor, opcion in cdi['integridad'].items() %}
+                                {% if activo.integridad == valor %}
+                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                {% else %}
+                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-dark bg-black w-100">Evaluar Activo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

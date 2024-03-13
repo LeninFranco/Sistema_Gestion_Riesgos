@@ -1,4 +1,4 @@
-{% extends "templateNoSideBar.html" %}
+{% extends "templateSideBarMain.html" %}
 
 {% block username %} {{usuario.nombre}} {% endblock %}
 
@@ -14,189 +14,87 @@
 {% endif %}
 {% endwith %}
 <div class="row pt-2"></div>
-<div class="row pt-5 text-center">
-    <h3>Bienvenido {{usuario.nombre}} {{usuario.apellidoPaterno}}</h3>
-    <p>En esta sección podras gestionar tus diferentes proyectos de software para su gestión efectiva de los riesgos que
-        puedan presentarse. Tambien, tendrás la capacidad de crear diferentes cuentas de participantes para que los
-        puedas asignar a tus diferentes proyectos.
-    </p>
-</div>
-<hr>
 <div class="row">
-    <div class="col-6">
-        <h3 class="text-center">Proyectos</h3>
-        <div class="row pt-2">
-            <button type="button" class="btn btn-dark bg-black" style="width: 90%; display: block; margin: 0 auto;" data-bs-toggle="modal"
-                data-bs-target="#VentanaAdd1">Añadir
-                Proyecto</button>
-            <div class="modal fade" id="VentanaAdd1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Registrar Proyecto</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="/anadir-proyecto" method="post" autocomplete="off">
-                                <div class="mb-3">
-                                    <input type="text" name="clave" class="form-control"
-                                        placeholder="Clave del Proyecto" autofocus>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" name="nombre" class="form-control"
-                                        placeholder="Nombre del proyecto" autofocus>
-                                </div>
-                                <div class="mb-3">
-                                    <textarea name="descripcion" cols="30" rows="10" class="form-control"
-                                        placeholder="Descripción del proyecto(Sin saltos de linea)"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row pt-2">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Clave del Proyecto</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for proyecto in proyectos %}
-                        <tr>
-                            <td>{{proyecto.clave}}</td>
-                            <td>
-                                <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
-                                    data-bs-target="#Ventana{{proyecto.idProyecto}}"><i class="fa fa-plus"></i></button>
-                                <a href="/editar-proyecto/{{proyecto.idProyecto}}" class="btn btn-success"><i
-                                        class="fa fa-pencil"></i></a>
-                                <a href="/seleccionar-proyecto/{{proyecto.idProyecto}}" class="btn btn-primary"><i
-                                        class="fa fa-right-to-bracket"></i></a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% for proyecto in proyectos %}
-        <div class="modal fade" id="Ventana{{proyecto.idProyecto}}" data-bs-backdrop="static" data-bs-keyboard="false"
-            tabindex="-1" aria-hidden="true">
+    <h3 class="text-center">Proyectos</h3>
+    <div class="row pt-2">
+        <button type="button" class="btn btn-dark bg-black w-100"
+            data-bs-toggle="modal" data-bs-target="#VentanaAdd1">Añadir
+            Proyecto</button>
+        <div class="modal fade" id="VentanaAdd1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Detalles del Proyecto</h5>
+                        <h5 class="modal-title">Registrar Proyecto</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body text-justify">
-                        <h4>Descripción del proyecto</h4>
-                        <p>{{proyecto.descripcion}}</p>
+                    <div class="modal-body">
+                        <form action="/anadir-proyecto" method="post" autocomplete="off">
+                            <div class="mb-3">
+                                <input type="text" name="clave" class="form-control" placeholder="Clave del Proyecto"
+                                    autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" name="nombre" class="form-control" placeholder="Nombre del proyecto"
+                                    autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <textarea name="descripcion" cols="30" rows="10" class="form-control"
+                                    placeholder="Descripción del proyecto(Sin saltos de linea)"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        {% endfor %}
     </div>
-    <div class="col-6">
-        <h3 class="text-center">Participantes</h3>
-        <div class="row pt-2">
-            <button type="button" class="btn btn-dark bg-black" style="width: 90%; display: block; margin: 0 auto;" data-bs-toggle="modal"
-                data-bs-target="#VentanaAdd2">Añadir
-                Participante</button>
-            <div class="modal fade" id="VentanaAdd2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Registrar Particicpante</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form action="/anadir-responsable" method="post" autocomplete="off" id="formulario">
-                                <div class="mb-3">
-                                    <input type="text" name="nombre" class="form-control" placeholder="Nombre(s)"
-                                        required autofocus>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" name="aPaterno" class="form-control"
-                                        placeholder="Apellido Paterno" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" name="aMaterno" class="form-control"
-                                        placeholder="Apellido Materno" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="email" name="email" class="form-control" placeholder="E-Mail" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="tel" name="tel" class="form-control" placeholder="Télefono" required>
-                                    <div class="form-text">Ejemplos: 55-1234-5678 ó 56-1234-5678</div>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" name="password" class="form-control" placeholder="Contraseña"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="row pt-2">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Clave del Proyecto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for proyecto in proyectos %}
+                    <tr>
+                        <td>{{proyecto.clave}}</td>
+                        <td>
+                            <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                                data-bs-target="#Ventana{{proyecto.idProyecto}}"><i class="fa fa-plus"></i></button>
+                            <a href="/editar-proyecto/{{proyecto.idProyecto}}" class="btn btn-success"><i
+                                    class="fa fa-pencil"></i></a>
+                            <a href="/seleccionar-proyecto/{{proyecto.idProyecto}}" class="btn btn-primary"><i
+                                    class="fa fa-right-to-bracket"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        <div class="row pt-2">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <th>Nombre del Participante</th>
-                        <th>Más información</th>
-                    </thead>
-                    <tbody>
-                        {% for responsable in responsables %}
-                        <tr>
-                            <td>{{ responsable.nombre }}</td>
-                            <td>
-                                <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
-                                    data-bs-target="#Ventana{{responsable.idUsuario}}"><i
-                                        class="fa fa-plus"></i></button>
-                                <a href="/edicion-responsable/{{responsable.idUsuario}}" class="btn btn-success"><i
-                                        class="fa fa-pencil"></i></a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        {% for responsable in responsables %}
-        <div class="modal fade" id="Ventana{{responsable.idUsuario}}" data-bs-backdrop="static"
-            data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Detalles del Participante</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-justify">
-                        <p><b>Nombre completo del Participante: </b>{{responsable.nombre}}
-                            {{responsable.apellidoPaterno}} {{responsable.apellidoMaterno}}</p>
-                        <p><b>Correo electrónico: </b>{{responsable.correo}}</p>
-                        <p><b>Teléfono: </b>{{responsable.telefono}}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
     </div>
+    {% for proyecto in proyectos %}
+    <div class="modal fade" id="Ventana{{proyecto.idProyecto}}" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Proyecto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-justify">
+                    <h4>Descripción del proyecto</h4>
+                    <p>{{proyecto.descripcion}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
 </div>
 
 {% endblock %}

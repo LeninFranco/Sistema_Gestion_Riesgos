@@ -1,4 +1,4 @@
-{% extends "templateNoSideBar.html" %}
+{% extends "templateSideBarMain.html" %}
 
 {% block username %} {{usuario.nombre}} {% endblock %}
 
@@ -34,6 +34,15 @@
                         <label class="form-label">Télefono del Participante</label>
                         <input type="tel" name="telefono" class="form-control" value="{{responsable.telefono}}" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Departamento</label>
+                        <input type="text" name="departamento" class="form-control" value="{{responsable.departamento}}" placeholder="Departmamento"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cargo</label>
+                        <input type="text" name="cargo" class="form-control" value="{{responsable.cargo}}" placeholder="Cargo"
+                            required>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-dark bg-black w-100">Modificar</button>
                     </div>
