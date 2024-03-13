@@ -16,13 +16,14 @@ class Activo(db.Model):
     frecRenovacion = db.Column(db.String(20), nullable=True)
     fechaAdquisicion = db.Column(db.Date, nullable=False)
     tipoActivo = db.Column(db.String(20), nullable=False)
+    estatus = db.Column(db.String(20), nullable=False)
     confidencialidad = db.Column(db.Integer, nullable=False)
     disponibilidad = db.Column(db.Integer, nullable=False)
     integridad = db.Column(db.Integer, nullable=False)
     sensibilidad = db.Column(db.Integer, nullable=False)
     idProyecto = db.Column(db.String(32), db.ForeignKey('Proyectos.idProyecto', ondelete='CASCADE'), nullable=False)
 
-    def __init__(self, clave, nombre, descripcion, propietario, ubicacion, frecMantenimiento, frecRenovacion, fechaAdquisicion, tipoActivo, idProyecto) -> None:
+    def __init__(self, clave, nombre, descripcion, propietario, ubicacion, frecMantenimiento, frecRenovacion, fechaAdquisicion, tipoActivo, estatus,idProyecto) -> None:
         self.clave = clave
         self.nombre = nombre
         self.descripcion = descripcion
@@ -32,6 +33,7 @@ class Activo(db.Model):
         self.frecRenovacion = frecRenovacion
         self.fechaAdquisicion = fechaAdquisicion
         self.tipoActivo = tipoActivo
+        self.estatus = estatus
         self.confidencialidad = 0
         self.disponibilidad = 0
         self.integridad = 0

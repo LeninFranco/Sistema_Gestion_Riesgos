@@ -98,6 +98,11 @@ frecuencia = [
     'Anual'
 ]
 
+estatus = [
+    'En uso',
+    'Desuso'
+]
+
 @activos.route('/listar-inventario')
 def vistaListaActivos():
     if not 'user_id' in session:
@@ -109,7 +114,7 @@ def vistaListaActivos():
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos
-    return render_template('activos/listaActivosI.html', usuario=usuario, activos=activos, frecuencia=frecuencia, tiposActivo=tiposActivo)
+    return render_template('activos/listaActivosI.html', usuario=usuario, activos=activos, frecuencia=frecuencia, tiposActivo=tiposActivo, estatus=estatus)
 
 @activos.route('/modificar-activo/<string:idActivo>')
 def vistaModificacionActivos(idActivo):
@@ -121,7 +126,7 @@ def vistaModificacionActivos(idActivo):
     if not 'proyecto_id' in session:
         return redirect(url_for('proyectos.vistaListaProyectos'))
     activo = Activo.query.filter_by(idActivo=idActivo).first()
-    return render_template('activos/edicionActivos.html', usuario=usuario, activo=activo, frecuencia=frecuencia, tiposActivo=tiposActivo)
+    return render_template('activos/edicionActivos.html', usuario=usuario, activo=activo, frecuencia=frecuencia, tiposActivo=tiposActivo, estatus=estatus)
 
 @activos.route('/anadir-activos', methods=['POST'])
 def añadirActivos():
@@ -133,6 +138,7 @@ def añadirActivos():
             propietario = request.form['propietario']
             ubicacion = request.form['ubicacion']
             tipoActivo = request.form['tipo']
+            estatus = request.form['estatus']
             frecMantenimiento = request.form['frecM']
             frecRenovacion = request.form['frecR']
             fecha_str = request.form['fecha']
@@ -145,6 +151,7 @@ def añadirActivos():
                 propietario=propietario,
                 ubicacion=ubicacion,
                 tipoActivo=tipoActivo,
+                estatus=estatus,
                 frecMantenimiento=frecMantenimiento,
                 frecRenovacion=frecRenovacion,
                 fechaAdquisicion=fechaAdquisicion.replace(hour=0, minute=0, second=0, microsecond=0),
@@ -171,20 +178,35 @@ def modificarActivos():
             propietario = request.form['propietario']
             ubicacion = request.form['ubicacion']
             tipoActivo = request.form['tipo']
+            estatus = request.form['estatus']
             frecMantenimiento = request.form['frecM']
             frecRenovacion = request.form['frecR']
             fecha_str = request.form['fecha']
             fechaAdquisicion = datetime.strptime(fecha_str, '%Y-%m-%d')
             a = Activo.query.filter_by(idActivo=idActivo).first()
-            a.clave = clave
-            a.nombre=nombre
-            a.descripcion=descripcion
-            a.propietario = propietario
-            a.ubicacion = ubicacion
-            a.tipoActivo = tipoActivo
-            a.frecMantenimiento = frecMantenimiento
-            a.frecRenovacion = frecRenovacion
-            a.fechaAdquisicion = fechaAdquisicion
+            if a.estatus == 'En uso' and estatus == 'Desuso':
+                a.clave = clave
+                a.nombre=nombre
+                a.descripcion=descripcion
+                a.propietario = propietario
+                a.ubicacion = ubicacion
+                a.tipoActivo = tipoActivo
+                a.estatus = estatus
+                a.frecMantenimiento = frecMantenimiento
+                a.frecRenovacion = frecRenovacion
+                a.fechaAdquisicion = fechaAdquisicion
+                a.evaluarActivo(0,0,0)
+            else:
+                a.clave = clave
+                a.nombre=nombre
+                a.descripcion=descripcion
+                a.propietario = propietario
+                a.ubicacion = ubicacion
+                a.tipoActivo = tipoActivo
+                a.estatus = estatus
+                a.frecMantenimiento = frecMantenimiento
+                a.frecRenovacion = frecRenovacion
+                a.fechaAdquisicion = fechaAdquisicion
             db.session.commit()
             flash('success')
             flash('El activo ha sido modificado correctamente')
@@ -204,7 +226,10 @@ def vistaListaEvaluaciones():
     if not 'proyecto_id' in session:
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
-    activos = proyecto.activos
+    activos = []
+    for activo in proyecto.activos:
+        if activo.estatus == "En uso":
+            activos.append(activo)
     return render_template('activos/listaActivosE.html', usuario=usuario, activos=activos, cdi=cdi)
 
 @activos.route('/evaluar-activo/<string:idActivo>')

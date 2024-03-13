@@ -69,6 +69,16 @@
                         </div>
                         <div class="row">
                             <div class="mb-3">
+                                <label class="form-label">Estatus</label>
+                                <select name="estatus" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in estatus %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
                                 <label class="form-label">Frecuencia de Mantenimiento</label>
                                 <select name="frecM" class="form-select" style="white-space: pre-line;" required>
                                     {% for opcion in frecuencia %}
@@ -111,6 +121,7 @@
                 <th>Clave</th>
                 <th>Nombre</th>
                 <th>Tipo</th>
+                <th>Estatus</th>
                 <th>Acciones</th>
             </thead>
             <tbody>
@@ -119,6 +130,7 @@
                     <td>{{ activo.clave }}</td>
                     <td>{{ activo.nombre }}</td>
                     <td>{{ activo.tipoActivo }}</td>
+                    <td>{{ activo.estatus }}</td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{activo.idActivo}}"><i class="fa fa-plus"></i></button>
