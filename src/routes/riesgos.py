@@ -5,6 +5,7 @@ from src.models.proyectos import Proyecto
 from src.models.activos import Activo
 from src.models.riesgo import Riesgo
 from src.models.activos_riesgos import ActivosRiesgos
+from src.routes.activos import tiposActivo
 
 riesgos = Blueprint('riesgos', __name__)
 
@@ -197,7 +198,12 @@ def vistaListaRiesgos():
     activos = proyecto.activos
     riesgos = []
     for activo in activos:
-        riesgos += activo.riesgos
+        for asociacion in activo.riesgos_asociados:
+            riesgos += asociacion.riesgo
+    #for activo in proyecto.activos.riesgos_asociados:
+        #riesgos += asociacion.riesgo
+    #for activo in activos:
+    #    riesgos += activo.riesgos
     riesgos_umbrales = []
     for riesgo in riesgos:
         riesgos_umbrales.append((riesgo, definirUmbral(riesgo.probabilidad), definirUmbral(riesgo.impacto)))

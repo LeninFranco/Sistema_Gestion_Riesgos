@@ -29,7 +29,7 @@
                     <form action="/anadir-riesgo" method="post" autocomplete="off">
                         <div class="row">
                             <div class="mb-3">
-                                <input type="text" name="clave" class="form-control" placeholder="Clave Identificación Riesgo"
+                                <input type="text" name="clave" class="form-control" placeholder="Clave de identificación del riesgo"
                                     required autofocus>
                             </div>
                         </div>
@@ -42,11 +42,11 @@
                         <div class="row">
                             <div class="mb-3">
                                 <textarea name="descripcion" cols="30" rows="5" class="form-control"
-                                    placeholder="Descripción completa del riesgo(Sin saltos de linea)"></textarea>
+                                    placeholder="Descripción completa del riesgo (Sin saltos de linea)"></textarea>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="mb-3">
+                            <!-- <div class="mb-3"> 
                                 <label class="form-label">Selecciona el Activo (Su sensibilidad es el Impacto Técnico)
                                 </label>
                                 <select name="idActivo" class="form-select">
@@ -54,8 +54,246 @@
                                     <option value="{{activo.idActivo}}">{{activo.nombre}}</option>
                                     {% endfor %}
                                 </select>
+                            </div>  -->
+                        </div>
+
+                        <!-- Factores de probabilidad -->
+                        <div class="row">
+                            <div class="bg-body mb-3">
+                                <h4 class="text-center ">Factores de probabilidad</h4>
+                            </div>
+                            
+                                <script>
+                                    $(function () {
+                                      $('[data-toggle="tooltip"]').tooltip()
+                                    })
+                                </script>
+
+                            <!-- Factores de amenaza -->    
+                            <div class="">
+                                <hr>
+                                <h5 class="">Factores de amenaza</h5>
+                                    <!--Nivel de habilidad-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Nivel de habilidad</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Qué nivel técnico tiene este grupo de agentes de amenazas?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="nivelHabilidad" class="form-select" style="white-space: pre-line;"
+                                            required>
+                                            {% for valor, opcion in factores_de_amenaza['nivel_de_habilidad'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Motivacion-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Motivación</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Qué motivación tiene este grupo de agentes de amenazas para encontrar y explotar esta vulnerabilidad?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="motivacion" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in factores_de_amenaza['motivación'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Oportunidad-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Oportunidad</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Qué recursos y oportunidades necesita este grupo de agentes de amenazas para encontrar y explotar esta vulnerabilidad?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="oportunidad" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in factores_de_amenaza['oportunidad'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Tamaño-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Tamaño</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Qué tamaño tiene este grupo de agentes de amenazas?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="tamaño" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in factores_de_amenaza['tamaño'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                            </div>
+                            
+                            <!-- Factores de vulnerabilidad -->    
+                            <div>
+                                <hr>
+                                <h5 class="">Factores de vulnerabilidad</h4>
+                                    <!--Facilidad descubrimiento-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Facilidad de descubrimiento</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Cómo de fácil es para este grupo de agentes de amenazas descubrir esta vulnerabilidad?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="facilidadDescubrimiento" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in
+                                            factores_de_vulnerabilidad['facilidad_de_descubrimiento'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Facilidad de explotación-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Facilidad de explotación</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Hasta qué punto es fácil para este grupo de agentes de amenazas explotar realmente esta vulnerabilidad?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="facilidadExplotacion" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in factores_de_vulnerabilidad['facilidad_de_explotación'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Conciencia-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Conciencia</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Hasta qué punto es conocida esta vulnerabilidad por este grupo de agentes de amenazas?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="conciencia" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in factores_de_vulnerabilidad['conciencia'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Detección de intrusiones-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Detección de intrusiones</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Qué probabilidades hay de que se detecte un exploit?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="deteccionIntrusiones" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in factores_de_vulnerabilidad['detección_de_intrusiones'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                             </div>
                         </div>
+
+                        <!-- Factores de impacto -->
+                        <div class="row">
+                            <div class="bg-body mb-3">
+                                <h4 class="text-center ">Factores de impacto</h4>
+                            </div>
+                            
+                            <!-- Factores de amenaza -->    
+                            <div class="">
+                                <hr>
+                                <h5 class="">Impacto empresarial</h5>
+                                    
+                                    <!--Daño financiero-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Daño financiero</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿A cuánto ascienden los daños económicos derivados de un exploit?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="impactoFinanciero" class="form-select" style="white-space: pre-line;"
+                                            required>
+                                            {% for valor, opcion in factores_de_impacto_empresarial['daño_financiero'].items()
+                                            %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Daño a la reputación-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Daño a la reputación</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Supondría un exploit un daño para la reputación que perjudicaría a la empresa?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="impactoReputacion" class="form-select" style="white-space: pre-line;"
+                                            required>
+                                            {% for valor, opcion in
+                                            factores_de_impacto_empresarial['daño_a_la_reputación'].items()
+                                            %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Incumplimiento-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Incumplimiento legal</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Qué grado de exposición introduce el incumplimiento?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="impactoLegal" class="form-select" style="white-space: pre-line;" required>
+                                            {% for valor, opcion in factores_de_impacto_empresarial['incumplimiento'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <!--Violación a la privacidad-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Violación a la privacidad</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                        title="¿Cuánta información personal identificable podría divulgarse?"></i>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="impactoUsuarios" class="form-select" style="white-space: pre-line;"
+                                            required>
+                                            {% for valor, opcion in
+                                            factores_de_impacto_empresarial['violación_de_la_privacidad'].items() %}
+                                            <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                            </div>
+                            
+                                                       
+                            
+                            <div class="">
+                                <hr>
+                                <h5 class="">Activo del riesgo</h5>
+                                    
+                                    <!--Activos-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Categoría</label>
+                                        
+                                        <!--Lista despegable-->
+                                        <select name="idActivo" class="form-select">
+                                            {% for tipo in tiposActivo %}
+                                            <option value="{{tipo}}">{{tipo}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                            
+                        </div>
+
+                        <!--
                         <div class="row">
                             <div class="col-6 mb-3">
                                 <h3>Factores de Probabilidad</h3>
@@ -246,6 +484,7 @@
                                 </select>
                             </div>
                         </div>
+                        -->
                         <div class="row">
                             <div class="mb-3">
                                 <label class="form-label">Tipo de Riesgo</label>
