@@ -1,4 +1,4 @@
-from flask import Blueprint, session, redirect, url_for, render_template, request, flash
+from flask import Blueprint, session, redirect, url_for, render_template, request, flash, Response, json
 from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
 from src.models.responsables import Participantes
@@ -16,6 +16,15 @@ def vistaListaParticipantes():
     if not 'proyecto_id' in session:
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    participantes_proyecto = []
+    for asociacion in proyecto.usuarios_asociados:
+        participantes_proyecto.append((asociacion.usuario, asociacion.estado))
+    return render_template('participantes/listaParticipantes.html', usuario=usuario, participantes_proyecto=participantes_proyecto)
+
+@participantes.route('/get_participantes', methods=['GET'])
+def obtenerParticipantes():
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
     participantes_proyecto = []
     for asociacion in proyecto.usuarios_asociados:
@@ -23,8 +32,8 @@ def vistaListaParticipantes():
     participantes_listado = []
     for participante in participantes_jefe:
         if not participante in [x[0] for x in participantes_proyecto]:
-            participantes_listado.append(participante)
-    return render_template('participantes/listaParticipantes.html', usuario=usuario, participantes_listado=participantes_listado, participantes_proyecto=participantes_proyecto)
+            participantes_listado.append(participante.correo)
+    return Response(json.dumps(participantes_listado), mimetype='application/json')
 
 @participantes.route('/anadir-nuevo-participante', methods=['POST'])
 def crearParticipante():
@@ -63,14 +72,18 @@ def crearParticipante():
 @participantes.route('/anadir-participante', methods=['POST'])
 def añadirParticipante():
     if request.method == 'POST':
-        idParticipante = request.form['idParticipante']
-        participante = Usuario.query.filter_by(idUsuario = idParticipante).first()
-        proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
-        asociacion = Participantes(usuario=participante, proyecto=proyecto, estado="Activo")
-        db.session.add(asociacion)
-        db.session.commit()
-        flash("success")
-        flash("El participante ha sido añadido al proyecto")
+        email = request.form['correo']
+        participante = Usuario.query.filter_by(correo=email).first()
+        if participante:
+            proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+            asociacion = Participantes(usuario=participante, proyecto=proyecto, estado="Activo")
+            db.session.add(asociacion)
+            db.session.commit()
+            flash("success")
+            flash("El participante ha sido añadido al proyecto")
+        else:
+            flash("danger")
+            flash("No existe un participante con el correo que ingresó")
         return redirect(url_for('participantes.vistaListaParticipantes'))
 
 @participantes.route('/expulsar-participante/<string:idParticipante>')
