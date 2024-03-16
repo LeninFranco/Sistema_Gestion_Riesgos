@@ -13,11 +13,14 @@
 </div>
 {% endif %}
 {% endwith %}
+
+
+
 <div class="row pt-2">
     <h2>Riesgos</h2>
 </div>
 <div class="row pt-2">
-    <div class="modal fade" id="VentanaAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="VentanaAddRiesgo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content">
@@ -26,7 +29,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/anadir-riesgo" method="post" autocomplete="off">
+                    <form action="/anadir-riesgo" id="formularioRiesgos" method="post" autocomplete="off">
                         <div class="row">
                             <div class="mb-3">
                                 <input type="text" name="clave" class="form-control" placeholder="Clave de identificación del riesgo"
@@ -43,6 +46,16 @@
                             <div class="mb-3">
                                 <textarea name="descripcion" cols="30" rows="5" class="form-control"
                                     placeholder="Descripción completa del riesgo (Sin saltos de linea)"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Riesgo</label>
+                                <select name="idTipoRiesgo" class="form-select">
+                                    {% for tipoRiesgo in tiposRiesgo %}
+                                    <option value="{{tipoRiesgo.idTipoRiesgo}}">{{tipoRiesgo}}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -274,24 +287,220 @@
                             
                                                        
                             
-                            <div class="">
+                            <div class="row">
                                 <hr>
                                 <h5 class="">Activo del riesgo</h5>
                                     
                                     <!--Activos-->
                                     <div class="mb-3">
-                                        <!--Titulo de valor y tooltip-->
-                                        <label class="form-label">Categoría</label>
-                                        
-                                        <!--Lista despegable-->
-                                        <select name="idActivo" class="form-select">
-                                            {% for tipo in tiposActivo %}
-                                            <option value="{{tipo}}">{{tipo}}</option>
-                                            {% endfor %}
-                                        </select>
+                                        <div class="row">
+                                            <label class="form-label">Búsqueda por tipo</label>
+                                            <div class="col-12 col-md-8">
+                                                <!--Lista despegable-->
+                                                <select id="tipoActivo" name="tipoActivo" class="form-select">
+                                                    <option selected>Selecciona un tipo</option>
+                                                    {% for tipo in tiposActivo %}
+                                                    <option value="{{tipo}}">{{tipo}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+
+
+                                            <div class="col-6 col-md-4">
+                                                <button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddActivo">Añadir Activo</button>
+                                            </div>
+                                        </div>
                                     </div>
-                            
-                        </div>
+                                    <div class="mb-3">
+
+                                        <!-- Tabla en lugar de lista sin ordenar
+                                        <table id="tabla-activos" class="table-responsive">
+                                            <thead>
+                                                <th>Seleccionar</th>
+                                                <th></th>
+                                            </thead>
+                                            <tbody>
+                                                {% for activo in activos %}
+                                                <tr>
+                                                    <td><li class="list-group-item"><input type="checkbox" name="activos" value="{{ activo.id }}"> {{ activo.nombre }}</li></td>
+                                                    
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        -->
+                                        
+                                        <ul id= "activosFilt" class="list-group list-group-flush">
+                                            <!--
+                                            <h6> Todos los activos del proyecto:</h6>
+                                            {% for activo in activos %}
+                                                <li class="list-group-item"><input type="checkbox" name="{{ activo.nombre }}" value="{{ activo.id }}"> <label for="{{ activo.nombre }}">{{ activo.nombre }}</label></li>
+                                            {% endfor %}
+                                            -->
+                                        </ul>
+                                        
+                                    </div>
+                                    
+                                    <div id="resultadosPre" class="mb-3">
+                                        
+                                    </div>
+                                    <script>
+                                        $(document).ready(function() {
+                                            var seleccionAnterior = [];
+
+                                            function obtenerSeleccionesAnteriores() {
+                                                var selecciones = [];
+                                                $('#activosFilt input[type="checkbox"]:checked').each(function() {
+                                                    selecciones.push($(this).val());
+                                                });
+                                                return selecciones;
+                                            }
+                                            $('#tipoActivo').change(function() {
+                                                var tipo = $(this).val(); 
+                                                seleccionAnterior = obtenerSeleccionesAnteriores();
+                                                $.ajax({
+                                                    type: 'POST',
+                                                    url: '/obtener-activos-json',
+                                                    contentType: 'application/json',
+                                                    data: JSON.stringify({tipoActivo: tipo}),
+                                                    success: function(response) {
+                                                        // Inicializa el html interno de opciones
+                                                        var listarActivos = '';
+                                                        if(tipo != 'Selecciona un tipo'){
+                                                            listarActivos += '<h6> Activos del tipo: '+ tipo + '</h6>';
+                                                        }                                                     
+                                                        // Tabla en lugar de lista sin ordenar
+                                                        //var tbody = document.querySelector('#tabla-activos tbody');
+                                                        //tbody.innerHTML = '';
+                                                        $.each(response.activos, function(index, activo) {
+                                                            // Tabla en lugar de lista sin ordenar
+                                                            //var tr = document.createElement('tr');
+                                                            //tr.innerHTML = '<td><li class="list-group-item"><input type="checkbox" name="activos" value="' + activo.id + '"> '+ activo.nombre + '</li></td>';
+                                                            //tbody.appendChild(tr);
+                                                            //var li = document.createElement('li');
+                                                            //li.innerHTML = '<li class="list-group-item"><input type="checkbox" name="activos" value="' + activo.id + '"> '+ activo.nombre + '</li>';
+                                                            //tbody.appendChild(li);
+                                                            // Suma un li por cada activo en el tipo
+                                                            // Verificar si el activo estaba seleccionado anteriormente
+                                                                 
+                                                            // Verificar si el activo estaba seleccionado anteriormente
+                                                            var seleccionado = '';
+                                                            if (seleccionAnterior.includes(activo.idActivo)){
+                                                                seleccionado = 'checked';
+                                                            }
+                                                            //seleccionAnterior.includes(activo.idActivo) ? 'checked' : '';
+                                                            var color, sensibilidadNombre;
+                                                            if(activo.sensibilidad > 18){
+                                                                color = 'btn-danger';
+                                                                sensibilidadNombre = 'Sensibilidad alta';
+                                                            }else if(activo.sensibilidad > 9){
+                                                                color = 'btn-warning';
+                                                                sensibilidadNombre = 'Sensibilidad media';
+                                                            }else{
+                                                                color = 'btn-success';
+                                                                sensibilidadNombre = 'Sensibilidad baja';   
+                                                            }
+                                                            console.log('Selección: ' + seleccionado.toString());
+                                                            listarActivos += '<li class="list-group-item"><input type="checkbox" name="'+ activo.idActivo + '" value="' + activo.idActivo + '"' + seleccionado + '><label for="' + activo.idActivo + '"> ' + ' '+ activo.nombre + 
+                                                                ' <button type="button" class="btn btn-sm btn-block '+ color + '" style="pointer-events: none;">'+ sensibilidadNombre +'</button></label></li>'
+                                                        });
+                                                        //resultados += '<h6>Resultados - Sensibilidad: A, Impacto: ' + umbralImpact + 'Probabilidad: ' + umbralProb +  'Riesgo total y activos: '+ riesgoTotal + activos_seleccionados + '<h6/>';
+                                                        // Renderiza en la lista activosFit el html que está en opciones
+                                                        $('#activosFilt').html(listarActivos);
+
+                                                    }
+                                                });
+                                            });
+
+                                            
+                                        
+                                        //Para previsualizar el riesgo antes del submit
+                                        //function actualizarResultados() {
+                                        //    // Probabilidad
+                                        //    var p1 = parseInt($('[name=nivelHabilidad]').val());
+                                        //    var p2 = parseInt($('[name=motivacion]').val());
+                                        //    var p3 = parseInt($('[name=oportunidad]').val());
+                                        //    var p4 = parseInt($('[name=tamaño]').val());
+                                        //    var p5 = parseInt($('[name=facilidadDescubrimiento]').val());
+                                        //    var p6 = parseInt($('[name=facilidadExplotacion]').val());
+                                        //    var p7 = parseInt($('[name=conciencia]').val());
+                                        //    var p8 = parseInt($('[name=deteccionIntrusiones]').val());
+                                        //    var amenaza = (p1+p2+p3+p4)/4;
+                                        //    var vulnerabilidad = (p5+p6+p7+p8)/4;
+                                        //    var prob = (amenaza + vulnerabilidad)/2;
+                                        //    // Impacto
+                                        //    var i1 = parseInt($('[name=impactoFinanciero]').val());
+                                        //    var i2 = parseInt($('[name=impactoReputacion]').val());
+                                        //    var i3 = parseInt($('[name=impactoLegal]').val());
+                                        //    var i4 = parseInt($('[name=impactoUsuario]').val());
+                                        //    //var i5 = parseInt(activo.confidencialidad)
+                                        //    //var i6 = parseInt(activo.disponibilidad)
+                                        //    //var i7 = parseInt(activo.integridad)
+                                        //    var empresarial = (i1+i2+i3+i4)/4;
+                                        //    //var tecnico = (i5+i6+i7)/3;
+                                        //    //var impact = (empresarial + tecnico)/2;
+                                        //    var impact = empresarial/2;
+                                        //    
+                                        //    function umbral(factor){
+                                        //        if(factor > 0 && factor < 3){
+                                        //            return 'Bajo';
+                                        //        }else if(factor >=3 && factor < 6){
+                                        //            return 'Medio';
+                                        //        }else if(factor >=6 && factor <=9){
+                                        //            return 'Alto';
+                                        //        }
+                                        //    }
+                                        //    var umbralProb = umbral(prob);
+                                        //    var umbralImpact = umbral(impact);
+                                        //    function total(umbralProb, umbralImpact){
+                                        //        if (umbralImpact == 'Bajo' && umbralProb == 'Bajo'){
+                                        //            return 'Insignificante';
+                                        //        }else if(umbralImpact == 'Bajo' && umbralProb == 'Medio'){
+                                        //            return 'Bajo';
+                                        //        }else if(umbralImpact == 'Bajo' && umbralProb == 'Alto'){
+                                        //            return 'Medio';
+                                        //        }else if(umbralImpact == 'Medio' && umbralProb == 'Bajo'){
+                                        //            return 'Bajo';
+                                        //        }else if(umbralImpact == 'Medio' && umbralProb == 'Medio'){
+                                        //            return 'Medio';
+                                        //        }else if(umbralImpact == 'Medio' && umbralProb == 'Alto'){
+                                        //            return 'Alto';
+                                        //        }else if(umbralImpact == 'Alto' && umbralProb == 'Bajo'){
+                                        //            return 'Medio';
+                                        //        }else if(umbralImpact == 'Alto' && umbralProb == 'Medio'){
+                                        //            return 'Alto';
+                                        //        }else if(umbralImpact == 'Alto' && umbralProb == 'Alto'){
+                                        //            return 'Crítico';
+                                        //        }
+                                        //    }
+                                        //    var riesgoTotal = total(umbralProb, umbralImpact);
+                                        //    var activos_seleccionados = $('#activosFilt').val();
+                                        //    // Verificar si se han seleccionado todas las opciones necesarias
+                                        //    
+                                        //    // Calcular el máximo de las sensibilidades de los activos seleccionados
+                                        //    var max_sensibilidad;
+                                        //    $.each(activos_seleccionados, function(index, activo) {
+                                        //        var sensibilidad = activo.sensibilidad; // Función para obtener la sensibilidad de un activo por su ID
+                                        //        max_sensibilidad = Math.max(max_sensibilidad, sensibilidad);
+                                        //    });
+                                        //    // Actualizar los resultados en la página
+                                        //    $('#resultadosPre').html('<p>Sensibilidad: ' + max_sensibilidad + '</p>' +
+                                        //                                      '<p>Probabilidad: ' + umbralProb + '</p>' +
+                                        //                                      '<p>Impacto: ' + umbralImpact + '</p>' +
+                                        //                                      '<p>Riesgo total: ' + riesgoTotal + '</p>' +
+                                        //                                      '<p>Máxima sensibilidad de los activos seleccionados: ' + '</p>');
+                                        //    
+                                        //}
+
+                                        //$('#formularioRiesgos').change(actualizarResultados);
+
+                                        
+
+                                        });
+
+                                    </script>
+                                                                        
+                            </div>
 
                         <!--
                         <div class="row">
@@ -485,16 +694,7 @@
                             </div>
                         </div>
                         -->
-                        <div class="row">
-                            <div class="mb-3">
-                                <label class="form-label">Tipo de Riesgo</label>
-                                <select name="idTipoRiesgo" class="form-select">
-                                    {% for tipoRiesgo in tiposRiesgo %}
-                                    <option value="{{tipoRiesgo.idTipoRiesgo}}">{{tipoRiesgo.nombre}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
+                        
                         <div class="row">
                             <div class="mb-3">
                                 <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
@@ -506,6 +706,223 @@
         </div>
     </div>
 </div>
+
+
+
+
+<!-- Modal para activos, Copypaste de modal de listarActivosl.html con modificación para regresar al modal de riesgos-->
+<div class="row pt-2">
+    <div class="modal fade" id="VentanaAddActivo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Activo</h5>
+                    <button type="button" class="btn ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddRiesgo"><i class="fa-sharp fa-solid fa-backward"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form id="anadir-activo" method="post" autocomplete="off">
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="clave" class="form-control" placeholder="Clave del Activo"
+                                    required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="nombre" class="form-control" placeholder="Nombre del activo"
+                                    required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <textarea name="descripcion" cols="30" rows="5" class="form-control"
+                                    placeholder="Descripción completa del activo(Sin saltos de linea)"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="propietario" class="form-control"
+                                    placeholder="Nombre del Propietario" required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="ubicacion" class="form-control"
+                                    placeholder="Ubicación Física/Lógica del activo" required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Activo</label>
+                                <select name="tipo" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in tiposActivo %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Estatus</label>
+                                <select name="estatus" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in estatus %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Frecuencia de Mantenimiento</label>
+                                <select name="frecM" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in frecuencia %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Frecuencia de Renovación</label>
+                                <select name="frecR" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in frecuencia %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Adquisición</label>
+                                <input type="date" name="fecha" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- Evaluación del activo, dentro del mismo formulario -->
+                        <div class="mb-3">
+                            <div class="bg-body mb-3">
+                                <h4 class="text-center ">Evaluación del activo</h4>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <label class="form-label">Confidencialidad</label>
+                            </div>
+                            <div class="row">
+                                <select name="confidencialidad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['confidencialidad'].items() %}
+                                    
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <label class="form-label">Disponibilidad</label>
+                            </div>
+                            <div class="row">
+                                <select name="disponibilidad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['disponibilidad'].items() %}
+                                    
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <label class="form-label">Integridad</label>
+                            </div>
+                            <div class="row">
+                                <select name="integridad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['integridad'].items() %}
+                                    
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-6 col-md-4">
+                                <button type="button" class="btn btn-dark bg-black w-100 ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddRiesgo">
+                                    <i class="fa-sharp fa-solid fa-backward"></i> Regresar al riesgo</button>
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <button type="submit" class="btn btn-dark bg-black w-100">Registrar activo</button>
+                            </div>
+                        </div>
+                    </form>
+                    
+
+                    <div>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                            <div class="row pt-5" id="alertRow">
+                                <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+                                    {{messages[1]}}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+
+                    <!-- AJAX para añadir activo sin tener que redirigir a otra ruta-->
+                    <!--Funciona, pero no maneja excepciones (flashes) dentro del modal, por alguna razón se van a la vista de acciones-->
+                    <script>
+                        document.getElementById("anadir-activo").addEventListener("submit", function(event) {
+                            event.preventDefault(); // Evitar que el formulario se envíe normalmente
+                
+                            // Obtener los datos del formulario
+                            var formData = new FormData(this);
+                
+                            // Enviar los datos del formulario usando AJAX
+                            fetch('/anadir-activos-en-riesgo', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.text();
+                            })
+                            .then(data => {
+                                console.log('Result:' + data); // Manejar la respuesta del servidor
+                                // Puedes actualizar la interfaz de usuario aquí si es necesario
+
+                            
+                            })
+                            .catch(error => {
+                                console.error('There was an error!', error);
+                            });
+                            // Manejar los mensajes flash después de enviar el formulario
+                            // Puedes hacer esto mostrando mensajes flash en la página o realizando cualquier otra acción deseada
+                            // Por ejemplo, puedes mostrar mensajes flash en una área específica de la página
+                            //var flashMessages = document.getElementById("flash-messages");
+                            //flashMessages.innerHTML = ""; // Limpiar mensajes flash anteriores
+
+                            
+                        });
+                    </script>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
 <div class="row pt-2">
     <div class="table-responsive">
         <table class="table">
@@ -620,7 +1037,7 @@
             ]
         });
         
-        var addButton = $('<button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAdd">Añadir Riesgo</button>');
+        var addButton = $('<button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddRiesgo">Añadir Riesgo</button>');
 
         // Insertar el botón antes de la barra de búsqueda
         $('.dataTables_filter').prepend(addButton);
