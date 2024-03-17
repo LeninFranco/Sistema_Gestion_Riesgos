@@ -57,171 +57,282 @@
     </style>
 </head>
 <body>
-    <table class="matriz-riesgos">
-        <thead>
-            <tr>
-                <th>Impacto / Probabilidad</th>
-                <th>Bajo</th>
-                <th>Medio</th>
-                <th>Alto</th>
-            </tr>
-        </thead>
-        {% if riesgos_umbrales %}
-        {% for riesgo in riesgos_umbrales %}
-        <tbody>
-            
-            <tr>
-                <td>Alto</td>
+    
+        
+    {% if dictRiesgos %}
+    {% set riesgos_medio_bajo = [] %}
+    {% set riesgos_alto_bajo = [] %}
+    {% set riesgos_bajo_bajo = [] %}
 
-                
-                {% set riesgos_bajo_alto = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Bajo' and r[0].impacto == 'Alto' %}
-                    {% set _ = riesgos_bajo_alto.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_bajo_alto %}
+    {% set riesgos_alto_medio = [] %}
+    {% set riesgos_medio_medio = [] %}
+    {% set riesgos_bajo_medio = [] %}
+
+    {% set riesgos_alto_alto = [] %}
+    {% set riesgos_medio_alto = [] %}
+    {% set riesgos_bajo_alto = [] %}
+    
+    {% for clave, datos in dictRiesgos.items() %}
+        {% set riesgo = datos.riesgo %}
+        {% set probabilidad = datos.activos[0][1] %}
+        {% set impacto = datos.activos[0][2] %}
+        
+        <!-- Listas de Riesgos -->
+        {% if probabilidad == 'Bajo' and impacto == 'Alto' %}
+            {% set _ = riesgos_bajo_alto.append(riesgo) %}
+        {% endif %}
+        
+        {% if probabilidad == 'Medio' and impacto == 'Alto' %}
+            {% set _ = riesgos_medio_alto.append(riesgo) %}
+        {% endif %}
+
+        {% if probabilidad == 'Alto' and impacto == 'Alto' %}
+            {% set _ = riesgos_alto_alto.append(riesgo) %}
+        {% endif %}
+
+        {% if probabilidad == 'Bajo' and impacto == 'Medio' %}
+            {% set _ = riesgos_bajo_medio.append(riesgo) %}
+        {% endif %}
+
+        {% if probabilidad == 'Medio' and impacto == 'Medio' %}
+            {% set _ = riesgos_medio_medio.append(riesgo) %}
+        {% endif %}
+
+        {% if probabilidad == 'Alto' and impacto == 'Medio' %}
+            {% set _ = riesgos_alto_medio.append(riesgo) %}
+        {% endif %}
+
+        {% if probabilidad == 'Bajo' and impacto == 'Bajo' %}
+            {% set _ = riesgos_bajo_bajo.append(riesgo) %}
+        {% endif %}
+
+        {% if probabilidad == 'Medio' and impacto == 'Bajo' %}
+            {% set _ = riesgos_medio_bajo.append(riesgo) %}
+        {% endif %}
+
+        {% if probabilidad == 'Alto' and impacto == 'Bajo' %}
+            {% set _ = riesgos_alto_bajo.append(riesgo) %}
+        {% endif %}
+    {% endfor %}
+    <style>
+        .btn-transparent {
+            background-color: transparent;
+            border: 1px solid black;
+            color: black;
+            transition: background-color 0.3s;
+        }
+    
+        /*.btn-transparent:hover {
+            background-color: #f0f0f0; // Cambia el color de fondo cuando se pasa el mouse 
+        } */
+        
+    </style>
+    
+
+                    
+    <div class="table-responsive">
+        <table class="matriz-riesgos">
+            <thead>
+                <tr>
+                    <th>Impacto / Probabilidad</th>
+                    <th>Bajo</th>
+                    <th>Medio</th>
+                    <th>Alto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alto</td>
                     <td class="riesgo medio">
-                        {% for r in riesgos_bajo_alto %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_bajo_alto %}
+                            {% for r in riesgos_bajo_alto %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                <td class="riesgo medio">Riesgo Medio</td>
-                {% endif %}
-
-                {% set riesgos_medio_alto = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Medio' and r[0].impacto == 'Alto' %}
-                    {% set _ = riesgos_medio_alto.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_medio_alto %}
                     <td class="riesgo alto">
-                        {% for r in riesgos_medio_alto %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_medio_alto %}
+                            {% for r in riesgos_medio_alto %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                <td class="riesgo alto">Riesgo Alto</td>
-                {% endif %}
-                
-                {% set riesgos_alto_alto = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Alto' and r[0].impacto == 'Alto' %}
-                    {% set _ = riesgos_alto_alto.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_alto_alto %}
                     <td class="riesgo critico">
-                        {% for r in riesgos_alto_alto %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_alto_alto %}
+                            {% for r in riesgos_alto_alto %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                    <td class="riesgo critico">Riesgo Critico</td>
-                {% endif %}
-                
-                
-
-            </tr>
-            <tr>
-                <td>Medio</td>
-
-                {% set riesgos_bajo_medio = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Bajo' and r[0].impacto == 'Medio' %}
-                    {% set _ = riesgos_bajo_medio.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_bajo_medio %}
+                </tr>
+                <tr>
+                    <td>Medio</td>
                     <td class="riesgo bajo">
-                        {% for r in riesgos_bajo_medio %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_bajo_medio %}
+                            {% for r in riesgos_bajo_medio %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                    <td class="riesgo bajo">Riesgo Bajo</td>
-                {% endif %}
-                
-                {% set riesgos_medio_medio = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Medio' and r[0].impacto == 'Medio' %}
-                    {% set _ = riesgos_medio_medio.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_medio_medio %}
                     <td class="riesgo medio">
-                        {% for r in riesgos_medio_medio %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_medio_medio %}
+                            {% for r in riesgos_medio_medio %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                    <td class="riesgo medio">Riesgo Medio</td>
-                {% endif %}
-
-                {% set riesgos_alto_medio = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Alto' and r[0].impacto == 'Medio' %}
-                    {% set _ = riesgos_alto_medio.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_alto_medio %}
                     <td class="riesgo alto">
-                        {% for r in riesgos_alto_medio %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_alto_medio %}
+                            {% for r in riesgos_alto_medio %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                    <td class="riesgo alto">Riesgo Alto</td>
-                {% endif %}
-                
-                
-                
-                
-            </tr>
-            <tr>
-                <td>Bajo</td>
-
-                {% set riesgos_bajo_bajo = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Bajo' and r[0].impacto == 'Bajo' %}
-                    {% set _ = riesgos_bajo_bajo.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_bajo_bajo %}
+                </tr>
+                <tr>
+                    <td>Bajo</td>
                     <td class="riesgo insignificante">
-                        {% for r in riesgos_bajo_bajo %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_bajo_bajo %}
+                            {% for r in riesgos_bajo_bajo %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                    <td class="riesgo insignificante">Riesgo Insignificante</td>
-                {% endif %}
-                
-                {% set riesgos_medio_bajo = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Medio' and r[0].impacto == 'Bajo' %}
-                    {% set _ = riesgos_medio_bajo.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_medio_bajo %}
                     <td class="riesgo bajo">
-                        {% for r in riesgos_medio_bajo %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_medio_bajo %}
+                            {% for r in riesgos_medio_bajo %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                    <td class="riesgo bajo">Riesgo Bajo</td>
-                {% endif %}
-                
-                {% set riesgos_alto_bajo = [] %}
-                {% for r in riesgos_umbrales if r[0].probabilidad == 'Alto' and r[0].impacto == 'Bajo' %}
-                    {% set _ = riesgos_alto_bajo.append(r[0]) %}
-                {% endfor %}
-                {% if riesgos_alto_bajo %}
                     <td class="riesgo medio">
-                        {% for r in riesgos_alto_bajo %}
-                            {{ r.clave }},
-                        {% endfor %}
+                        {% if riesgos_alto_bajo %}
+                            {% for r in riesgos_alto_bajo %}
+                                <button type="button" class="btn btn-primary btn-transparent" data-bs-toggle="modal" data-bs-target="#Ventana{{ r.idRiesgo }}">{{ r.clave }}</button>
+                            {% endfor %}
+                        {% else %}
+                            ----
+                        {% endif %}
                     </td>
-                {% else %}
-                    <td class="riesgo medio">Riesgo Medio</td>
-                {% endif %}
-
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    
+    
+    <!-- Modal -->
+    {% for clave in dictRiesgos.keys() %}
+    <div class="modal fade" id="Ventana{{dictRiesgos[clave]['riesgo'].idRiesgo}}" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Riesgo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <p><b>Descripción: </b>{{dictRiesgos[clave]['riesgo'].descripcion}}</p>
+                <p><b>Tipo de Riesgo: </b>{{dictRiesgos[clave]['riesgo'].tipoRiesgo}}</p>
+                <p><b>Probabilidad: </b>{{ dictRiesgos[clave]['activos'][0][1] }}</p>
+                <p><b>Impacto: </b>{{ dictRiesgos[clave]['activos'][0][2] }}</p>
+                <p><b>Umbral Total: </b>{{ dictRiesgos[clave]['activos'][0][3] }}</p>
+                <p><b>Activos asociados: </b></p>
+                <table class="table">
+                    <thead>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Clave</th>
+                        <th>Sensibildad</th>
+                    </thead>
+                    <tbody>
+                        
+                        {% for activo in dictRiesgos[clave]['activos'] %}
+                            <tr>
+                                <td><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                    title="Descripción: {{activo[0].descripcion}}"></i></td>
+                                <td class=""> {{ activo[0].nombre }}</td> 
+                                <td>{{ activo[0].clave }}</td>  
+                                <td>
+                                {% if activo[0].sensibilidad > 18 %}
+                                <button type="button" class="btn btn-sm btn-block btn-danger" style="pointer-events: none;"> Sensibilidad alta </button>
+                                {% elif activo[0].sensibilidad > 9 %}
+                                <button type="button" class="btn btn-sm btn-block btn-warning" style="pointer-events: none;"> Sensibilidad media </button>
+                                {% else %}
+                                <button type="button" class="btn btn-sm btn-block btn-success" style="pointer-events: none;"> Sensibilidad baja </button>       
+                                {% endif %}
+                            </td>
+                                </li>
+                            </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
                 
-                
-                
-            </tr>
-
-        </tbody>
-    </table>
-        {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+    {% endfor %}
+<!--
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Clave</th>
+                        <th>Nombre</th>
+                        <th>Impacto</th>
+                        <th>Probabilidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for clave, datos in dictRiesgos.items() %}
+                            {% set riesgo = datos.riesgo %}
+                            {% set probabilidad = datos.activos[0][1] %}
+                            {% set impacto = datos.activos[0][2] %}
+                            <tr>
+                                <td>{{ clave }}</td>
+                                <td>{{ riesgo.nombre }}</td>
+                                <td>{{ impacto }}</td>
+                                <td>{{ probabilidad }}</td>
+                                
+                            </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+-->
+        
+        
+    
         {% else %}
+        <div class="table-responsive">
+            <table class="matriz-riesgos">
+                <thead>
+                    <tr>
+                        <th>Impacto / Probabilidad</th>
+                        <th>Bajo</th>
+                        <th>Medio</th>
+                        <th>Alto</th>
+                    </tr>
+                </thead>
+                <tbody>
         <tbody>
             <tr>
                 <td>Alto</td>
@@ -243,6 +354,7 @@
             </tr>
         </tbody>
     </table>
+    </div>
         <h4>No hay riesgos disponibles</h4>
 {% endif %}
     

@@ -519,19 +519,26 @@ def vistaMatrizRiesgos():
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos
     riesgos = []
-    asociaciones = []
+    
     for activo in activos:
         for asociacion in activo.riesgos_asociados:
-            riesgos.append(asociacion.riesgo) 
+            riesgos.append(asociacion.riesgo)     
     riesgos_umbrales = []
+    dictRiesgos = {}
     for activo in activos:
          for asociacion in activo.riesgos_asociados:
-              asociaciones.append((asociacion,definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo))))
-                   
-    #for riesgo in riesgos:
-    #    riesgos_umbrales.append((riesgo, definirUmbral(riesgo.probabilidad), definirUmbral(riesgo.impacto)))
-    return render_template('matriz/matriz.html', proyecto=proyecto,usuario=usuario, riesgos_umbrales=asociaciones, umbrales=umbrales, tiposRiesgo=tiposRiesgo, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+              if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                   dictRiesgos[asociacion.riesgo.clave] = {
+                        'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                        'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                   }
+              else:
+                   dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
 
+    for clave in dictRiesgos.keys():
+        dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+    
+    return render_template('matriz/matriz.html', proyecto=proyecto, usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/obtener-activos-json', methods=['POST'])
 def obtenerActivosJSON():
