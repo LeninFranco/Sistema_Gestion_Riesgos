@@ -507,7 +507,30 @@ def añadirActivoEnRiesgo():
             db.session.rollback()
             return jsonify('Existe')
     
-
+@riesgos.route('/matriz-riesgos')
+def vistaMatrizRiesgos():
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    riesgos = []
+    asociaciones = []
+    for activo in activos:
+        for asociacion in activo.riesgos_asociados:
+            riesgos.append(asociacion.riesgo) 
+    riesgos_umbrales = []
+    for activo in activos:
+         for asociacion in activo.riesgos_asociados:
+              asociaciones.append((asociacion,definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo))))
+                   
+    #for riesgo in riesgos:
+    #    riesgos_umbrales.append((riesgo, definirUmbral(riesgo.probabilidad), definirUmbral(riesgo.impacto)))
+    return render_template('matriz/matriz.html', proyecto=proyecto,usuario=usuario, riesgos_umbrales=asociaciones, umbrales=umbrales, tiposRiesgo=tiposRiesgo, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 
 @riesgos.route('/obtener-activos-json', methods=['POST'])
