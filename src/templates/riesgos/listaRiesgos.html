@@ -53,23 +53,11 @@
                                 <label class="form-label">Tipo de Riesgo</label>
                                 <select name="idTipoRiesgo" class="form-select">
                                     {% for tipoRiesgo in tiposRiesgo %}
-                                    <option value="{{tipoRiesgo.idTipoRiesgo}}">{{tipoRiesgo}}</option>
+                                    <option value="{{tipoRiesgo}}">{{tipoRiesgo}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
-                        <div class="row">
-                            <!-- <div class="mb-3"> 
-                                <label class="form-label">Selecciona el Activo (Su sensibilidad es el Impacto Técnico)
-                                </label>
-                                <select name="idActivo" class="form-select">
-                                    {% for activo in activos %}
-                                    <option value="{{activo.idActivo}}">{{activo.nombre}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>  -->
-                        </div>
-
                         <!-- Factores de probabilidad -->
                         <div class="row">
                             <div class="bg-body mb-3">
@@ -215,7 +203,7 @@
                                 <h4 class="text-center ">Factores de impacto</h4>
                             </div>
                             
-                            <!-- Factores de amenaza -->    
+                            <!-- Impacto empresarial -->    
                             <div class="">
                                 <hr>
                                 <h5 class="">Impacto empresarial</h5>
@@ -350,14 +338,30 @@
 
                                             function obtenerSeleccionesAnteriores() {
                                                 var selecciones = [];
-                                                $('#activosFilt input[type="checkbox"]:checked').each(function() {
+                                                $('#activosFilt input:checked').each(function() {
                                                     selecciones.push($(this).val());
                                                 });
                                                 return selecciones;
                                             }
+
+
+                                            function obtenerSelecciones(selecciones) {
+                                                $('#activosFilt input:checked').each(function() {
+                                                    if(!selecciones.includes($(this).val())){
+                                                        selecciones.push($(this).val());
+                                                    }
+                                                });
+                                                return selecciones;
+                                            }
+
                                             $('#tipoActivo').change(function() {
                                                 var tipo = $(this).val(); 
-                                                seleccionAnterior = obtenerSeleccionesAnteriores();
+                                                if(seleccionAnterior.length == 0){
+                                                    seleccionAnterior = obtenerSeleccionesAnteriores();
+                                                }else{
+                                                    seleccionAnterior = obtenerSelecciones(seleccionAnterior);
+                                                }
+
                                                 $.ajax({
                                                     type: 'POST',
                                                     url: '/obtener-activos-json',
@@ -369,9 +373,6 @@
                                                         if(tipo != 'Selecciona un tipo'){
                                                             listarActivos += '<h6> Activos del tipo: '+ tipo + '</h6>';
                                                         }                                                     
-                                                        // Tabla en lugar de lista sin ordenar
-                                                        //var tbody = document.querySelector('#tabla-activos tbody');
-                                                        //tbody.innerHTML = '';
                                                         $.each(response.activos, function(index, activo) {
                                                             // Tabla en lugar de lista sin ordenar
                                                             //var tr = document.createElement('tr');
@@ -388,7 +389,7 @@
                                                             if (seleccionAnterior.includes(activo.idActivo)){
                                                                 seleccionado = 'checked';
                                                             }
-                                                            //seleccionAnterior.includes(activo.idActivo) ? 'checked' : '';
+
                                                             var color, sensibilidadNombre;
                                                             if(activo.sensibilidad > 18){
                                                                 color = 'btn-danger';
@@ -400,8 +401,7 @@
                                                                 color = 'btn-success';
                                                                 sensibilidadNombre = 'Sensibilidad baja';   
                                                             }
-                                                            console.log('Selección: ' + seleccionado.toString());
-                                                            listarActivos += '<li class="list-group-item"><input type="checkbox" name="'+ activo.idActivo + '" value="' + activo.idActivo + '"' + seleccionado + '><label for="' + activo.idActivo + '"> ' + ' '+ activo.nombre + 
+                                                            listarActivos += '<li class="list-group-item"><input type="checkbox" id="idActivos" name="idActivos"'+ ' value="' + activo.idActivo + '" ' + seleccionado + '><label for="' + activo.idActivo + '"> ' + ' '+ activo.nombre + 
                                                                 ' <button type="button" class="btn btn-sm btn-block '+ color + '" style="pointer-events: none;">'+ sensibilidadNombre +'</button></label></li>'
                                                         });
                                                         //resultados += '<h6>Resultados - Sensibilidad: A, Impacto: ' + umbralImpact + 'Probabilidad: ' + umbralProb +  'Riesgo total y activos: '+ riesgoTotal + activos_seleccionados + '<h6/>';
@@ -411,10 +411,21 @@
                                                     }
                                                 });
                                             });
-
+                                            // Mostrar alerta si ningún activo está seleccionado
+                                            $('#formularioRiesgos').submit(function(event) {
+                                                // Verificar si al menos un checkbox está marcado como seleccionado
+                                                var alertaActivo = '';
+                                                if (!$('#activosFilt input[type="checkbox"]:checked').length > 0) {
+                                                    // Mostrar un mensaje de error o tomar alguna acción
+                                                    alertaActivo = '<div class="alert alert-danger" role="alert">Selecciona al menos un activo para el riesgo. </div>';
+                                                    $('#activoRequerido').html(alertaActivo);
+                                                    // Prevenir el envío del formulario
+                                                    event.preventDefault();
+                                                }
+                                            });
                                             
                                         
-                                        //Para previsualizar el riesgo antes del submit
+                                        //Para previsualizar el riesgo antes del submit, no completado
                                         //function actualizarResultados() {
                                         //    // Probabilidad
                                         //    var p1 = parseInt($('[name=nivelHabilidad]').val());
@@ -493,211 +504,18 @@
                                         //}
 
                                         //$('#formularioRiesgos').change(actualizarResultados);
-
-                                        
-
                                         });
-
                                     </script>
-                                                                        
+                                                                       
                             </div>
-
-                        <!--
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <h3>Factores de Probabilidad</h3>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <h3>Factores de Impacto</h3>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <h5>Agente de Amenaza</h5>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <h5>Impacto Técnico</h5>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <input type="text" name="amenaza" class="form-control"
-                                    placeholder="Nombre del agente de amenaza" required>
-                            </div>
-                            <div class="col-6 mb-3 text-justify" style="position: absolute; left: 50%; overflow: auto;">
-                                <p>La sensibilidad del activo que se desea asociar a este riesgo está compuesta por tres
-                                    variables que definen el impacto técnico del riesgo. </p>
-
-                                <p>La primera variable se refiere a la confidencialidad de la información. Esto implica
-                                    proteger la privacidad y la confidencialidad de los datos y asegurarse de que solo
-                                    las personas autorizadas tengan acceso a la información crítica.</p>
-
-                                <p>La segunda variable aborda la disponibilidad del activo. La disponibilidad se refiere
-                                    a la capacidad de acceder y utilizar los recursos de manera ininterrumpida. </p>
-
-                                <p>La tercera variable se relaciona con la integridad de la información. La integridad
-                                    implica garantizar que los datos no se modifiquen de manera no autorizada o
-                                    inapropiada. </p>
-
-                                <p>Si no encuentra el activo deseado en este momento, le
-                                    recomendamos regresar al menú
-                                    de activos para darlo de alta y asegurarse de que se incluya en la evaluación de
-                                    riesgos de seguridad de la información.</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Nivel de Habilidad</label>
-                                <select name="nivelHabilidad" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in factores_de_amenaza['nivel_de_habilidad'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Motivación</label>
-                                <select name="motivacion" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_amenaza['motivación'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Oportunidad</label>
-                                <select name="oportunidad" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_amenaza['oportunidad'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Tamaño</label>
-                                <select name="tamaño" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_amenaza['tamaño'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <h5>Vulnerabilidad del Activo</h5>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <h5>Impacto Empresarial</h5>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <input type="text" name="vulnerabilidad" class="form-control"
-                                    placeholder="Nombre de la vulnerabilidad del activo" required>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">
-                                    Evalúe el impacto empresarial considerando aspectos económicos, legales y la
-                                    privacidad
-                                    del usuario.</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Facilidad de Descubrimiento</label>
-                                <select name="facilidadDescubrimiento" class="form-select"
-                                    style="white-space: pre-line;" required>
-                                    {% for valor, opcion in
-                                    factores_de_vulnerabilidad['facilidad_de_descubrimiento'].items()
-                                    %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Daño Financiero</label>
-                                <select name="impactoFinanciero" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in factores_de_impacto_empresarial['daño_financiero'].items()
-                                    %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Facilidad de Explotación</label>
-                                <select name="facilidadExplotacion" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in
-                                    factores_de_vulnerabilidad['facilidad_de_explotación'].items()
-                                    %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Daño a la Reputación</label>
-                                <select name="impactoReputacion" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in
-                                    factores_de_impacto_empresarial['daño_a_la_reputación'].items()
-                                    %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Conciencia</label>
-                                <select name="conciencia" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_vulnerabilidad['conciencia'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Incumplimiento Legal</label>
-                                <select name="impactoLegal" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_impacto_empresarial['incumplimiento'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Detección de Intrusiones</label>
-                                <select name="deteccionIntrusiones" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in
-                                    factores_de_vulnerabilidad['detección_de_intrusiones'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Violación de la Privacidad</label>
-                                <select name="impactoUsuarios" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in
-                                    factores_de_impacto_empresarial['violación_de_la_privacidad'].items() %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        -->
-                        
                         <div class="row">
                             <div class="mb-3">
                                 <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="activoRequerido" class="mb-3">
+                                
                             </div>
                         </div>
                     </form>
@@ -847,6 +665,10 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="mb-3 pd-4   " id="resultadoActivo"></div>
+                        </div>
+
 
                         <div class="row">
                             <div class="col-6 col-md-4">
@@ -859,7 +681,7 @@
                         </div>
                     </form>
                     
-
+                    
                     <div>
                         {% with messages = get_flashed_messages() %}
                             {% if messages %}
@@ -895,9 +717,14 @@
                                 return response.text();
                             })
                             .then(data => {
-                                console.log('Result:' + data); // Manejar la respuesta del servidor
-                                // Puedes actualizar la interfaz de usuario aquí si es necesario
-
+                                //console.log('Result:' + typeof(data)); // Manejar la respuesta del servidor
+                                if(data.includes('Existe')){
+                                    htmlMensaje = '<div class="alert alert-danger" role="alert">La clave del activo ya existe</div>';
+                                }else{
+                                    htmlMensaje = '<div class="alert alert-success" role="alert">El activo ha sido añadido correctamente</div>';
+                                }
+                                
+                                $('#resultadoActivo').html(htmlMensaje);
                             
                             })
                             .catch(error => {
@@ -925,7 +752,7 @@
 
 <div class="row pt-2">
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-main">
             <thead>
                 <th>Clave</th>
                 <th>Nombre</th>
@@ -934,29 +761,30 @@
                 <th>Acciones</th>
             </thead>
             <tbody>
-                {% for riesgo in riesgos_umbrales %}
+               
+                {% for clave in dictRiesgos.keys() %}
+
+
                 <tr>
-                    <td>{{ riesgo[0].clave }}</td>
-                    <td>{{ riesgo[0].nombre }}</td>
-                    <td>{{riesgo[0].tipoRiesgo.nombre}}</td>
-                    {% if riesgo[0].umbral == 'Insignificante' %}
-                    <td style="background-color: blue;">{{ riesgo[0].umbral }}</td>
-                    {% elif riesgo[0].umbral == 'Bajo' %}
-                    <td style="background-color: green;">{{ riesgo[1] }}</td>
-                    {% elif riesgo[0].umbral == 'Medio' %}
-                    <td style="background-color: yellow; color: black;">{{ riesgo[0].umbral }}</td>
-                    {% elif riesgo[0].umbral == 'Alto' %}
-                    <td style="background-color: orange; color: black;">{{ riesgo[0].umbral }}</td>
+                    <td>{{ dictRiesgos[clave]['riesgo'].clave }}</td>
+                    <td>{{ dictRiesgos[clave]['riesgo'].nombre }}</td>
+                    <td>{{ dictRiesgos[clave]['riesgo'].tipoRiesgo}}</td>
+                    {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}
+                    <td style="background-color: blue;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Bajo' %}
+                    <td style="background-color: green;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Medio' %}
+                    <td style="background-color: yellow; color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Alto' %}
+                    <td style="background-color: orange; color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% else %}
-                    <td style="background-color: red;">{{ riesgo[0].umbral }}</td>
+                    <td style="background-color: red;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% endif %}
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
-                            data-bs-target="#Ventana{{riesgo[0].idRiesgo}}"><i class="fa fa-plus"></i></button>
-                        <a href="/modificar-riesgo/{{riesgo[0].idRiesgo}}" class="btn btn-success"><i
+                            data-bs-target="#Ventana{{dictRiesgos[clave]['riesgo'].idRiesgo}}"><i class="fa fa-plus"></i></button>
+                        <a href="/modificar-riesgo/{{dictRiesgos[clave]['riesgo'].idRiesgo}}" class="btn btn-success"><i
                                 class="fa fa-pencil"></i></a>
-                        <a href="/eliminar-riesgo/{{riesgo[0].idRiesgo}}" class="btn btn-danger btn-delete"><i
-                                class="fa fa-trash"></i></a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -964,8 +792,8 @@
         </table>
     </div>
 </div>
-{% for riesgo in riesgos_umbrales %}
-<div class="modal fade" id="Ventana{{riesgo[0].idRiesgo}}" data-bs-backdrop="static" data-bs-keyboard="false"
+{% for clave in dictRiesgos.keys() %}
+<div class="modal fade" id="Ventana{{dictRiesgos[clave]['riesgo'].idRiesgo}}" data-bs-backdrop="static" data-bs-keyboard="false"
     tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -974,12 +802,63 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
-                <p><b>Descripción: </b>{{riesgo[0].descripcion}}</p>
-                <p><b>Tipo de Riesgo: </b>{{riesgo[0].tipoRiesgo.nombre}}</p>
-                <p><b>Probabilidad: </b>{{umbrales['Probabilidad'][riesgo[1]]}}</p>
-                <p><b>Impacto: </b>{{umbrales['Impacto'][riesgo[2]]}}</p>
-                <p><b>Umbral Total: </b>{{umbrales['Umbral Total'][riesgo[0].umbral]}}</p>
-                <p><b>Nombre del Activo asociado: </b>{{riesgo[0].activo.nombre}}</p>
+                <p><b>Descripción: </b>{{dictRiesgos[clave]['riesgo'].descripcion}}</p>
+                <p><b>Tipo de Riesgo: </b>{{dictRiesgos[clave]['riesgo'].tipoRiesgo}}</p>
+                <p><b>Probabilidad: </b>{{ dictRiesgos[clave]['activos'][0][1] }}</p>
+                <p><b>Impacto: </b>{{ dictRiesgos[clave]['activos'][0][2] }}</p>
+                <p><b>Umbral Total: </b>{{ dictRiesgos[clave]['activos'][0][3] }}</p>
+                <p><b>Activos asociados: </b></p>
+                <table class="table">
+                    <thead>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Clave</th>
+                        <th>Sensibildad</th>
+                    </thead>
+                    <tbody>
+                        
+                        {% for activo in dictRiesgos[clave]['activos'] %}
+                            <tr>
+                                <td><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                    title="Descripción: {{activo[0].descripcion}}"></i></td>
+                                <td class=""> {{ activo[0].nombre }}</td> 
+                                <td>{{ activo[0].clave }}</td>  
+                                <td>
+                                {% if activo[0].sensibilidad > 18 %}
+                                 <button type="button" class="btn btn-sm btn-block btn-danger" style="pointer-events: none;"> Sensibilidad alta </button>
+                                {% elif activo[0].sensibilidad > 9 %}
+                                 <button type="button" class="btn btn-sm btn-block btn-warning" style="pointer-events: none;"> Sensibilidad media </button>
+                                {% else %}
+                                 <button type="button" class="btn btn-sm btn-block btn-success" style="pointer-events: none;"> Sensibilidad baja </button>       
+                                {% endif %}
+                            </td>
+                                </li>
+                            </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+                
+                <!--
+                    <ul class="list-group list-group-flush">
+                    <div class="mb-3">
+                        {% for activo in dictRiesgos[clave]['activos'] %}
+                        
+                            <li class="list-group-item"><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="Descripción: {{activo[0].descripcion}}"></i> {{ activo[0].nombre }}
+                            {% if activo[0].sensibilidad > 18 %}
+                             <button type="button" class="btn btn-sm btn-block btn-danger" style="pointer-events: none;"> Sensibilidad alta </button>
+                            {% elif activo[0].sensibilidad > 9 %}
+                             <button type="button" class="btn btn-sm btn-block btn-warning" style="pointer-events: none;"> Sensibilidad media </button>
+                            {% else %}
+                             <button type="button" class="btn btn-sm btn-block btn-success" style="pointer-events: none;"> Sensibilidad baja </button>       
+                            {% endif %}
+                            </li>
+                        {% endfor %}
+                    </div>
+                </ul>
+            -->
+                
             </div>
         </div>
     </div>
@@ -998,7 +877,7 @@
             return order[b] - order[a];
         };
 
-        $('.table').DataTable({
+        $('.table-main').DataTable({
             "lengthChange": false,
             "paging": false,
             "info": false,

@@ -1,0 +1,84 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+<div class="row pt-2 text-justify">
+    <h2>{{proyecto.nombre}}</h2>
+    <p>{{proyecto.descripcion}}</p>
+    <style>
+        .matriz-riesgos {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .matriz-riesgos, .matriz-riesgos th, .matriz-riesgos td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .riesgo {
+            color: white;
+        }
+        .insignificante {
+            background-color: lightseagreen;
+        }
+
+
+        .bajo {
+            background-color: green;
+        }
+
+        .medio {
+            background-color: yellow;
+            color: black; /* Mejorar contraste */
+        }
+
+        .alto {
+            background-color: orange;
+        }
+        .critico {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <table class="matriz-riesgos">
+        <thead>
+            <tr>
+                <th>Impacto / Probabilidad</th>
+                <th>Bajo</th>
+                <th>Medio</th>
+                <th>Alto</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Alto</td>
+                <td class="riesgo medio">Riesgo Medio</td>
+                <td class="riesgo alto">Riesgo Alto</td>
+                <td class="riesgo critico">Riesgo Critico</td>
+            </tr>
+            <tr>
+                <td>Medio</td>
+                <td class="riesgo bajo">Riesgo Bajo</td>
+                <td class="riesgo medio">Riesgo Medio</td>
+                <td class="riesgo alto">Riesgo Alto</td>
+            </tr>
+            <tr>
+                <td>Bajo</td>
+                <td class="riesgo insignificante">Riesgo Insignificante</td>
+                <td class="riesgo bajo">Riesgo Bajo</td>
+                <td class="riesgo medio">Riesgo Medio</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+</div>
+{% endblock %}
+    

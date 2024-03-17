@@ -69,7 +69,7 @@ class Activo(db.Model):
     @classmethod
     def from_dict(cls, data):
         return cls(
-            #idActvo=data['idActivo'],
+            idActvo=data['idActivo'],
             clave=data['clave'],
             nombre=data['nombre'],
             descripcion=data['descripcion'],

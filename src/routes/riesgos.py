@@ -297,17 +297,25 @@ def vistaListaRiesgos():
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos
     riesgos = []
+    
     for activo in activos:
         for asociacion in activo.riesgos_asociados:
-            riesgos += asociacion.riesgo
-    #for activo in proyecto.activos.riesgos_asociados:
-        #riesgos += asociacion.riesgo
-    #for activo in activos:
-    #    riesgos += activo.riesgos
+            riesgos.append(asociacion.riesgo)     
     riesgos_umbrales = []
-    for riesgo in riesgos:
-        riesgos_umbrales.append((riesgo, definirUmbral(riesgo.probabilidad), definirUmbral(riesgo.impacto)))
-    return render_template('riesgos/listaRiesgos.html', usuario=usuario, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    dictRiesgos = {}
+    for activo in activos:
+         for asociacion in activo.riesgos_asociados:
+              if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                   dictRiesgos[asociacion.riesgo.clave] = {
+                        'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                        'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                   }
+              else:
+                   dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+
+    for clave in dictRiesgos.keys():
+        dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+    return render_template('riesgos/listaRiesgos.html', usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/modificar-riesgo/<string:idRiesgo>')
 def vistaModificacionRiesgo(idRiesgo):
@@ -320,7 +328,7 @@ def vistaModificacionRiesgo(idRiesgo):
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
-    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=riesgo.activos_asociados, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activosProyecto=proyecto.activos , factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/anadir-riesgo', methods=['POST'])
 def añadirRiesgo():
@@ -328,12 +336,11 @@ def añadirRiesgo():
         clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
-        amenaza = request.form['amenaza']
+        idTipoRiesgo = request.form['idTipoRiesgo']
         nivelHabilidad = request.form['nivelHabilidad']
         motivacion = request.form['motivacion']
         oportunidad = request.form['oportunidad']
         tamaño = request.form['tamaño']
-        vulnerabilidad = request.form['vulnerabilidad']
         facilidadDescubrimiento = request.form['facilidadDescubrimiento']
         facilidadExplotacion = request.form['facilidadExplotacion']
         conciencia = request.form['conciencia']
@@ -342,18 +349,17 @@ def añadirRiesgo():
         impactoReputacion = request.form['impactoReputacion']
         impactoLegal = request.form['impactoLegal']
         impactoUsuarios = request.form['impactoUsuarios']
-        idTipoRiesgo = request.form['idTipoRiesgo']
-        idActivo = request.form['idActivo']
+        idActivos = request.form.getlist('idActivos')
+        
         r = Riesgo(
             clave=clave,
             nombre=nombre,
             descripcion=descripcion,
-            amenaza=amenaza,
+            tipoRiesgo=idTipoRiesgo,
             nivelHabilidad=int(nivelHabilidad),
             motivacion=int(motivacion),
             oportunidad=int(oportunidad),
             tamaño=int(tamaño),
-            vulnerabilidad=vulnerabilidad,
             facilidadDescubrimiento=int(facilidadDescubrimiento),
             facilidadExplotacion=int(facilidadExplotacion),
             conciencia=int(conciencia),
@@ -361,14 +367,28 @@ def añadirRiesgo():
             impactoFinanciero=int(impactoFinanciero),
             impactoReputacion=int(impactoReputacion),
             impactoLegal=int(impactoLegal),
-            impactoUsuarios=int(impactoUsuarios),
-            idTipoRiesgo=idTipoRiesgo,
-            idActivo=idActivo
+            impactoUsuarios=int(impactoUsuarios)
         )
-        activo = Activo.query.filter_by(idActivo=idActivo).first()
-        r.priorizarRiesgo(activo.sensibilidad)
+        # Obtener activos de formulario
+        activos = []
+        for idActivo in idActivos:
+            activo = Activo.query.filter_by(idActivo=str(idActivo)).first()
+            activos.append(activo)
+ 
         db.session.add(r)
         db.session.commit()
+        
+        # Añadir asociaciones por cada activo con el riesgo r
+        asociaciones = []
+        for activo in activos:
+            probabilidadRiesgo = obtenerProbabilidad(r)
+            impactoRiesgoActivo = obtenerImpacto(r, activo)
+            asociacion = ActivosRiesgos(riesgo = r, activo = activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
+            asociaciones.append(asociacion)
+        
+        db.session.add_all(asociaciones)
+        db.session.commit()
+
         flash('success')
         flash('El riesgo ha sido añadido correctamente')
         return redirect(url_for('riesgos.vistaListaRiesgos'))
@@ -380,12 +400,11 @@ def actualizarRiesgo():
         clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
-        amenaza = request.form['amenaza']
+        idTipoRiesgo = request.form['idTipoRiesgo']
         nivelHabilidad = request.form['nivelHabilidad']
         motivacion = request.form['motivacion']
         oportunidad = request.form['oportunidad']
         tamaño = request.form['tamaño']
-        vulnerabilidad = request.form['vulnerabilidad']
         facilidadDescubrimiento = request.form['facilidadDescubrimiento']
         facilidadExplotacion = request.form['facilidadExplotacion']
         conciencia = request.form['conciencia']
@@ -394,18 +413,14 @@ def actualizarRiesgo():
         impactoReputacion = request.form['impactoReputacion']
         impactoLegal = request.form['impactoLegal']
         impactoUsuarios = request.form['impactoUsuarios']
-        idTipoRiesgo = request.form['idTipoRiesgo']
-        idActivo = request.form['idActivo']
         r = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
         r.clave=clave
         r.nombre=nombre
         r.descripcion=descripcion
-        r.amenaza=amenaza
         r.nivelHabilidad=int(nivelHabilidad)
         r.motivacion=int(motivacion)
         r.oportunidad=int(oportunidad)
         r.tamaño=int(tamaño)
-        r.vulnerabilidad=vulnerabilidad
         r.facilidadDescubrimiento=int(facilidadDescubrimiento)
         r.facilidadExplotacion=int(facilidadExplotacion)
         r.conciencia=int(conciencia)
@@ -414,11 +429,30 @@ def actualizarRiesgo():
         r.impactoReputacion=int(impactoReputacion)
         r.impactoLegal=int(impactoLegal)
         r.impactoUsuarios=int(impactoUsuarios)
-        r.idTipoRiesgo=idTipoRiesgo
-        r.idActivo=idActivo
-        activo = Activo.query.filter_by(idActivo=idActivo).first()
-        r.priorizarRiesgo(activo.sensibilidad)
+        #r.idActivo=idActivo
+        #activo = Activo.query.filter_by(idActivo=idActivo).first()
+        #r.priorizarRiesgo(activo.sensibilidad)
         db.session.commit()
+        asociaciones = []
+        asociacionesAntiguas = []
+        asociacionesAux = []
+        for activo in r.activos_asociados:
+            asociacion = ActivosRiesgos.query.filter_by(riesgo = r, activo=activo).first()
+            asociacionesAntiguas.append(asociacion)
+            asociacionesAux.append(asociacion)
+
+        for asociacion in asociacionesAntiguas:
+            db.session.delete(asociacion)
+        
+        for asociacion in asociacionesAux:
+            probabilidadRiesgo = obtenerProbabilidad(r)
+            impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
+            asociacion = ActivosRiesgos(riesgo = r, activo = asociacion.activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
+            asociaciones.append(asociacion)
+        
+        db.session.add_all(asociaciones)
+        db.session.commit()
+
         flash('success')
         flash('El riesgo ha sido actualizado correctamente')
         return redirect(url_for('riesgos.vistaListaRiesgos'))
@@ -431,47 +465,6 @@ def eliminarRiesgo(idRiesgo):
     flash('danger')
     flash('El riesgo fue eliminado exitosamente') 
     return redirect(url_for('riesgos.vistaListaRiesgos'))
-
-#@riesgos.route('/anadir-activos-en-riesgo', methods=['POST'])
-#def añadirActivosEnRiesgo():
-#    if request.method == 'POST':
-#        try:
-#            clave = request.form.get('clave')
-#            nombre = request.form.get('nombre')
-#            descripcion = request.form.get('descripcion')
-#            propietario = request.form.get('propietario')
-#            ubicacion = request.form.get('ubicacion')
-#            tipoActivo = request.form.get('tipo')
-#            estatus = request.form.get('estatus')
-#            frecMantenimiento = request.form.get('frecM')
-#            frecRenovacion = request.form.get('frecR')
-#            fecha_str = request.form.get('fecha')
-#            fechaAdquisicion = datetime.strptime(fecha_str, '%Y-%m-%d')
-#
-#            a = Activo(
-#                clave=clave,
-#                nombre=nombre,
-#                descripcion=descripcion,
-#                propietario=propietario,
-#                ubicacion=ubicacion,
-#                tipoActivo=tipoActivo,
-#                estatus=estatus,
-#                frecMantenimiento=frecMantenimiento,
-#                frecRenovacion=frecRenovacion,
-#                fechaAdquisicion=fechaAdquisicion.replace(hour=0, minute=0, second=0, microsecond=0),
-#                idProyecto=session['proyecto_id']
-#            )
-#            db.session.add(a)
-#            db.session.commit()
-#            flash('success')
-#            flash('El activo ha sido añadido correctamente')
-#        except:
-#            db.session.rollback()
-#            flash('danger')
-#            flash('La clave del activo ya existe')
-#        return "Ok"
-    
-
 
 @riesgos.route('/anadir-activos-en-riesgo', methods=['POST'])
 def añadirActivoEnRiesgo():
@@ -509,14 +502,10 @@ def añadirActivoEnRiesgo():
             a.evaluarActivo(confidencialidad, disponibilidad, integridad)
             db.session.add(a)
             db.session.commit()
-            #flash('success')
-            #flash('El activo ha sido añadido correctamente')
-            return jsonify({'message': 'El activo ha sido añadido correctamente'})
+            return jsonify('Ok')
         except:
             db.session.rollback()
-            #flash('danger')
-            #flash('La clave del activo ya existe')
-            return jsonify({'message': 'La clave del activo ya existe'})
+            return jsonify('Existe')
     
 
 
@@ -544,6 +533,47 @@ def filtrarTipo(tipo):
     # Lógica para filtrar los activos de la base de datos por tipo
     activosFiltrados = []
     for activo in obtenerTodosActivos():
-        if activo.tipoActivo == tipo:
+        if activo.tipoActivo == tipo and activo.estatus == 'En uso':
             activosFiltrados.append(activo)
     return activosFiltrados
+
+
+def obtenerProbabilidad(riesgo) -> float:
+    amenazaRiesgo = (riesgo.nivelHabilidad + riesgo.motivacion + riesgo.oportunidad + riesgo.tamaño)/4
+    vulnerabilidadRiesgo = (riesgo.facilidadDescubrimiento + riesgo.facilidadExplotacion + riesgo.conciencia + riesgo.deteccionIntrusiones)/4
+    prob = (amenazaRiesgo + vulnerabilidadRiesgo)/2
+    return prob
+
+def obtenerImpacto(riesgo, activo) -> float:
+    impactoEmpresarialRiesgo = (riesgo.impactoFinanciero + riesgo.impactoReputacion + riesgo.impactoLegal + riesgo.impactoUsuarios)/4
+    impactoTecnicoActivo = (activo.sensibilidad)/3
+    imp = (impactoEmpresarialRiesgo + impactoTecnicoActivo)/2
+    return imp
+
+def obtenerTotal(probabildad: float, impacto: float) -> float:
+    return probabildad * impacto
+
+def obtenerUmbral(probabilidad: float, impacto: float) -> str:
+    umbralProb = definirUmbral(probabilidad)
+    umbralImp = definirUmbral(impacto)
+    if umbralImp == 'Bajo' and umbralProb == 'Bajo':
+             umbral = 'Insignificante'
+    elif umbralImp == 'Bajo' and umbralProb == 'Medio':
+        umbral = 'Bajo'
+    elif umbralImp == 'Bajo' and umbralProb == 'Alto':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Bajo':
+        umbral = 'Bajo'
+    elif umbralImp == 'Medio' and umbralProb == 'Medio':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Alto':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Bajo':
+        umbral = 'Medio'
+    elif umbralImp == 'Alto' and umbralProb == 'Medio':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Alto':
+        umbral = 'Crítico'
+    else:
+        umbral = 'Sin umbral'
+    return umbral

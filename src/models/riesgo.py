@@ -32,7 +32,7 @@ class Riesgo(db.Model):
     impactoLegal = db.Column(db.Integer, nullable=False)
     impactoUsuarios = db.Column(db.Integer, nullable=False)
 
-    def __init__(self, clave, nombre, descripcion, tipoRiesgo, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios, idTipoRiesgo, idActivo):
+    def __init__(self, clave, nombre, descripcion, tipoRiesgo, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios):
         self.clave = clave
         self.nombre = nombre
         self.descripcion = descripcion
