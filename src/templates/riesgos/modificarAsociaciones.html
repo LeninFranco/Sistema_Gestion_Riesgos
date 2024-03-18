@@ -1,0 +1,315 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row pt-5" id="alertRow">
+    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+        {{messages[1]}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+<div class="row pt-2">
+    <h2>Activos ligados al riesgo {{ riesgo.nombre }}</h2>
+</div>
+<div class="row pt-2">
+    <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal"
+        data-bs-target="#VentanaAddActivo">Crear activo</button>
+    <!-- Modal para activos, Copypaste de modal de listarActivosl.html con modificación para regresar al modal de riesgos-->
+    <div class="row pt-2">
+        <div class="modal fade" id="VentanaAddActivo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Registrar Activo</h5>
+                        <button type="button" class="btn ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddRiesgo"><i class="fa-sharp fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="anadir-activo" method="post" autocomplete="off">
+                            <div class="row">
+                                <div class="mb-3">
+                                    <input type="text" name="clave" class="form-control" placeholder="Clave del Activo"
+                                        required autofocus>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <input type="text" name="nombre" class="form-control" placeholder="Nombre del activo"
+                                        required autofocus>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <textarea name="descripcion" cols="30" rows="5" class="form-control"
+                                        placeholder="Descripción completa del activo(Sin saltos de linea)"></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <input type="text" name="propietario" class="form-control"
+                                        placeholder="Nombre del Propietario" required autofocus>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <input type="text" name="ubicacion" class="form-control"
+                                        placeholder="Ubicación Física/Lógica del activo" required autofocus>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label class="form-label">Tipo de Activo</label>
+                                    <select name="tipo" class="form-select" style="white-space: pre-line;" required>
+                                        {% for opcion in tiposActivo %}
+                                        <option value="{{opcion}}">{{opcion}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label class="form-label">Estatus</label>
+                                    <select name="estatus" class="form-select" style="white-space: pre-line;" required>
+                                        {% for opcion in estatus %}
+                                        <option value="{{opcion}}">{{opcion}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label class="form-label">Frecuencia de Mantenimiento</label>
+                                    <select name="frecM" class="form-select" style="white-space: pre-line;" required>
+                                        {% for opcion in frecuencia %}
+                                        <option value="{{opcion}}">{{opcion}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label class="form-label">Frecuencia de Renovación</label>
+                                    <select name="frecR" class="form-select" style="white-space: pre-line;" required>
+                                        {% for opcion in frecuencia %}
+                                        <option value="{{opcion}}">{{opcion}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label class="form-label">Fecha de Adquisición</label>
+                                    <input type="date" name="fecha" class="form-control">
+                                </div>
+                            </div>
+
+                            <!-- Evaluación del activo, dentro del mismo formulario -->
+                            <div class="mb-3">
+                                <div class="bg-body mb-3">
+                                    <h4 class="text-center ">Evaluación del activo</h4>
+                                    <hr>
+                                </div>
+                                <div class="row">
+                                    <label class="form-label">Confidencialidad</label>
+                                </div>
+                                <div class="row">
+                                    <select name="confidencialidad" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in cdi['confidencialidad'].items() %}
+
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="row">
+                                    <label class="form-label">Disponibilidad</label>
+                                </div>
+                                <div class="row">
+                                    <select name="disponibilidad" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in cdi['disponibilidad'].items() %}
+
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="row">
+                                    <label class="form-label">Integridad</label>
+                                </div>
+                                <div class="row">
+                                    <select name="integridad" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in cdi['integridad'].items() %}
+
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="mb-3 pd-4   " id="resultadoActivo"></div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-dark bg-black w-100">Registrar activo</button>
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <div>
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                <div class="row pt-5" id="alertRow">
+                                    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+                                        {{messages[1]}}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+
+                        <!-- AJAX para añadir activo sin tener que redirigir a otra ruta-->
+                        <!--Funciona, pero no maneja excepciones (flashes) dentro del modal, por alguna razón se van a la vista de acciones-->
+                        <script>
+                            document.getElementById("anadir-activo").addEventListener("submit", function(event) {
+                                event.preventDefault(); // Evitar que el formulario se envíe normalmente
+                            
+                                // Obtener los datos del formulario
+                                var formData = new FormData(this);
+                            
+                                // Enviar los datos del formulario usando AJAX
+                                fetch('/anadir-activos-en-riesgo', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.text();
+                                })
+                                .then(data => {
+                                    //console.log('Result:' + typeof(data)); // Manejar la respuesta del servidor
+                                    if(data.includes('Existe')){
+                                        htmlMensaje = '<div class="alert alert-danger" role="alert">La clave del activo ya existe</div>';
+                                    }else{
+                                        htmlMensaje = '<div class="alert alert-success" role="alert">El activo ha sido añadido correctamente</div>';
+                                    }
+
+                                    $('#resultadoActivo').html(htmlMensaje);
+                                
+                                })
+                                .catch(error => {
+                                    console.error('There was an error!', error);
+                                });
+                                // Manejar los mensajes flash después de enviar el formulario
+                                // Puedes hacer esto mostrando mensajes flash en la página o realizando cualquier otra acción deseada
+                                // Por ejemplo, puedes mostrar mensajes flash en una área específica de la página
+                                //var flashMessages = document.getElementById("flash-messages");
+                                //flashMessages.innerHTML = ""; // Limpiar mensajes flash anteriores
+
+
+                            });
+                        </script>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+</div>
+<div class="row pt-2">
+    <form action="{{ url_for('riesgos.añadirActivoARiesgoExstente', idRiesgo=riesgo.idRiesgo)}}" method="post">
+        <div class="row">
+            <div class="col-8">
+                <select name="idActivo" class="form-select" style="white-space: pre-line;" required>
+                    {% for activo in activos_listado %}
+                    <option value="{{activo.idActivo}}">{{activo.nombre}} - {{activo.tipoActivo}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-dark bg-black w-100">Añadir</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row pt-2">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <th>Clave</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Confidencialidad</th>
+                <th>Disponibilidad</th>
+                <th>Integridad</th>
+                <th>Sensibilidad</th>
+                <th>Acciones</th>
+            </thead>
+            <tbody>
+                {% for activo in activos_riesgo %}
+                <tr>
+                    <td>{{ activo.clave }}</td>
+                    <td>{{ activo.nombre }}</td>
+                    <td>{{ activo.tipoActivo }}</td>
+                    <td>{{ activo.confidencialidad }}</td>
+                    <td>{{ activo.disponibilidad }}</td>
+                    <td>{{ activo.integridad }}</td>
+                    <td>{{ activo.sensibilidad }}</td>
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{activo.idActivo}}"><i class="fa fa-plus"></i></button>
+                        <a href="/desligar-activo/{{riesgo.idRiesgo}}-{{activo.idActivo}}"
+                            class="btn btn-danger btn-delete"><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% for activo in activos_riesgo %}
+<div class="modal fade" id="Ventana{{activo.idActivo}}" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del activo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <p><b>Descripción: </b>{{activo.descripcion}}</p>
+                <p><b>Propietario: </b>{{activo.propietario}}</p>
+                <p><b>Ubicación: </b>{{activo.ubicacion}}</p>
+                <p><b>Frecuencia mantenimiento: </b>{{activo.frecMantenimiento}}</p>
+                <p><b>Frecuencia de Renovación: </b>{{activo.frecRenovacion}}</p>
+                <p><b>Fecha de Adquisición: </b>{{activo.fechaAdquisicion}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<script>
+
+</script>
+{% endblock %}

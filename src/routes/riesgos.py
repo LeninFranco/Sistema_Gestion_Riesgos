@@ -466,6 +466,62 @@ def eliminarRiesgo(idRiesgo):
     flash('El riesgo fue eliminado exitosamente') 
     return redirect(url_for('riesgos.vistaListaRiesgos'))
 
+@riesgos.route('/listar-activos/<string:idRiesgo>')
+def listarActivos(idRiesgo):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    riesgo = Riesgo.query.filter_by(idRiesgo = idRiesgo).first()
+    asociaciones = []
+    #for asociacion in riesgo.activos_asociados:
+    #    asociaciones.append(asociacion)
+    # Por ahora, a opinión de stakeholders
+    activosEnRiesgo = []
+    for asociacion in riesgo.activos_asociados:
+        activosEnRiesgo.append(asociacion.activo)
+    activos_listado = []
+    for activo in activos:
+        if not activo in activosEnRiesgo:
+            activos_listado.append(activo)
+    return render_template('riesgos/modificarAsociaciones.html', usuario=usuario, riesgo = riesgo, activos = activos, activos_riesgo=activosEnRiesgo, activos_listado = activos_listado, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+
+@riesgos.route('/desligar-activo/<string:idRiesgo>-<string:idActivo>')
+def eliminarActivoRiesgo(idRiesgo, idActivo):
+    riesgo = Riesgo.query.filter_by(idRiesgo = idRiesgo).first()
+    if not len(riesgo.activos_asociados) < 2:
+        activo = Activo.query.filter_by(idActivo = idActivo).first()
+        asociacion = ActivosRiesgos.query.filter_by(riesgo = riesgo, activo = activo).first()
+        db.session.delete(asociacion)
+        db.session.commit()
+        flash("success")
+        flash("El activo ha sido desligado del riesgo")
+    else:
+        flash("danger")
+        flash("El riesgo debe tener al menos un activo")
+    return redirect(url_for('riesgos.listarActivos',idRiesgo = idRiesgo))
+    
+
+@riesgos.route('/anadir-activo-en-riesgo-existente/<string:idRiesgo>', methods=['POST'])
+def añadirActivoARiesgoExstente(idRiesgo):
+    if request.method == 'POST':
+        idActivo = request.form['idActivo']
+        riesgo = Riesgo.query.filter_by(idRiesgo = idRiesgo).first()
+        activo = Activo.query.filter_by(idActivo = idActivo).first()
+        probabilidadRiesgo = obtenerProbabilidad(riesgo)
+        impactoRiesgoActivo = obtenerImpacto(riesgo, activo)
+        asociacion = ActivosRiesgos(riesgo = riesgo, activo = activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
+        db.session.add(asociacion)
+        db.session.commit()
+        flash("success")
+        flash("El activo ha sido añadido al riesgo")
+        return redirect(url_for('riesgos.listarActivos',idRiesgo = idRiesgo))
+
 @riesgos.route('/anadir-activos-en-riesgo', methods=['POST'])
 def añadirActivoEnRiesgo():
     if request.method == 'POST':
