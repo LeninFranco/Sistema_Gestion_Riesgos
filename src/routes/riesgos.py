@@ -1,10 +1,11 @@
-from flask import Blueprint, session, redirect, url_for, render_template, request, flash
+from flask import Blueprint, session, redirect, url_for, render_template, request, flash, jsonify
 from src.utils.db import db
 from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
 from src.models.activos import Activo
 from src.models.riesgo import Riesgo
 from src.models.activos_riesgos import ActivosRiesgos
+from datetime import datetime
 
 riesgos = Blueprint('riesgos', __name__)
 
@@ -178,11 +179,111 @@ factores_de_impacto_empresarial = {
     }
 }
 
+#
+# Listas para activos
+#
+
+cdi = {
+    'confidencialidad': {
+        0: 'No evaluado.',
+        1: "El activo no posee información confidencial y puede ser compartido públicamente sin preocupaciones.",
+        2: "El activo tiene información de baja confidencialidad y puede ser compartido con personas de confianza.",
+        3: "El activo presenta cierto grado de confidencialidad en la información que posee y debe ser compartido únicamente con personas autorizadas.",
+        4: "El activo cuenta con un alto nivel de confidencialidad en la información que posee y solo debe ser compartido con un grupo selecto de personas o departamentos.",
+        5: "El activo es sumamente confidencial en la información que tiene y solo puede ser accesible por un número muy limitado de personas con necesidad de saber.",
+        6: "El activo requiere una confidencialidad muy alta y solo debe compartirse con individuos altamente autorizados.",
+        7: "La información en el activo es altamente sensible y solo puede ser compartida con un pequeño grupo de personas clave.",
+        8: "El activo alberga información de máxima importancia y su confidencialidad es crítica, solo permitiendo el acceso a un puñado de individuos de confianza.",
+        9: "El activo contiene información extremadamente confidencial y solo puede ser accesible por una persona o entidad absolutamente autorizada."
+    },
+    'disponibilidad': {
+        0: 'No evaluado.',
+        1: "La información que maneja el activo está prácticamente siempre inaccesible o inutilizable para la mayoría del personal.",
+        2: "La información que maneja el activo posee una disponibilidad limitada y puede volverse inaccesible en momentos críticos.",
+        3: "La información que maneja el activo generalmente se encuentra disponible, pero pueden surgir interrupciones ocasionales.",
+        4: "La información que maneja el activo cuenta con una alta disponibilidad y se puede acceder en la mayoría de los casos.",
+        5: "La información que maneja el activo está siempre disponible sin experimentar interrupciones significativas.",
+        6: "La disponibilidad del activo es crítica y debe mantenerse constantemente para respaldar las operaciones.",
+        7: "El activo debe estar siempre disponible para garantizar la continuidad de las operaciones y evitar interrupciones críticas.",
+        8: "La disponibilidad del activo es esencial y se requieren medidas excepcionales para garantizar un acceso continuo.",
+        9: "La disponibilidad del activo es de suprema importancia, y cualquier interrupción puede tener consecuencias graves en las operaciones."
+    },
+    'integridad': {
+        0: 'No evaluado.',
+        1: "La información del activo es altamente propensa a la corrupción y a modificaciones no autorizadas.",
+        2: "La información del activo tiene un nivel limitado de integridad y puede ser susceptible a cambios no autorizados en ciertas circunstancias.",
+        3: "La información del activo es generalmente íntegro, pero pueden ocurrir cambios no autorizados en circunstancias excepcionales.",
+        4: "La información del activo es altamente íntegro y es poco probable que se modifique no autorizadamente.",
+        5: "La información del activo es extremadamente íntegro y se protege rigurosamente contra cualquier modificación no autorizada.",
+        6: "La integridad de la información es crítica y cualquier modificación no autorizada debe ser prevenida a toda costa.",
+        7: "El activo alberga información esencial y su integridad es de máxima importancia, asegurando que no se produzcan cambios no autorizados.",
+        8: "La integridad de la información en el activo es esencial y debe protegerse con medidas de seguridad rigurosas.",
+        9: "La integridad del activo es de suprema importancia y cualquier modificación no autorizada es inaceptable."
+    },
+    'sensibilidad': {
+        0: 'No evaluado.',
+        3: "Los activos son relativamente menos críticos en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo moderado en el proyecto.",
+        4: "Los activos son relativamente menos críticos en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo moderado en el proyecto.",
+        5: "Los activos son relativamente menos críticos en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo moderado en el proyecto.",
+        6: "Los activos son relativamente menos críticos en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo moderado en el proyecto.",
+        7: "Los activos son relativamente menos críticos en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo moderado en el proyecto.",
+        8: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, aunque no tan severo como en niveles más altos.",
+        9: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, aunque no tan severo como en niveles más altos.",
+        10: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, aunque no tan severo como en niveles más altos.",
+        11: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, aunque no tan severo como en niveles más altos.",
+        12: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, aunque no tan severo como en niveles más altos.",
+        13: "Los activos son de importancia moderada en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo considerable en el proyecto.",
+        14: "Los activos son de importancia moderada en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo considerable en el proyecto.",
+        15: "Los activos son de importancia moderada en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo considerable en el proyecto.",
+        16: "Los activos son de importancia moderada en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo considerable en el proyecto.",
+        17: "Los activos son de importancia moderada en términos de seguridad de la información. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo considerable en el proyecto.",
+        18: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, y se requiere una atención inmediata para mitigar sus riesgos.",
+        19: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, y se requiere una atención inmediata para mitigar sus riesgos.",
+        20: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, y se requiere una atención inmediata para mitigar sus riesgos.",
+        21: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, y se requiere una atención inmediata para mitigar sus riesgos.",
+        22: "Los activos con esta sensibilidad son importantes para la organización. La pérdida de confidencialidad, integridad o disponibilidad de estos activos tendría un impacto negativo, y se requiere una atención inmediata para mitigar sus riesgos.",
+        23: "Los activos con esta sensibilidad son críticos para la organización. La pérdida de confidencialidad, integridad o disponibilidad sería catastrófica, y se requiere atención inmediata y medidas extremas para mitigar sus riesgos.",
+        24: "Los activos con esta sensibilidad son críticos para la organización. La pérdida de confidencialidad, integridad o disponibilidad sería catastrófica, y se requiere atención inmediata y medidas extremas para mitigar sus riesgos.",
+        25: "Los activos con esta sensibilidad son críticos para la organización. La pérdida de confidencialidad, integridad o disponibilidad sería catastrófica, y se requiere atención inmediata y medidas extremas para mitigar sus riesgos.",
+        26: "Los activos con esta sensibilidad son críticos para la organización. La pérdida de confidencialidad, integridad o disponibilidad sería catastrófica, y se requiere atención inmediata y medidas extremas para mitigar sus riesgos.",
+        27: "Los activos con esta sensibilidad son críticos para la organización. La pérdida de confidencialidad, integridad o disponibilidad sería catastrófica, y se requiere atención inmediata y medidas extremas para mitigar sus riesgos."
+    }
+}
+
 tiposRiesgo = [
     'Físico',
     'Lógico',
     'Organizacional'
 ]
+
+tiposActivo = [
+    'Información/Documentos',
+    'Aplicaciones',
+    'Plataformas',
+    'Bases de Datos',
+    'Red/Telecomunicaciones',
+    'Intangibles',
+    'Gente/Personal',
+    'Físico'
+]
+
+frecuencia = [
+    'No Requiere',
+    'Diario',
+    'Semanal',
+    'Quincenal',
+    'Mensual',
+    'Bimestral',
+    'Trimestral',
+    'Semestral',
+    'Anual'
+]
+
+estatus = [
+    'En uso',
+    'Desuso'
+]
+
 
 @riesgos.route('/listar-riesgos')
 def vistaListaRiesgos():
@@ -196,12 +297,25 @@ def vistaListaRiesgos():
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos
     riesgos = []
+    
     for activo in activos:
-        riesgos += activo.riesgos
+        for asociacion in activo.riesgos_asociados:
+            riesgos.append(asociacion.riesgo)     
     riesgos_umbrales = []
-    for riesgo in riesgos:
-        riesgos_umbrales.append((riesgo, definirUmbral(riesgo.probabilidad), definirUmbral(riesgo.impacto)))
-    return render_template('riesgos/listaRiesgos.html', usuario=usuario, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    dictRiesgos = {}
+    for activo in activos:
+         for asociacion in activo.riesgos_asociados:
+              if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                   dictRiesgos[asociacion.riesgo.clave] = {
+                        'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                        'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                   }
+              else:
+                   dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+
+    for clave in dictRiesgos.keys():
+        dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+    return render_template('riesgos/listaRiesgos.html', usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/modificar-riesgo/<string:idRiesgo>')
 def vistaModificacionRiesgo(idRiesgo):
@@ -214,7 +328,7 @@ def vistaModificacionRiesgo(idRiesgo):
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
-    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=riesgo.activos_asociados, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activosProyecto=proyecto.activos , factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/anadir-riesgo', methods=['POST'])
 def añadirRiesgo():
@@ -222,12 +336,11 @@ def añadirRiesgo():
         clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
-        amenaza = request.form['amenaza']
+        idTipoRiesgo = request.form['idTipoRiesgo']
         nivelHabilidad = request.form['nivelHabilidad']
         motivacion = request.form['motivacion']
         oportunidad = request.form['oportunidad']
         tamaño = request.form['tamaño']
-        vulnerabilidad = request.form['vulnerabilidad']
         facilidadDescubrimiento = request.form['facilidadDescubrimiento']
         facilidadExplotacion = request.form['facilidadExplotacion']
         conciencia = request.form['conciencia']
@@ -236,18 +349,17 @@ def añadirRiesgo():
         impactoReputacion = request.form['impactoReputacion']
         impactoLegal = request.form['impactoLegal']
         impactoUsuarios = request.form['impactoUsuarios']
-        idTipoRiesgo = request.form['idTipoRiesgo']
-        idActivo = request.form['idActivo']
+        idActivos = request.form.getlist('idActivos')
+        
         r = Riesgo(
             clave=clave,
             nombre=nombre,
             descripcion=descripcion,
-            amenaza=amenaza,
+            tipoRiesgo=idTipoRiesgo,
             nivelHabilidad=int(nivelHabilidad),
             motivacion=int(motivacion),
             oportunidad=int(oportunidad),
             tamaño=int(tamaño),
-            vulnerabilidad=vulnerabilidad,
             facilidadDescubrimiento=int(facilidadDescubrimiento),
             facilidadExplotacion=int(facilidadExplotacion),
             conciencia=int(conciencia),
@@ -255,14 +367,28 @@ def añadirRiesgo():
             impactoFinanciero=int(impactoFinanciero),
             impactoReputacion=int(impactoReputacion),
             impactoLegal=int(impactoLegal),
-            impactoUsuarios=int(impactoUsuarios),
-            idTipoRiesgo=idTipoRiesgo,
-            idActivo=idActivo
+            impactoUsuarios=int(impactoUsuarios)
         )
-        activo = Activo.query.filter_by(idActivo=idActivo).first()
-        r.priorizarRiesgo(activo.sensibilidad)
+        # Obtener activos de formulario
+        activos = []
+        for idActivo in idActivos:
+            activo = Activo.query.filter_by(idActivo=str(idActivo)).first()
+            activos.append(activo)
+ 
         db.session.add(r)
         db.session.commit()
+        
+        # Añadir asociaciones por cada activo con el riesgo r
+        asociaciones = []
+        for activo in activos:
+            probabilidadRiesgo = obtenerProbabilidad(r)
+            impactoRiesgoActivo = obtenerImpacto(r, activo)
+            asociacion = ActivosRiesgos(riesgo = r, activo = activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
+            asociaciones.append(asociacion)
+        
+        db.session.add_all(asociaciones)
+        db.session.commit()
+
         flash('success')
         flash('El riesgo ha sido añadido correctamente')
         return redirect(url_for('riesgos.vistaListaRiesgos'))
@@ -274,12 +400,11 @@ def actualizarRiesgo():
         clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
-        amenaza = request.form['amenaza']
+        idTipoRiesgo = request.form['idTipoRiesgo']
         nivelHabilidad = request.form['nivelHabilidad']
         motivacion = request.form['motivacion']
         oportunidad = request.form['oportunidad']
         tamaño = request.form['tamaño']
-        vulnerabilidad = request.form['vulnerabilidad']
         facilidadDescubrimiento = request.form['facilidadDescubrimiento']
         facilidadExplotacion = request.form['facilidadExplotacion']
         conciencia = request.form['conciencia']
@@ -288,18 +413,14 @@ def actualizarRiesgo():
         impactoReputacion = request.form['impactoReputacion']
         impactoLegal = request.form['impactoLegal']
         impactoUsuarios = request.form['impactoUsuarios']
-        idTipoRiesgo = request.form['idTipoRiesgo']
-        idActivo = request.form['idActivo']
         r = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
         r.clave=clave
         r.nombre=nombre
         r.descripcion=descripcion
-        r.amenaza=amenaza
         r.nivelHabilidad=int(nivelHabilidad)
         r.motivacion=int(motivacion)
         r.oportunidad=int(oportunidad)
         r.tamaño=int(tamaño)
-        r.vulnerabilidad=vulnerabilidad
         r.facilidadDescubrimiento=int(facilidadDescubrimiento)
         r.facilidadExplotacion=int(facilidadExplotacion)
         r.conciencia=int(conciencia)
@@ -308,11 +429,30 @@ def actualizarRiesgo():
         r.impactoReputacion=int(impactoReputacion)
         r.impactoLegal=int(impactoLegal)
         r.impactoUsuarios=int(impactoUsuarios)
-        r.idTipoRiesgo=idTipoRiesgo
-        r.idActivo=idActivo
-        activo = Activo.query.filter_by(idActivo=idActivo).first()
-        r.priorizarRiesgo(activo.sensibilidad)
+        #r.idActivo=idActivo
+        #activo = Activo.query.filter_by(idActivo=idActivo).first()
+        #r.priorizarRiesgo(activo.sensibilidad)
         db.session.commit()
+        asociaciones = []
+        asociacionesAntiguas = []
+        asociacionesAux = []
+        for activo in r.activos_asociados:
+            asociacion = ActivosRiesgos.query.filter_by(riesgo = r, activo=activo).first()
+            asociacionesAntiguas.append(asociacion)
+            asociacionesAux.append(asociacion)
+
+        for asociacion in asociacionesAntiguas:
+            db.session.delete(asociacion)
+        
+        for asociacion in asociacionesAux:
+            probabilidadRiesgo = obtenerProbabilidad(r)
+            impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
+            asociacion = ActivosRiesgos(riesgo = r, activo = asociacion.activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
+            asociaciones.append(asociacion)
+        
+        db.session.add_all(asociaciones)
+        db.session.commit()
+
         flash('success')
         flash('El riesgo ha sido actualizado correctamente')
         return redirect(url_for('riesgos.vistaListaRiesgos'))
@@ -325,3 +465,201 @@ def eliminarRiesgo(idRiesgo):
     flash('danger')
     flash('El riesgo fue eliminado exitosamente') 
     return redirect(url_for('riesgos.vistaListaRiesgos'))
+
+@riesgos.route('/listar-activos/<string:idRiesgo>')
+def listarActivos(idRiesgo):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    riesgo = Riesgo.query.filter_by(idRiesgo = idRiesgo).first()
+    asociaciones = []
+    #for asociacion in riesgo.activos_asociados:
+    #    asociaciones.append(asociacion)
+    # Por ahora, a opinión de stakeholders
+    activosEnRiesgo = []
+    for asociacion in riesgo.activos_asociados:
+        activosEnRiesgo.append(asociacion.activo)
+    activos_listado = []
+    for activo in activos:
+        if not activo in activosEnRiesgo:
+            activos_listado.append(activo)
+    return render_template('riesgos/modificarAsociaciones.html', usuario=usuario, riesgo = riesgo, activos = activos, activos_riesgo=activosEnRiesgo, activos_listado = activos_listado, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+
+@riesgos.route('/desligar-activo/<string:idRiesgo>-<string:idActivo>')
+def eliminarActivoRiesgo(idRiesgo, idActivo):
+    riesgo = Riesgo.query.filter_by(idRiesgo = idRiesgo).first()
+    if not len(riesgo.activos_asociados) < 2:
+        activo = Activo.query.filter_by(idActivo = idActivo).first()
+        asociacion = ActivosRiesgos.query.filter_by(riesgo = riesgo, activo = activo).first()
+        db.session.delete(asociacion)
+        db.session.commit()
+        flash("success")
+        flash("El activo ha sido desligado del riesgo")
+    else:
+        flash("danger")
+        flash("El riesgo debe tener al menos un activo")
+    return redirect(url_for('riesgos.listarActivos',idRiesgo = idRiesgo))
+    
+
+@riesgos.route('/anadir-activo-en-riesgo-existente/<string:idRiesgo>', methods=['POST'])
+def añadirActivoARiesgoExstente(idRiesgo):
+    if request.method == 'POST':
+        idActivo = request.form['idActivo']
+        riesgo = Riesgo.query.filter_by(idRiesgo = idRiesgo).first()
+        activo = Activo.query.filter_by(idActivo = idActivo).first()
+        probabilidadRiesgo = obtenerProbabilidad(riesgo)
+        impactoRiesgoActivo = obtenerImpacto(riesgo, activo)
+        asociacion = ActivosRiesgos(riesgo = riesgo, activo = activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
+        db.session.add(asociacion)
+        db.session.commit()
+        flash("success")
+        flash("El activo ha sido añadido al riesgo")
+        return redirect(url_for('riesgos.listarActivos',idRiesgo = idRiesgo))
+
+@riesgos.route('/anadir-activos-en-riesgo', methods=['POST'])
+def añadirActivoEnRiesgo():
+    if request.method == 'POST':
+        try:
+            clave = request.form['clave']
+            nombre = request.form['nombre']
+            descripcion = request.form['descripcion']
+            propietario = request.form['propietario']
+            ubicacion = request.form['ubicacion']
+            tipoActivo = request.form['tipo']
+            estatus = request.form['estatus']
+            frecMantenimiento = request.form['frecM']
+            frecRenovacion = request.form['frecR']
+            fecha_str = request.form['fecha']
+            fechaAdquisicion = datetime.strptime(fecha_str, '%Y-%m-%d')
+
+            confidencialidad = int(request.form['confidencialidad'])
+            disponibilidad = int(request.form['disponibilidad'])
+            integridad = int(request.form['integridad'])
+            
+            a = Activo(
+                clave=clave,
+                nombre=nombre,
+                descripcion=descripcion,
+                propietario=propietario,
+                ubicacion=ubicacion,
+                tipoActivo=tipoActivo,
+                estatus=estatus,
+                frecMantenimiento=frecMantenimiento,
+                frecRenovacion=frecRenovacion,
+                fechaAdquisicion=fechaAdquisicion.replace(hour=0, minute=0, second=0, microsecond=0),
+                idProyecto=session['proyecto_id']
+            )
+            a.evaluarActivo(confidencialidad, disponibilidad, integridad)
+            db.session.add(a)
+            db.session.commit()
+            return jsonify('Ok')
+        except:
+            db.session.rollback()
+            return jsonify('Existe')
+    
+@riesgos.route('/matriz-riesgos')
+def vistaMatrizRiesgos():
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    riesgos = []
+    
+    for activo in activos:
+        for asociacion in activo.riesgos_asociados:
+            riesgos.append(asociacion.riesgo)     
+    riesgos_umbrales = []
+    dictRiesgos = {}
+    for activo in activos:
+         for asociacion in activo.riesgos_asociados:
+              if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                   dictRiesgos[asociacion.riesgo.clave] = {
+                        'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                        'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                   }
+              else:
+                   dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+
+    for clave in dictRiesgos.keys():
+        dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+    
+    return render_template('matriz/matriz.html', proyecto=proyecto, usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+
+@riesgos.route('/obtener-activos-json', methods=['POST'])
+def obtenerActivosJSON():
+    tipo_seleccionado = request.json['tipoActivo']
+    activos_filtrados = filtrarTipo(tipo_seleccionado)
+    activos_serializados = [activo.to_dict() for activo in activos_filtrados]
+    return jsonify(activos=[activo for activo in activos_serializados])
+
+def obtenerTodosActivos():
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    return activos
+
+def filtrarTipo(tipo):
+    # Lógica para filtrar los activos de la base de datos por tipo
+    activosFiltrados = []
+    for activo in obtenerTodosActivos():
+        if activo.tipoActivo == tipo and activo.estatus == 'En uso':
+            activosFiltrados.append(activo)
+    return activosFiltrados
+
+
+def obtenerProbabilidad(riesgo) -> float:
+    amenazaRiesgo = (riesgo.nivelHabilidad + riesgo.motivacion + riesgo.oportunidad + riesgo.tamaño)/4
+    vulnerabilidadRiesgo = (riesgo.facilidadDescubrimiento + riesgo.facilidadExplotacion + riesgo.conciencia + riesgo.deteccionIntrusiones)/4
+    prob = (amenazaRiesgo + vulnerabilidadRiesgo)/2
+    return prob
+
+def obtenerImpacto(riesgo, activo) -> float:
+    impactoEmpresarialRiesgo = (riesgo.impactoFinanciero + riesgo.impactoReputacion + riesgo.impactoLegal + riesgo.impactoUsuarios)/4
+    impactoTecnicoActivo = (activo.sensibilidad)/3
+    imp = (impactoEmpresarialRiesgo + impactoTecnicoActivo)/2
+    return imp
+
+def obtenerTotal(probabildad: float, impacto: float) -> float:
+    return probabildad * impacto
+
+def obtenerUmbral(probabilidad: float, impacto: float) -> str:
+    umbralProb = definirUmbral(probabilidad)
+    umbralImp = definirUmbral(impacto)
+    if umbralImp == 'Bajo' and umbralProb == 'Bajo':
+             umbral = 'Insignificante'
+    elif umbralImp == 'Bajo' and umbralProb == 'Medio':
+        umbral = 'Bajo'
+    elif umbralImp == 'Bajo' and umbralProb == 'Alto':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Bajo':
+        umbral = 'Bajo'
+    elif umbralImp == 'Medio' and umbralProb == 'Medio':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Alto':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Bajo':
+        umbral = 'Medio'
+    elif umbralImp == 'Alto' and umbralProb == 'Medio':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Alto':
+        umbral = 'Crítico'
+    else:
+        umbral = 'Sin umbral'
+    return umbral

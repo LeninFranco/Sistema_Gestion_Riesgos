@@ -45,3 +45,44 @@ class Activo(db.Model):
         self.disponibilidad = disponibilidad
         self.integridad = integridad
         self.sensibilidad = self.confidencialidad + self.disponibilidad + self.integridad
+    
+    def to_dict(self):
+        return {
+            'idActivo': self.idActivo,
+            'clave': self.clave,
+            'nombre': self.nombre,
+            'descripcion': self.descripcion,
+            'propietario': self.propietario,
+            'ubicacion': self.ubicacion,
+            'frecMantenimiento': self.frecMantenimiento,
+            'frecRenovacion': self.frecRenovacion,
+            'fechaAdquisicion': self.fechaAdquisicion.strftime('%Y-%m-%d'),  # Formatear fecha como cadena
+            'tipoActivo': self.tipoActivo,
+            'estatus': self.estatus,
+            'confidencialidad': self.confidencialidad,
+            'disponibilidad': self.disponibilidad,
+            'integridad': self.integridad,
+            'sensibilidad': self.sensibilidad,
+            'idProyecto': self.idProyecto
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            idActvo=data['idActivo'],
+            clave=data['clave'],
+            nombre=data['nombre'],
+            descripcion=data['descripcion'],
+            propietario=data['propietario'],
+            ubicacion=data['ubicacion'],
+            frecMantenimiento=data['frecMantenimiento'],
+            frecRenovacion=data['frecRenovacion'],
+            fechaAdquisicion=data['fechaAdquisicion'],
+            tipoActivo=data['tipoActivo'],
+            estatus=data['estatus'],
+            confidencialidad=data['confidencialidad'],
+            disponibilidad=data['disponibilidad'],
+            integridad=data['integridad'],
+            sensibilidad=data['sensibilidad'],
+            idProyecto=data['idProyecto']
+        )

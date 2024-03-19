@@ -13,3 +13,4 @@ class ActivosRiesgos(db.Model):
     impacto = db.Column(db.Float)
     total = db.Column(db.Float)
     umbral = db.Column(db.String(10))
+

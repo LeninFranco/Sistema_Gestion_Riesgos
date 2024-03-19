@@ -16,7 +16,7 @@
                             value="{{riesgo.idRiesgo}}" readonly required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Clave de Identificación del Riesgo</label>
+                        <label class="form-label">Clave de identificación del Riesgo</label>
                         <input type="text" name="clave" class="form-control" placeholder="Clave Identificación Riesgo" required
                             autofocus value="{{riesgo.nombre}}">
                     </div>
@@ -30,6 +30,20 @@
                         <textarea name="descripcion" cols="30" rows="10" class="form-control"
                             placeholder="Descripción completa del riesgo(Sin saltos de linea)">{{riesgo.descripcion}}</textarea>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Riesgo</label>
+                        <select name="idTipoRiesgo" class="form-select">
+                            {% for tipoRiesgo in tiposRiesgo %}
+                                {% if riesgo.tipoRiesgo == tipoRiesgo %}
+                                    <option value="{{tipoRiesgo}}" selected>{{tipoRiesgo}}</option>
+                                {% else %}
+                                    <option value="{{tipoRiesgo}}">{{tipoRiesgo}}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!--
                     <div class="mb-3">
                         <label class="form-label">Selecciona el Activo (Su sensibilidad es el Impacto Técnico)
                         </label>
@@ -43,271 +57,317 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <h3>Factores de Probabilidad</h3>
-                    </div>
-                    <div class="mb-3">
-                        <h5>Agente de Amenaza</h5>
-                    </div>
-                    <div class="mb-3">
-                        <input type="text" name="amenaza" class="form-control"
-                            placeholder="Nombre del agente de amenaza" required value="{{riesgo.amenaza}}">
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Nivel de Habilidad</label>
+                    -->
+                    <!-- Factores de probabilidad -->
+                    <div class="row">
+                        <div class="bg-body mb-3">
+                            <h4 class="text-center ">Factores de probabilidad</h4>
                         </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="nivelHabilidad" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in factores_de_amenaza['nivel_de_habilidad'].items() %}
-                                    {% if riesgo.nivelHabilidad == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        
+                            <script>
+                                $(function () {
+                                  $('[data-toggle="tooltip"]').tooltip()
+                                })
+                            </script>
+
+                        <!-- Factores de amenaza -->    
+                    
+                        <div class="mb-3">
+                            <hr>
+                            <h5 class="">Factores de amenaza</h5>
+                            <!--Nivel de habilidad-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Nivel de habilidad</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Qué nivel técnico tiene este grupo de agentes de amenazas?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="nivelHabilidad" class="form-select" style="white-space: pre-line;"
+                                        required>
+                                        {% for valor, opcion in factores_de_amenaza['nivel_de_habilidad'].items() %}
+                                        {% if riesgo.nivelHabilidad == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Motivación</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="motivacion" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_amenaza['motivación'].items() %}
-                                    {% if riesgo.motivacion == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Motivacion-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Motivación</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Qué motivación tiene este grupo de agentes de amenazas para encontrar y explotar esta vulnerabilidad?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="motivacion" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in factores_de_amenaza['motivación'].items() %}
+                                        {% if riesgo.motivacion == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Oportunidad</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="oportunidad" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_amenaza['oportunidad'].items() %}
-                                    {% if riesgo.oportunidad == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Oportunidad-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Oportunidad</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Qué recursos y oportunidades necesita este grupo de agentes de amenazas para encontrar y explotar esta vulnerabilidad?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="oportunidad" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in factores_de_amenaza['oportunidad'].items() %}
+                                        {% if riesgo.oportunidad == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Tamaño</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="tamaño" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_amenaza['tamaño'].items() %}
-                                    {% if riesgo.tamaño == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Tamaño-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Tamaño</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Qué tamaño tiene este grupo de agentes de amenazas?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="tamaño" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in factores_de_amenaza['tamaño'].items() %}
+                                        {% if riesgo.tamaño == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     <div class="mb-3">
-                        <h5>Vulnerabilidad del Activo</h5>
+                        <hr>
+                        <h5 class="">Factores de vulnerabilidad</h4>
                     </div>
-                    <div class="mb-3">
-                        <input type="text" name="vulnerabilidad" class="form-control"
-                            placeholder="Nombre de la vulnerabilidad del activo" required
-                            value="{{riesgo.vulnerabilidad}}">
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Facilidad de Descubrimiento</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="facilidadDescubrimiento" class="form-select"
-                                    style="white-space: pre-line;" required>
-                                    {% for valor, opcion in
-                                    factores_de_vulnerabilidad['facilidad_de_descubrimiento'].items()
-                                    %}
-                                    {% if riesgo.facilidadDescubrimiento == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Facilidad descubrimiento-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Facilidad de descubrimiento</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Cómo de fácil es para este grupo de agentes de amenazas descubrir esta vulnerabilidad?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="facilidadDescubrimiento" class="form-select"
+                                        style="white-space: pre-line;" required>
+                                        {% for valor, opcion in
+                                        factores_de_vulnerabilidad['facilidad_de_descubrimiento'].items()
+                                        %}
+                                        {% if riesgo.facilidadDescubrimiento == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Facilidad de Explotación</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="facilidadExplotacion" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in
-                                    factores_de_vulnerabilidad['facilidad_de_explotación'].items() %}
-                                    {% if riesgo.facilidadExplotacion == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Facilidad de explotación-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Facilidad de explotación</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Hasta qué punto es fácil para este grupo de agentes de amenazas explotar realmente esta vulnerabilidad?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="facilidadExplotacion" class="form-select" style="white-space: pre-line;"
+                                        required>
+                                        {% for valor, opcion in
+                                        factores_de_vulnerabilidad['facilidad_de_explotación'].items() %}
+                                        {% if riesgo.facilidadExplotacion == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Conciencia</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="conciencia" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_vulnerabilidad['conciencia'].items() %}
-                                    {% if riesgo.conciencia == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Conciencia-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Conciencia</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Hasta qué punto es conocida esta vulnerabilidad por este grupo de agentes de amenazas?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="conciencia" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in factores_de_vulnerabilidad['conciencia'].items() %}
+                                        {% if riesgo.conciencia == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Detección de Intrusiones</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="deteccionIntrusiones" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in
-                                    factores_de_vulnerabilidad['detección_de_intrusiones'].items() %}
-                                    {% if riesgo.deteccionIntrusiones == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Detección de intrusiones-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Detección de intrusiones</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Qué probabilidades hay de que se detecte un exploit?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="deteccionIntrusiones" class="form-select" style="white-space: pre-line;"
+                                        required>
+                                        {% for valor, opcion in
+                                        factores_de_vulnerabilidad['detección_de_intrusiones'].items() %}
+                                        {% if riesgo.deteccionIntrusiones == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
+                    <div class="mb-3">
+                        <div class="bg-body mb-3">
+                            <h4 class="text-center ">Factores de impacto</h4>
+                        </div>
                     </div>
                     <div class="mb-3">
-                        <h3>Factores de Impacto</h3>
-                    </div>
-                    <div class="mb-3">
+                        <hr>
                         <h5>Impacto Empresarial</h5>
                     </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Daño Financiero</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="impactoFinanciero" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in factores_de_impacto_empresarial['daño_financiero'].items()
-                                    %}
-                                    {% if riesgo.impactoFinanciero == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Daño financiero-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Daño financiero</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿A cuánto ascienden los daños económicos derivados de un exploit?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="impactoFinanciero" class="form-select" style="white-space: pre-line;"
+                                        required>
+                                        {% for valor, opcion in factores_de_impacto_empresarial['daño_financiero'].items()
+                                        %}
+                                        {% if riesgo.impactoFinanciero == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Daño a la Reputación</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="impactoReputacion" class="form-select" style="white-space: pre-line;"
-                                    required>
-                                    {% for valor, opcion in
-                                    factores_de_impacto_empresarial['daño_a_la_reputación'].items() %}
-                                    {% if riesgo.impactoReputacion == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Daño a la reputación-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Daño a la reputación</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Supondría un exploit un daño para la reputación que perjudicaría a la empresa?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="impactoReputacion" class="form-select" style="white-space: pre-line;"
+                                        required>
+                                        {% for valor, opcion in
+                                        factores_de_impacto_empresarial['daño_a_la_reputación'].items() %}
+                                        {% if riesgo.impactoReputacion == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Incumplimiento Legal</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="impactoLegal" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in factores_de_impacto_empresarial['incumplimiento'].items() %}
-                                    {% if riesgo.impactoLegal == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Incumplimiento-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Incumplimiento legal</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Qué grado de exposición introduce el incumplimiento?"></i>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="impactoLegal" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in factores_de_impacto_empresarial['incumplimiento'].items() %}
+                                        {% if riesgo.impactoLegal == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="row">
-                            <label class="form-label">Violación de la Privacidad</label>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <select name="impactoUsuarios" class="form-select" style="white-space: pre-line;" required>
-                                    {% for valor, opcion in
-                                    factores_de_impacto_empresarial['violación_de_la_privacidad'].items() %}
-                                    {% if riesgo.impactoUsuarios == valor %}
-                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
-                                    {% else %}
-                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
-                                    {% endif %}
-                                    {% endfor %}
-                                </select>
+                        <div class="mb-3">
+                            <!--Violación a la privacidad-->
+                            <div class="mb-3">
+                                <!--Titulo de valor y tooltip-->
+                                <label class="form-label">Violación a la privacidad</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="¿Cuánta información personal identificable podría divulgarse?"></i>
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <select name="impactoUsuarios" class="form-select" style="white-space: pre-line;" required>
+                                        {% for valor, opcion in
+                                        factores_de_impacto_empresarial['violación_de_la_privacidad'].items() %}
+                                        {% if riesgo.impactoUsuarios == valor %}
+                                        <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                        {% else %}
+                                        <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tipo de Riesgo</label>
-                        <select name="idTipoRiesgo" class="form-select">
-                            {% for tipoRiesgo in tiposRiesgo %}
-                            {% if riesgo.idTipoRiesgo == tipoRiesgo.idTipoRiesgo %}
-                            <option value="{{tipoRiesgo.idTipoRiesgo}}" selected>{{tipoRiesgo.nombre}}</option>
-                            {% else %}
-                            <option value="{{tipoRiesgo.idTipoRiesgo}}">{{tipoRiesgo.nombre}}</option>
-                            {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
+                         
+                                                
+                       
                     <div class="mb-3">
                         <button type="submit" class="btn btn-dark bg-black w-100">Modificar</button>
                     </div>
@@ -316,4 +376,218 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para activos, Copypaste de modal de listarActivosl.html con modificación para regresar al modal de riesgos-->
+<div class="row pt-2">
+    <div class="modal fade" id="VentanaAddActivo" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Activo</h5>
+                    <button type="button" class="btn ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddRiesgo"><i class="fa-sharp fa-solid fa-backward"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form id="anadir-activo" method="post" autocomplete="off">
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="clave" class="form-control" placeholder="Clave del Activo"
+                                    required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="nombre" class="form-control" placeholder="Nombre del activo"
+                                    required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <textarea name="descripcion" cols="30" rows="5" class="form-control"
+                                    placeholder="Descripción completa del activo(Sin saltos de linea)"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="propietario" class="form-control"
+                                    placeholder="Nombre del Propietario" required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="ubicacion" class="form-control"
+                                    placeholder="Ubicación Física/Lógica del activo" required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Activo</label>
+                                <select name="tipo" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in tiposActivo %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Estatus</label>
+                                <select name="estatus" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in estatus %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Frecuencia de Mantenimiento</label>
+                                <select name="frecM" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in frecuencia %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Frecuencia de Renovación</label>
+                                <select name="frecR" class="form-select" style="white-space: pre-line;" required>
+                                    {% for opcion in frecuencia %}
+                                    <option value="{{opcion}}">{{opcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Adquisición</label>
+                                <input type="date" name="fecha" class="form-control">
+                            </div>
+                        </div>
+
+                        <!-- Evaluación del activo, dentro del mismo formulario -->
+                        <div class="mb-3">
+                            <div class="bg-body mb-3">
+                                <h4 class="text-center ">Evaluación del activo</h4>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <label class="form-label">Confidencialidad</label>
+                            </div>
+                            <div class="row">
+                                <select name="confidencialidad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['confidencialidad'].items() %}
+                                    
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <label class="form-label">Disponibilidad</label>
+                            </div>
+                            <div class="row">
+                                <select name="disponibilidad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['disponibilidad'].items() %}
+                                    
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <label class="form-label">Integridad</label>
+                            </div>
+                            <div class="row">
+                                <select name="integridad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['integridad'].items() %}
+                                    
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3 pd-4   " id="resultadoActivo"></div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-6 col-md-4">
+                                <button type="button" class="btn btn-dark bg-black w-100 ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddRiesgo">
+                                    <i class="fa-sharp fa-solid fa-backward"></i> Regresar al riesgo</button>
+                            </div>
+                            <div class="col-12 col-md-8">
+                                <button type="submit" class="btn btn-dark bg-black w-100">Registrar activo</button>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    
+                    <div>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                            <div class="row pt-5" id="alertRow">
+                                <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+                                    {{messages[1]}}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+
+                    <!-- AJAX para añadir activo sin tener que redirigir a otra ruta-->
+                    <!--Funciona, pero no maneja excepciones (flashes) dentro del modal, por alguna razón se van a la vista de acciones-->
+                    <script>
+                        document.getElementById("anadir-activo").addEventListener("submit", function(event) {
+                            event.preventDefault(); // Evitar que el formulario se envíe normalmente
+                
+                            // Obtener los datos del formulario
+                            var formData = new FormData(this);
+                
+                            // Enviar los datos del formulario usando AJAX
+                            fetch('/anadir-activos-en-riesgo', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.text();
+                            })
+                            .then(data => {
+                                //console.log('Result:' + typeof(data)); // Manejar la respuesta del servidor
+                                if(data.includes('Existe')){
+                                    htmlMensaje = '<div class="alert alert-danger" role="alert">La clave del activo ya existe</div>';
+                                }else{
+                                    htmlMensaje = '<div class="alert alert-success" role="alert">El activo ha sido añadido correctamente</div>';
+                                }
+                                
+                                $('#resultadoActivo').html(htmlMensaje);
+                            
+                            })
+                            .catch(error => {
+                                console.error('There was an error!', error);
+                            });
+                            
+                        });
+                    </script>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock %}
