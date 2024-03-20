@@ -18,7 +18,7 @@
 </div>
 <div class="row pt-2">
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-main align-middle">
             <thead>
                 <th>Clave</th>
                 <th>Nombre</th>
@@ -41,7 +41,8 @@
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{activo.idActivo}}"><i class="fa fa-plus"></i></button>
                         <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                            data-bs-target=""><i class="fa fa-triangle-exclamation"></i></button>
+                            data-bs-target="#Ventana{{activo.idActivo}}_R"><i
+                                class="fa fa-triangle-exclamation"></i></button>
                         <a href="/evaluar-activo/{{activo.idActivo}}" class="btn btn-success"><i
                                 class="fa fa-pencil"></i></a>
                     </td>
@@ -72,9 +73,62 @@
     </div>
 </div>
 {% endfor %}
+{% for activo in activos %}
+<div class="modal fade" id="Ventana{{activo.idActivo}}_R" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Riesgos identificados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                {% if activo.riesgos_asociados%}
+                <table class="table">
+                    <thead>
+                        <th>Nombre</th>
+                        <th>Clave</th>
+                        <th>Umbral</th>
+                    </thead>
+                    <tbody>
+                        {% for asociacion in activo.riesgos_asociados %}
+                        <tr>
+                            <td>{{asociacion.riesgo.nombre}}</td>
+                            <td>{{asociacion.riesgo.clave}}</td>
+                            <td>
+                                {% if asociacion.umbral == 'Insignificante' %}
+                                <button type="button" class="btn btn-sm btn-block btn-primary"
+                                    style="pointer-events: none;"> Insignificante </button>
+                                {% elif asociacion.umbral == 'Bajo' %}
+                                <button type="button" class="btn btn-sm btn-block btn-success"
+                                    style="pointer-events: none;"> Bajo </button>
+                                {% elif asociacion.umbral == 'Medio' %}
+                                <button type="button" class="btn btn-sm btn-block btn-warning"
+                                    style="pointer-events: none;"> Medio </button>
+                                {% elif asociacion.umbral == 'Alto' %}
+                                <button type="button" class="btn btn-sm btn-block"
+                                    style="background-color: orange; color: black; pointer-events: none;"> Alto
+                                </button>
+                                {% elif asociacion.umbral == 'Crítico' %}
+                                <button type="button" class="btn btn-sm btn-block btn-danger"
+                                    style="pointer-events: none;"> Crítico </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <h4>Aun no hay riesgos identificados en este activo</h4>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 <script>
     $(document).ready(function () {
-        $('.table').DataTable({
+        $('.table-main').DataTable({
             "lengthChange": false,
             "paging": false,
             "info": false,

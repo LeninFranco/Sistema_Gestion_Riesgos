@@ -304,14 +304,14 @@ def vistaListaRiesgos():
     riesgos_umbrales = []
     dictRiesgos = {}
     for activo in activos:
-         for asociacion in activo.riesgos_asociados:
-              if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
-                   dictRiesgos[asociacion.riesgo.clave] = {
-                        'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
-                        'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
-                   }
-              else:
-                   dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+        for asociacion in activo.riesgos_asociados:
+            if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                dictRiesgos[asociacion.riesgo.clave] = {
+                    'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                    'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                }
+            else:
+                dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
 
     for clave in dictRiesgos.keys():
         dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
@@ -374,7 +374,6 @@ def añadirRiesgo():
         for idActivo in idActivos:
             activo = Activo.query.filter_by(idActivo=str(idActivo)).first()
             activos.append(activo)
- 
         db.session.add(r)
         db.session.commit()
         
@@ -643,7 +642,7 @@ def obtenerUmbral(probabilidad: float, impacto: float) -> str:
     umbralProb = definirUmbral(probabilidad)
     umbralImp = definirUmbral(impacto)
     if umbralImp == 'Bajo' and umbralProb == 'Bajo':
-             umbral = 'Insignificante'
+            umbral = 'Insignificante'
     elif umbralImp == 'Bajo' and umbralProb == 'Medio':
         umbral = 'Bajo'
     elif umbralImp == 'Bajo' and umbralProb == 'Alto':

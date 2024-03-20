@@ -72,7 +72,7 @@
     </div>
     <div class="row pt-2">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table align-middle">
                 <thead>
                     <th>Nombre</th>
                     <th>Correo</th>
@@ -119,11 +119,20 @@
                     <p><b>Cargo: </b>{{responsable[0].cargo}}</p>
                     <p><b>Lista de Proyectos en los que participa (Claves): </b></p>
                     {% if responsable[1] %}
-                    <ul>
-                        {% for asociacion in responsable[1] %}
-                            <li>{{asociacion.proyecto.clave}}</li>
-                        {% endfor %}
-                    </ul>
+                    <table class="table">
+                        <thead>
+                            <th>Clave</th>
+                            <th>Nombre</th>
+                        </thead>
+                        <tbody>
+                            {% for asociacion in responsable[1] %}
+                            <tr>
+                                <td>{{asociacion.proyecto.clave}}</td>
+                                <td>{{asociacion.proyecto.nombre}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                     {% else %}
                         <p>No esta participando en ningún proyecto</p>
                     {% endif %}

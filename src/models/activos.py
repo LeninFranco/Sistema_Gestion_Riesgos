@@ -23,7 +23,7 @@ class Activo(db.Model):
     sensibilidad = db.Column(db.Integer, nullable=False)
     idProyecto = db.Column(db.String(32), db.ForeignKey('Proyectos.idProyecto', ondelete='CASCADE'), nullable=False)
 
-    def __init__(self, clave, nombre, descripcion, propietario, ubicacion, frecMantenimiento, frecRenovacion, fechaAdquisicion, tipoActivo, estatus,idProyecto) -> None:
+    def __init__(self, clave, nombre, descripcion, propietario, ubicacion, frecMantenimiento, frecRenovacion, fechaAdquisicion, tipoActivo, estatus, idProyecto) -> None:
         self.clave = clave
         self.nombre = nombre
         self.descripcion = descripcion

@@ -1,6 +1,7 @@
 from src.utils.db import db
 from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
+from src.models.acciones import Accion
 
 class Participantes(db.Model):
     __tablename__ = 'Participantes'
@@ -10,3 +11,4 @@ class Participantes(db.Model):
     usuario = db.relationship('Usuario', backref='proyectos_asociados')
     proyecto = db.relationship('Proyecto', backref='usuarios_asociados')
     estado = db.Column(db.String(10))
+    acciones = db.relationship('Accion', backref='participante', cascade='all, delete-orphan')

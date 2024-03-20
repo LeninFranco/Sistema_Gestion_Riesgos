@@ -116,7 +116,7 @@
 </div>
 <div class="row pt-2">
     <div class="table-responsive">
-        <table class="table">
+        <table class="table table-main align-middle">
             <thead>
                 <th>Clave</th>
                 <th>Nombre</th>
@@ -159,7 +159,6 @@
                 <p><b>Frecuencia Mantenimiento: </b>{{activo.frecMantenimiento}}</p>
                 <p><b>Frecuencia Renovación: </b>{{activo.frecRenovacion}}</p>
                 <p><b>Frecha de Adquisicón: </b>{{activo.fechaAdquisicion}}</p>
-                <p><b></b></p>
             </div>
         </div>
     </div>
@@ -167,7 +166,7 @@
 {% endfor %}
 <script>
     $(document).ready(function () {
-        $('.table').DataTable({
+        $('.table-main').DataTable({
             "lengthChange": false,
             "paging": false,
             "info": false,
@@ -205,12 +204,12 @@
         $('.dataTables_filter').prepend(addButton);
 
         // Ajustar manualmente el ancho del botón
-        addButton.width(784); // Ajusta el valor según sea necesario
+        addButton.width(200); // Ajusta el valor según sea necesario
 
         var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
-        addButton.height(alturaBarraBusqueda - 18);
+        addButton.height(alturaBarraBusqueda - 16);
 
-        addButton.css('margin-right', '10px');
+        addButton.css('margin-right', '15px');
     });
 </script>
 
