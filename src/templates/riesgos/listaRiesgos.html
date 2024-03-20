@@ -836,7 +836,7 @@
                     </thead>
                     <tbody>
 
-
+                        {% for activo in dictRiesgos[clave]['activos'] %}
                         <tr>
                             <td><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
                                     title="Descripción: {{activo[0].descripcion}}"></i></td>
@@ -856,7 +856,7 @@
                             </td>
                             </li>
                         </tr>
-
+                        {% endfor %}
                     </tbody>
                 </table>
 
