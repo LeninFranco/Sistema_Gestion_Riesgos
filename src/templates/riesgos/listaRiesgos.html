@@ -786,15 +786,15 @@
                     <td>{{ dictRiesgos[clave]['riesgo'].nombre }}</td>
                     <td>{{ dictRiesgos[clave]['riesgo'].tipoRiesgo}}</td>
                     {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}
-                    <td style="background-color: blue;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    <td class="bg-info">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% elif dictRiesgos[clave]['activos'][0][3] == 'Bajo' %}
-                    <td style="background-color: green;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    <td class="bg-success">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% elif dictRiesgos[clave]['activos'][0][3] == 'Medio' %}
-                    <td style="background-color: yellow; color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    <td style="background-color: rgb(255, 214, 31); color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% elif dictRiesgos[clave]['activos'][0][3] == 'Alto' %}
-                    <td style="background-color: orange; color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    <td style="background-color: rgb(255, 145, 0); color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% else %}
-                    <td style="background-color: red;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    <td class="bg-danger">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% endif %}
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
