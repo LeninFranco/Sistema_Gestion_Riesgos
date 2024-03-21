@@ -1,5 +1,8 @@
 from src.models.usuarios import Usuario
 from src.models.activos import Activo
+from src.models.responsables import Participantes
+from src.models.acciones import Accion
+from src.models.proyectos import Proyecto
 from src.utils.db import db
 from app import app
 from faker import Faker
@@ -49,7 +52,6 @@ def generarActivos(idProyecto, subnumero):
         activo.evaluarActivo(confidencialidad,disponibilidad,integridad)
         db.session.add(activo)
     db.session.commit()
-
 
 with app.app_context():
     pass

@@ -9,7 +9,7 @@ from src.routes.activos import activos
 from src.routes.riesgos import riesgos
 from src.routes.participantes import participantes
 from src.routes.proyectosP import proyectosP
-from src.routes.planes import planes
+from src.routes.accionesP import accionesP
 from src.routes.password import password
 from src.routes.acciones import acciones
 import os
@@ -31,7 +31,7 @@ app.register_blueprint(activos)
 app.register_blueprint(riesgos)
 app.register_blueprint(participantes)
 app.register_blueprint(proyectosP)
-app.register_blueprint(planes)
+app.register_blueprint(accionesP)
 app.register_blueprint(password)
 app.register_blueprint(acciones)
 

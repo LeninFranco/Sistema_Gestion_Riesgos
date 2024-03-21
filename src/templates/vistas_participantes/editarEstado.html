@@ -1,0 +1,140 @@
+{% extends "templateNoSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row pt-5" id="alertRow">
+    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+        {{messages[1]}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+<div class="row pt-2"></div>
+<hr>
+<div class="row pt-2">
+    <div class="col-2">
+        <form action="/lista-accionesP">
+            <button type="submit" class="btn btn-dark bg-black"><i class="fa-solid fa-chevron-left"></i></button>
+        </form>
+    </div>
+    <div class="col-10"></div>
+</div>
+<div class="row pt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Actualización del estado de la acción.</h2>
+            </div>
+            <div class="card-body">
+                <form action="/actualizar-estado-accion" method="post" autocomplete="off">
+                    <div class="row">
+                        <div class="mb-3">
+                            <input type="hidden" name="idaccion" class="form-control" value="{{accion.idAccion}}"
+                                readonly>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3">
+                            <label class="form-label">Estado de la Acción</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estado" value="Iniciado">
+                                <label class="form-check-label" {% if accion.estado=='Iniciado' %} checked {% endif %}>
+                                    Iniciado</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estado" value="En Proceso">
+                                <label class="form-check-label" {% if accion.estado=='En Proceso' %} checked {% endif
+                                    %}> En Proceso</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estado" value="En Revisión">
+                                <label class="form-check-label" {% if accion.estado=='En Revisión' %} checked {% endif
+                                    %}> En Revisión</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estado" value="Pospuesto">
+                                <label class="form-check-label" {% if accion.estado=='Pospuesto' %} checked {% endif %}>
+                                    Pospuesto</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estado" value="Cancelado">
+                                <label class="form-check-label"> Cancelado</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="estado" value="Finalizado">
+                                <label class="form-check-label"> Finalizado</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="inputRange" {% if accion.estado=='En Proceso' %} style="display: block;" {%
+                        else %} style="display: none;" {% endif %}>
+                        <div class="mb-3">
+                            <label class="form-label">Porcentaje de finalización de la acción</label>
+                            <input type="range" class="form-range" name="porcentaje" min="0" max="100" step="10"
+                                value="{{accion.porcentaje}}">
+                        </div>
+                    </div>
+                    <div class="row" id="inputText" {% if accion.estado=='Iniciado' or accion.estado=='En Proceso' %}
+                        style="display: none;" {% else %} style="display: block;" {% endif %}>
+                        <div class="mb-3">
+                            <label class="form-label">Describe los detalles del cambio de estado</label>
+                            <textarea name="detalles" cols="30" rows="10" class="form-control"
+                                placeholder="Descripción completa del cambio de estado(Sin saltos de linea)">{{accion.detalles}}</textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-dark bg-black w-100">Actualizar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion.idAccion}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la Accion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <p><b>Descripción: </b>{{accion.descripcion}}</p>
+                <p><b>Objetivo: </b>{{accion.objetivo}}</p>
+                <p><b>Categoria: </b>{{accion.categoria}}</p>
+                <p><b>Control: </b>{{accion.control}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const estadoRadios = document.querySelectorAll('input[name="estado"]');
+        const inputRangeDiv = document.getElementById("inputRange");
+        const inputTextDiv = document.getElementById("inputText");
+
+        estadoRadios.forEach(radio => {
+            radio.addEventListener("change", function () {
+                if (this.value === "Iniciado") {
+                    inputRangeDiv.style.display = "none";
+                    inputTextDiv.style.display = "none";
+                } else if (this.value === "En Proceso") {
+                    inputRangeDiv.style.display = "block";
+                    inputTextDiv.style.display = "none";
+                } else {
+                    inputRangeDiv.style.display = "none";
+                    inputTextDiv.style.display = "block";
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

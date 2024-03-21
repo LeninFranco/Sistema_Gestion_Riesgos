@@ -15,3 +15,17 @@ def vistaListaProyectos():
     asociaciones = usuario.proyectos_asociados
     return render_template('vistas_participantes/listaProyectos.html', usuario=usuario, asociaciones=asociaciones)
 
+@proyectosP.route('/acceder-proyectoP/<string:idProyecto>')
+def accederProyectoP(idProyecto):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 0:
+        return redirect(url_for('login.logoutUser'))
+    session['proyecto_id'] = idProyecto
+    return redirect(url_for('accionesP.vistaListaAccionesP'))
+
+@proyectosP.route('/regresar-proyectosP')
+def regresarProyectosP():
+    session.pop('proyecto_id')
+    return redirect(url_for('proyectosP.vistaListaProyectos'))
