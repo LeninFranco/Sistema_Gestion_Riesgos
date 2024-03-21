@@ -28,6 +28,11 @@
                 </div>
                 <div class="modal-body">
                     <form action="/anadir-accion" id="formularioAccion" method="post" autocomplete="off">
+                        <script>
+                            $(function () {
+                              $('[data-toggle="tooltip"]').tooltip()
+                            })
+                        </script>
                         <div class="row">
                             <div class="mb-3">
                                 <input type="text" name="clave" class="form-control"
@@ -62,6 +67,8 @@
                         <div class="row">
                             <div class="mb-3">
                                 <label class="form-label">Responsable</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="Participante del proyecto que se encargará de revisar el desarrollo de la acción"></i>
                                 <select name="idUsuario" class="form-select" style="white-space: pre-line;" required>
                                     {% for responsable in usuarios_listado %}
                                     <option value="{{responsable.idUsuario}}">{{responsable.nombre}} - {{responsable.departamento}}</option>
@@ -84,13 +91,16 @@
                             </div>
                         </div>
 
+                        <hr>
+
                         <div class="row">
                             <div class="mb-3">
                                 <label class="form-label">Objetivo</label>
+                                <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-html="true" title="Al realizar esta acción, se trata al riesgo, con uno de estos objetivos"></i>
                                 <select name="objetivo" class="form-select" style="white-space: pre-line;" required>
-                                    {% for objetivo in objetivos %}
-                                    <option value="{{objetivo}}">{{objetivo}}</option>
-                                    {% endfor %}
+                                    {% for objetivo, valorObjetivo in objetivos.items() %}
+                                    <option value="{{objetivo}}"> {{objetivo}}: {{valorObjetivo}}</option>
+                                {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -267,7 +277,7 @@
                 <p><b>Objetivo: </b>{{accion.objetivo}}</p>
                 <p><b>Descripción: </b>{{accion.descripcion}}</p>
                 <p><b>Categoria: </b>{{accion.categoria}}</p>
-                <p><b>Control: </b>{{accion.control}}</p>
+                <p><b>Control: </b>{{accion.control}} : {{descripcionControl}}</p>
                 
             </div>
         </div>

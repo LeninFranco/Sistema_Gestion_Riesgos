@@ -324,12 +324,14 @@ controlesISO27002 = {
     }
 }
 
-objetivos = [
-    "Aceptar",
-    "Modificar",
-    "Trasladar",
-    "Evitar"
-]
+objetivos = {
+    "Aceptar": "Asumir el riesgo",
+    "Modificar": "Reducir la probabilidad y el impacto del riesgo",
+    "Trasladar": "Compartir el riesgo con un tercero que pueda tratarlo",
+    "Evitar": "Eliminar aquello que causa el riesgo"
+    }
+
+
 
 estadosAccion = [
     "En proceso",
@@ -430,7 +432,9 @@ def vistaModificacionAccion(idAccion):
             dictRiesgosSinAcciones.append(dictRiesgos[clave]['riesgo'])
             
     
-    return render_template('acciones/edicionAccion.html', accion = accion ,usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto)
+    
+    descripcionControl = controlesISO27001[accion.categoria][accion.control]
+    return render_template('acciones/edicionAccion.html', accion = accion ,usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto, descripcionControl = descripcionControl)
 
 @acciones.route('/anadir-accion', methods=['POST'])
 def añadirAccion():
@@ -480,8 +484,10 @@ def actualizarAccion():
         clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
-        fechaIni = request.form['fechaIni']
-        fechaFin = request.form['fechaFin']
+        fechaIniStr = request.form['fechaIni']
+        fechaFinStr = request.form['fechaFin']
+        fechaIni = datetime.strptime(fechaIniStr, '%Y-%m-%d')
+        fechaFin = datetime.strptime(fechaFinStr, '%Y-%m-%d')
         objetivo = request.form['objetivo']
         categoria = request.form['categoria']
         control = request.form['control']

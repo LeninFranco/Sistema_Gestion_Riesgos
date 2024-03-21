@@ -3,201 +3,238 @@
 {% block username %} {{usuario.nombre}} {% endblock %}
 
 {% block content %}
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-<div class="row pt-5" id="alertRow">
-    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
-        {{messages[1]}}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+<div class="card">
+    <div class="card-header text-center">
+        <h2>Modificación de acción</h2>
     </div>
-</div>
-{% endif %}
-{% endwith %}
+    <div class="card-body">
+        <script>
+            $(function () {
+              $('[data-toggle="tooltip"]').tooltip()
+            })
+        </script>
 
-<div class="row pt-2">
-    <h2>Riesgos</h2>
-</div>
-<div class="row pt-2">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Registrar Accion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="/actualizar-accion" id="formularioAccion" method="post" autocomplete="off">
-                    <input type="hidden" name="idRiesgo" class="form-control" placeholder="Nombre del riesgo"
-                            value="{{accion.idAccion}}" readonly required>
-                    <div class="row">
-                        <div class="mb-3">
-                            <input type="text" name="clave" class="form-control"
-                                placeholder="Clave de identificación de la acción" required autofocus value="{{accion.clave}}">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="mb-3">
-                            <input type="text" name="nombre" class="form-control" placeholder="Nombre de la acción"
-                                required autofocus value="{{accion.nombre}}">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="mb-3">
-                            <label class="form-label">Riesgo</label>
-                            <select name="idRiesgo" class="form-select" style="white-space: pre-line;" required>
-                                {% for clave in dictRiesgos.keys() %}
-                                <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}">{{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="mb-3">
-                            <textarea name="descripcion" cols="30" rows="5" class="form-control"
-                                placeholder="Descripción completa de la accion (Sin saltos de linea)"" value="{{accion.descripcion}}" ></textarea>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="mb-3">
-                            <label class="form-label">Responsable</label>
-                            <select name="idUsuario" class="form-select" style="white-space: pre-line;" required>
-                                {% for responsable in usuarios_listado %}
-                                <option value="{{responsable.idUsuario}}">{{responsable.nombre}} - {{responsable.departamento}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="mb-3">
-                            <label class="form-label">Fecha de Inicio</label>
-                            <input id="fechaIni" type="date" name="fechaIni" class="form-control" value="{{accion.fechaIni}}>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="mb-3">
-                            <label class="form-label">Fecha de Fin</label>
-                            <input id="fechaFin" type="date" name="fechaFin" class="form-control" value="{{accion.fechaFin}}>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="mb-3">
-                            <label class="form-label">Objetivo</label>
-                            <select name="objetivo" class="form-select" style="white-space: pre-line;" required>
-                                {% for objetivo in objetivos %}
-                                <option value="{{objetivo}}">{{objetivo}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-
-                    
-
-                    {% set selected_categoria = '' %}
-
-                    <div class="row">
-                        <div class="mb-3">
-                            <label class="form-label">Categoria</label>
-                            <select id="categoriaSelect" name="categoria" class="form-select" style="white-space: pre-line;" required>
-                                {% for valor, categoria in categoriasISO27001.items() %}
-                                <option value="{{valor}}">{{valor}}: {{categoria}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    
-                    
-                    <div class="row">
-                        <div class="mb-3">
-                            <label class="form-label">Control</label>
-                            <select id="controlSelect" name="control" class="form-select" style="white-space: pre-line;" required>
-                                <option value="">Seleccione una categoría primero</option>
-                            </select>
-                        </div>
-                    </div>
-
-                        <script>
-                            // Captura el evento de cambio en el primer combo box
-                            document.getElementById('categoriaSelect').addEventListener('change', function() {
-                                // Obtiene el valor seleccionado
-                                var selectedValue = this.value;
-                                
-                                // Obtiene el segundo combo box
-                                var controlSelect = document.getElementById('controlSelect');
-                                
-                                // Limpia las opciones anteriores del segundo combo box
-                                controlSelect.innerHTML = '<option value="">Seleccione un control</option>';
-                                
-                                // Si se selecciona una categoría válida, actualiza el segundo combo box
-                                if (selectedValue !== '') {
-                                    var controls = JSON.parse('{{ controlesISO27001 | tojson | safe }}')[selectedValue];
-                                    for (var clave in controls) {
-                                        var control = controls[clave];
-                                        var option = document.createElement('option');
-                                        option.value = clave;
-                                        option.textContent = clave + ': ' + control;
-                                        controlSelect.appendChild(option);
-                                    }
-                                }
-                            });
-                        </script>
-
-<script>
-    // Obtener la fecha actual
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
-    var yyyy = today.getFullYear();
-    var todayString = yyyy + '-' + mm + '-' + dd;
-
-    // Establecer la fecha mínima para la fecha de inicio
-    document.getElementById('fechaIni').setAttribute('min', todayString);
-
-    // Asignar una función de validación al cambio de la fecha de inicio
-    document.getElementById('fechaIni').addEventListener('change', function() {
-        // Obtener el valor de la fecha de inicio y de fin
-        var fechaIni = new Date(this.value);
-        var fechaFin = new Date(document.getElementById('fechaFin').value);
-
-        
-
-        // Validar que la fecha de fin sea posterior a la fecha de inicio
-        if (fechaFin <= fechaIni) {
-            alert('La fecha de fin debe ser posterior a la fecha de inicio');
-            document.getElementById('fechaFin').value = ''; // Limpiar el valor
-        }
-    });
-
-    // Asignar una función de validación al cambio de la fecha de fin
-    document.getElementById('fechaFin').addEventListener('change', function() {
-        // Obtener el valor de la fecha de inicio y de fin
-        var fechaIni = new Date(document.getElementById('fechaIni').value);
-        var fechaFin = new Date(this.value);
-
-        // Validar que la fecha de fin sea posterior a la fecha de inicio
-        if (fechaFin <= fechaIni) {
-            alert('La fecha de fin debe ser posterior a la fecha de inicio');
-            this.value = ''; // Limpiar el valor
-        }
-    });
-</script>
-
-<div class="row">
-    <div class="mb-3">
-        <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
-    </div>
-</div>
-
-                    </form>
+        <form action="/actualizar-accion" id="formularioAccion" method="post" autocomplete="off">
+            <input type="hidden" name="idAccion" class="form-control" placeholder="Nombre del riesgo"
+                    value="{{accion.idAccion}}" readonly required>
+            <input type="hidden" name="porcentaje" class="form-control" placeholder="Nombre del riesgo"
+                    value="{{accion.porcentaje}}" readonly required>
+            <input type="hidden" name="estado" class="form-control" placeholder="Nombre del riesgo"
+                    value="{{accion.estado}}" readonly required>
+            <input type="hidden" name="detalles" class="form-control" placeholder="Nombre del riesgo"
+                    value="{{accion.detalles}}" readonly required>
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Clave de identificación de la acción</label>
+                    <input type="text" name="clave" class="form-control"
+                        placeholder="Clave de identificación de la acción" required autofocus value="{{accion.clave}}">
                 </div>
             </div>
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Nombre de la acción</label>
+                    <input type="text" name="nombre" class="form-control" placeholder="Nombre de la acción"
+                        required autofocus value="{{accion.nombre}}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Riesgo de la acción</label>
+                    <select name="idRiesgo" class="form-select" style="white-space: pre-line;" required>
+                        {% for clave in dictRiesgos.keys() %}
+                            {% if accion.riesgo.clave == clave %}
+                            <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}" selected>{{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}}</option>
+                            {% else %}
+                            <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}">{{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Descripción de la acción</label>
+                    <textarea name="descripcion" cols="30" rows="5" class="form-control"
+                        placeholder="Descripción completa de la accion (Sin saltos de linea)"" value="{{accion.descripcion}}">{{accion.descripcion}}</textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Responsable</label>
+                    <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                                title="Participante del proyecto que se encargará de revisar el desarrollo de la acción"></i>
+                    <select name="idUsuario" class="form-select" style="white-space: pre-line;" required>
+                        {% for responsable in usuarios_listado %}
+                        <option value="{{responsable.idUsuario}}">{{responsable.nombre}} - {{responsable.departamento}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Fecha de Inicio</label>
+                    <input id="fechaIni" type="date" name="fechaIni" class="form-control" value="{{accion.fechaIni}}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Fecha de Fin</label>
+                    <input id="fechaFin" type="date" name="fechaFin" class="form-control" value="{{accion.fechaFin}}">
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Objetivo</label>
+                    <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-html="true" title="Al realizar esta acción, se trata al riesgo, con uno de estos objetivos"
+                    ></i>
+                    <select id="objetivo" name="objetivo" class="form-select" style="white-space: pre-line;" required>
+                        {% for objetivo, valorObjetivo in objetivos.items() %}
+                            {% if accion.objetivo == objetivo %}
+                            <option value="{{objetivo}}" selected> {{objetivo}}: {{valorObjetivo}}</option>
+                            {% else %}
+                            <option value="{{objetivo}}"> {{objetivo}}: {{valorObjetivo}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <!-- Solo para el superviso, no para el gestor
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Estado</label>
+                    <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-html="true" title="¿Cómo cambió la situación de la acción?"
+                    ></i>
+                    <select id="estado" name="estado" class="form-select" style="white-space: pre-line;" required>
+                        {% for estado in estadosAccion %}
+                            {% if accion.estado == estado %}
+                            <option value="{{estado}}" selected> {{estado}}</option>
+                            {% else %}
+                            <option value="{{estado}}"> {{estado}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Detalles</label><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-html="true" title="Describe que cambió "
+                    ></i>
+                    <textarea name="descripcion" cols="30" rows="5" class="form-control"
+                        placeholder="Descripción completa de la accion (Sin saltos de linea)"" value="{{accion.descripcion}}">{{accion.descripcion}}</textarea>
+                </div>
+            </div>
+            -->
+            {% set selected_categoria = '' %}
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Categoria</label>
+                    <select id="categoriaSelect" name="categoria" class="form-select" style="white-space: pre-line;" required>
+                        {% for valor, categoria in categoriasISO27001.items() %}
+                        {% if accion.categoria == valor %}
+                        <option value="{{valor}}" selected>{{valor}}: {{categoria}}</option>
+                        {% else %}
+                        <option value="{{valor}}">{{valor}}: {{categoria}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="mb-3">
+                    <label class="form-label">Control</label>
+                    <p>Control actual: <b>{{accion.control}}: {{descripcionControl}}</b></p>
+                    <select id="controlSelect" name="control" class="form-select" style="white-space: pre-line;" required>
+                        <option value="">Seleccione una categoría primero</option>
+                    </select>
+                </div>
+            </div>
+
+            <script>
+                // Captura el evento de cambio en el primer combo box
+                document.getElementById('categoriaSelect').addEventListener('change', function() {
+                    // Obtiene el valor seleccionado
+                    var selectedValue = this.value;
+                    // Obtiene el segundo combo box
+                    var controlSelect = document.getElementById('controlSelect');
+                    // Limpia las opciones anteriores del segundo combo box
+                    controlSelect.innerHTML = '<option value="">Seleccione un control</option>';
+                    // Si se selecciona una categoría válida, actualiza el segundo combo box
+                    if (selectedValue !== '') {
+                        var controls = JSON.parse('{{ controlesISO27001 | tojson | safe }}')[selectedValue];
+                        for (var clave in controls) {
+                            var control = controls[clave];
+                            var option = document.createElement('option');
+                            option.value = clave;
+                            option.textContent = clave + ': ' + control;
+                            controlSelect.appendChild(option);
+                        }
+                    }
+                });
+            </script>
+
+            
+
+            <script>
+                // Obtener la fecha actual
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+                var yyyy = today.getFullYear();
+                var todayString = yyyy + '-' + mm + '-' + dd;
+                // Establecer la fecha mínima para la fecha de inicio
+                document.getElementById('fechaIni').setAttribute('min', todayString);
+                // Asignar una función de validación al cambio de la fecha de inicio
+                document.getElementById('fechaIni').addEventListener('change', function() {
+                    // Obtener el valor de la fecha de inicio y de fin
+                    var fechaIni = new Date(this.value);
+                    var fechaFin = new Date(document.getElementById('fechaFin').value);
+                    // Validar que la fecha de fin sea posterior a la fecha de inicio
+                    if (fechaFin <= fechaIni) {
+                        alert('La fecha de fin debe ser posterior a la fecha de inicio');
+                        document.getElementById('fechaFin').value = ''; // Limpiar el valor
+                    }
+                });
+                // Asignar una función de validación al cambio de la fecha de fin
+                document.getElementById('fechaFin').addEventListener('change', function() {
+                    // Obtener el valor de la fecha de inicio y de fin
+                    var fechaIni = new Date(document.getElementById('fechaIni').value);
+                    var fechaFin = new Date(this.value);
+                    // Validar que la fecha de fin sea posterior a la fecha de inicio
+                    if (fechaFin <= fechaIni) {
+                        alert('La fecha de fin debe ser posterior a la fecha de inicio');
+                        this.value = ''; // Limpiar el valor
+                    }
+                });
+            </script>
+
+            <div class="row">
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-dark bg-black w-100">Modificar</button>
+                </div>
+            </div>
+        </form>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="row pt-5" id="alertRow">
+            <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+                {{messages[1]}}
+            </div>
         </div>
+        {% endif %}
+        {% endwith %}
     </div>
 </div>
-
 
 
 {% endblock %}
