@@ -17,19 +17,329 @@
 <div class="row pt-2">
     <h2>Acciones</h2>
 </div>
+<div class="row pt-2">
+    <div class="modal fade" id="VentanaAddAccion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar Accion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/anadir-accion" id="formularioAccion" method="post" autocomplete="off">
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="clave" class="form-control"
+                                    placeholder="Clave de identificación de la acción" required autofocus>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="text" name="nombre" class="form-control" placeholder="Nombre de la acción"
+                                    required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Riesgo</label>
+                                <select name="idRiesgo" class="form-select" style="white-space: pre-line;" required>
+                                    {% for clave in dictRiesgos.keys() %}
+                                    <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}">{{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+    
+
+                        <div class="row">
+                            <div class="mb-3">
+                                <textarea name="descripcion" cols="30" rows="5" class="form-control"
+                                    placeholder="Descripción completa de la accion (Sin saltos de linea)"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Responsable</label>
+                                <select name="idUsuario" class="form-select" style="white-space: pre-line;" required>
+                                    {% for responsable in usuarios_listado %}
+                                    <option value="{{responsable.idUsuario}}">{{responsable.nombre}} - {{responsable.departamento}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Inicio</label>
+                                <input id="fechaIni" type="date" name="fechaIni" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Fin</label>
+                                <input id="fechaFin" type="date" name="fechaFin" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Objetivo</label>
+                                <select name="objetivo" class="form-select" style="white-space: pre-line;" required>
+                                    {% for objetivo in objetivos %}
+                                    <option value="{{objetivo}}">{{objetivo}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        
+
+                        {% set selected_categoria = '' %}
+
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Categoria</label>
+                                <select id="categoriaSelect" name="categoria" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, categoria in categoriasISO27001.items() %}
+                                    <option value="{{valor}}">{{valor}}: {{categoria}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Control</label>
+                                <select id="controlSelect" name="control" class="form-select" style="white-space: pre-line;" required>
+                                    <option value="">Seleccione una categoría primero</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <script>
+                            // Captura el evento de cambio en el primer combo box
+                            document.getElementById('categoriaSelect').addEventListener('change', function() {
+                                // Obtiene el valor seleccionado
+                                var selectedValue = this.value;
+                                
+                                // Obtiene el segundo combo box
+                                var controlSelect = document.getElementById('controlSelect');
+                                
+                                // Limpia las opciones anteriores del segundo combo box
+                                controlSelect.innerHTML = '<option value="">Seleccione un control</option>';
+                                
+                                // Si se selecciona una categoría válida, actualiza el segundo combo box
+                                if (selectedValue !== '') {
+                                    var controls = JSON.parse('{{ controlesISO27001 | tojson | safe }}')[selectedValue];
+                                    for (var clave in controls) {
+                                        var control = controls[clave];
+                                        var option = document.createElement('option');
+                                        option.value = clave;
+                                        option.textContent = clave + ': ' + control;
+                                        controlSelect.appendChild(option);
+                                    }
+                                }
+                            });
+                        </script>
+
+<script>
+    // Obtener la fecha actual
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+    var yyyy = today.getFullYear();
+    var todayString = yyyy + '-' + mm + '-' + dd;
+
+    // Establecer la fecha mínima para la fecha de inicio
+    document.getElementById('fechaIni').setAttribute('min', todayString);
+
+    // Asignar una función de validación al cambio de la fecha de inicio
+    document.getElementById('fechaIni').addEventListener('change', function() {
+        // Obtener el valor de la fecha de inicio y de fin
+        var fechaIni = new Date(this.value);
+        var fechaFin = new Date(document.getElementById('fechaFin').value);
+
+        
+
+        // Validar que la fecha de fin sea posterior a la fecha de inicio
+        if (fechaFin <= fechaIni) {
+            alert('La fecha de fin debe ser posterior a la fecha de inicio');
+            document.getElementById('fechaFin').value = ''; // Limpiar el valor
+        }
+    });
+
+    // Asignar una función de validación al cambio de la fecha de fin
+    document.getElementById('fechaFin').addEventListener('change', function() {
+        // Obtener el valor de la fecha de inicio y de fin
+        var fechaIni = new Date(document.getElementById('fechaIni').value);
+        var fechaFin = new Date(this.value);
+
+        // Validar que la fecha de fin sea posterior a la fecha de inicio
+        if (fechaFin <= fechaIni) {
+            alert('La fecha de fin debe ser posterior a la fecha de inicio');
+            this.value = ''; // Limpiar el valor
+        }
+    });
+</script>
+
+<div class="row">
+    <div class="mb-3">
+        <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
+    </div>
+</div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="row pt-2">
     <div class="table-responsive">
         <table class="table table-main align-middle">
             <thead>
-                
+                <tr>
+                    <th>Clave</th>
+                    <th class="custom-sort">Fecha Fin</th>
+                    <th class="custom-sort">Umbral Total</th>
+                    <th>Estatus</th>
+                    <th>Porcentaje</th>
+                    <th>Acciones</th>
+                </tr>
             </thead>
             <tbody>
-
+                {% for accion in acciones %}
+                <tr>
+                    <td>{{ accion.clave }}</td>
+                    <td>{{ accion.fechaFin }}</td>
+                    
+                    <td>{{ accion.idRiesgo }}</td>
+                    <td>{{ accion.estado }}</td>
+                    <td>{{ accion.porcentaje }}</td>
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{ accion.idAccion }}"><i class="fa fa-plus"></i></button>
+                        <a href="/modificar-accion/{{ accion.idAccion }}" class="btn btn-success"><i
+                                class="fa fa-pencil"></i></a>
+                        
+                                
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
 
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion.idAccion}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la Accion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <p><b>Porcentaje: </b>{{accion.porcentaje}}</p>
+                <p><b>Responsable: </b>{{accionidParticipante}}</p>
+                <table class="table">
+                    <thead>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Final</th>
+                    </thead>
+                    <tbody>
+                        <tbody>
+                            <tr>
+                                <td class=""> {{ accion.fechaIni }}</td>
+                                <td class=""> {{ accion.fechaFin }}</td>
+                                </li>
+                            </tr>
+                        </tbody>
+                    </table>
+                <p><b>Objetivo: </b>{{accion.objetivo}}</p>
+                <p><b>Descripción: </b>{{accion.descripcion}}</p>
+                <p><b>Categoria: </b>{{accion.categoria}}</p>
+                <p><b>Control: </b>{{accion.control}}</p>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
+
+<script>
+    $(document).ready(function () {
+        var customSortType = $.fn.dataTable.ext.type.order['custom-sort'];
+        var order = { 'Insignificante': 1, 'Bajo': 2, 'Medio': 3, 'Alto': 4, 'Crítico': 5 };
+
+        $.fn.dataTable.ext.type.order['custom-sort-asc'] = function (a, b) {
+            return order[a] - order[b];
+        };
+
+        $.fn.dataTable.ext.type.order['custom-sort-desc'] = function (a, b) {
+            return order[b] - order[a];
+        };
+
+        $('.table-main').DataTable({
+            "lengthChange": false,
+            "paging": false,
+            "info": false,
+            "language": {
+                "search": "",  // Eliminar el texto "Buscar:"
+                "searchPlaceholder": "Buscar Riesgo o Tipo",  // Establecer el marcador de posición
+                "zeroRecords": "No se encontraron registros coincidentes"
+            },
+            "columnDefs": [
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [0] // Primera columna
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [1] // Primera columna
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [2] // Primera columna
+                },
+                {
+                    "orderable": true,
+                    "searchable": false, // Deshabilitar búsqueda
+                    "targets": "custom-sort",
+                    "type": "custom-sort" // Usar el tipo de datos personalizado para la ordenación
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": false, // Deshabilitar búsqueda
+                    "targets": [-1] // Última columna
+                }
+            ]
+        });
+
+        var addButton = $('<button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddAccion">Añadir Acción</button>');
+
+        // Insertar el botón antes de la barra de búsqueda
+        $('.dataTables_filter').prepend(addButton);
+
+        // Ajustar manualmente el ancho del botón
+        addButton.width(200); // Ajusta el valor según sea necesario
+
+        var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
+        addButton.height(alturaBarraBusqueda - 16);
+
+        addButton.css('margin-right', '15px');
+    });
+</script>
 {% endblock %}

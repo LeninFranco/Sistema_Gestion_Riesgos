@@ -350,13 +350,13 @@ def vistaListaAcciones():
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos #Necesitamos los activos para obtener sus riesgos, y saber cualess riesgos no tienen tareas
-    participantes_proyecto = []
     participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
+    participantes_proyecto = []
     for asociacion in proyecto.usuarios_asociados:
         participantes_proyecto.append((asociacion.usuario, asociacion.estado))
     usuarios_listado = []
     for participante in participantes_jefe:
-        if not participante in [x[0] for x in participantes_proyecto]:
+        if participante in [x[0] for x in participantes_proyecto]:
             usuarios_listado.append(participante)
 
 
@@ -364,7 +364,8 @@ def vistaListaAcciones():
 
     
     for asociacion in proyecto.usuarios_asociados:
-        acciones.append(asociacion.acciones)
+        for actions in asociacion.acciones:
+            acciones.append(actions)
 
     #Diccionario de riesgos para tener solo un riesgo por n activos, no necesitamos manejar el activo, solo el riesgo
     dictRiesgos = {}
@@ -380,7 +381,7 @@ def vistaListaAcciones():
     for clave in dictRiesgos.keys():
         if len(dictRiesgos[clave]['riesgo'].acciones) < 1:
             dictRiesgosSinAcciones.append(dictRiesgos[clave]['riesgo'])
-    return render_template('acciones/listaAcciones.html', usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado)
+    return render_template('acciones/listaAcciones.html', usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto)
 
 @acciones.route('/modificar-accion/<string:idAccion>')
 def vistaModificacionAccion(idAccion):
@@ -393,21 +394,48 @@ def vistaModificacionAccion(idAccion):
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     accion = Accion.query.filter_by(idAccion=idAccion).first()
+    activos = proyecto.activos
     participantes_proyecto = []
     participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
+    participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
+    participantes_proyecto = []
     for asociacion in proyecto.usuarios_asociados:
         participantes_proyecto.append((asociacion.usuario, asociacion.estado))
-    participantes_listado = []
+    usuarios_listado = []
     for participante in participantes_jefe:
-        if not participante in [x[0] for x in participantes_proyecto]:
-            participantes_listado.append(participante)
+        if participante in [x[0] for x in participantes_proyecto]:
+            usuarios_listado.append(participante)
+
+
+    acciones = []
+
     
-    return render_template('acciones/edicionAccion.html',  usuario=usuario, accion=accion, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, participantes_proyecto = participantes_proyecto)
+    for asociacion in proyecto.usuarios_asociados:
+        for actions in asociacion.acciones:
+            acciones.append(actions)
+
+    #Diccionario de riesgos para tener solo un riesgo por n activos, no necesitamos manejar el activo, solo el riesgo
+    dictRiesgos = {}
+    for activo in activos:
+        for asociacion in activo.riesgos_asociados:
+            if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                dictRiesgos[asociacion.riesgo.clave] = {
+                    'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                    #'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                }
+    #Diccionario de riesgos siwn accioness
+    dictRiesgosSinAcciones = []
+    for clave in dictRiesgos.keys():
+        if len(dictRiesgos[clave]['riesgo'].acciones) < 1:
+            dictRiesgosSinAcciones.append(dictRiesgos[clave]['riesgo'])
+            
+    
+    return render_template('acciones/edicionAccion.html', accion = accion ,usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto)
 
 @acciones.route('/anadir-accion', methods=['POST'])
 def añadirAccion():
     if request.method == 'POST':
-        try:
+        
             clave = request.form['clave']
             nombre = request.form['nombre']
             descripcion = request.form['descripcion']
@@ -416,8 +444,8 @@ def añadirAccion():
             objetivo = request.form['objetivo']
             categoria = request.form['categoria']
             control = request.form['control']
-            porcentaje = request.form['porcentaje']
-            estado = request.form['estado']
+            #porcentaje = request.form['porcentaje']
+            #estado = request.form['estado']
             #detalles = request.form['detalles']
             idUsuario = request.form['idUsuario']
             idRiesgo = request.form['idRiesgo']
@@ -427,13 +455,13 @@ def añadirAccion():
                 clave=clave,
                 nombre=nombre,
                 descripcion=descripcion,
-                fechaIni=fechaIni,
-                fechaFin=fechaFin,
+                fechaIni=datetime.strptime(fechaIni, '%Y-%m-%d').date(),
+                fechaFin=datetime.strptime(fechaFin, '%Y-%m-%d').date(),
                 objetivo=objetivo,
                 categoria = categoria,
                 control = control,
-                porcentaje = float(porcentaje),
-                estado = estado,
+                porcentaje = float(0),
+                estado = "Iniciado",
                 detalles = '',
                 idParticipante = participante.id,
                 idRiesgo = idRiesgo
@@ -442,11 +470,8 @@ def añadirAccion():
             db.session.commit()
             flash('success')
             flash('La acción ha sido añadida correctamente')
-        except:
-            db.session.rollback()
-            flash('danger')
-            flash('La clave de la acción ya existe')
-        return redirect(url_for('acciones.vistaListaAcciones'))
+        
+    return redirect(url_for('acciones.vistaListaAcciones'))
 
 @acciones.route('/actualizar-accion', methods=['POST'])
 def actualizarAccion():
