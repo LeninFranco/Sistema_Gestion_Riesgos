@@ -156,51 +156,51 @@
                             });
                         </script>
 
-<script>
-    // Obtener la fecha actual
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
-    var yyyy = today.getFullYear();
-    var todayString = yyyy + '-' + mm + '-' + dd;
+                        <script>
+                            // Obtener la fecha actual
+                            var today = new Date();
+                            var dd = String(today.getDate()).padStart(2, '0');
+                            var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+                            var yyyy = today.getFullYear();
+                            var todayString = yyyy + '-' + mm + '-' + dd;
 
-    // Establecer la fecha mínima para la fecha de inicio
-    document.getElementById('fechaIni').setAttribute('min', todayString);
+                            // Establecer la fecha mínima para la fecha de inicio
+                            document.getElementById('fechaIni').setAttribute('min', todayString);
 
-    // Asignar una función de validación al cambio de la fecha de inicio
-    document.getElementById('fechaIni').addEventListener('change', function() {
-        // Obtener el valor de la fecha de inicio y de fin
-        var fechaIni = new Date(this.value);
-        var fechaFin = new Date(document.getElementById('fechaFin').value);
+                            // Asignar una función de validación al cambio de la fecha de inicio
+                            document.getElementById('fechaIni').addEventListener('change', function() {
+                                // Obtener el valor de la fecha de inicio y de fin
+                                var fechaIni = new Date(this.value);
+                                var fechaFin = new Date(document.getElementById('fechaFin').value);
 
-        
+                                
 
-        // Validar que la fecha de fin sea posterior a la fecha de inicio
-        if (fechaFin <= fechaIni) {
-            alert('La fecha de fin debe ser posterior a la fecha de inicio');
-            document.getElementById('fechaFin').value = ''; // Limpiar el valor
-        }
-    });
+                                // Validar que la fecha de fin sea posterior a la fecha de inicio
+                                if (fechaFin <= fechaIni) {
+                                    alert('La fecha de fin debe ser posterior a la fecha de inicio');
+                                    document.getElementById('fechaFin').value = ''; // Limpiar el valor
+                                }
+                            });
 
-    // Asignar una función de validación al cambio de la fecha de fin
-    document.getElementById('fechaFin').addEventListener('change', function() {
-        // Obtener el valor de la fecha de inicio y de fin
-        var fechaIni = new Date(document.getElementById('fechaIni').value);
-        var fechaFin = new Date(this.value);
+                            // Asignar una función de validación al cambio de la fecha de fin
+                            document.getElementById('fechaFin').addEventListener('change', function() {
+                                // Obtener el valor de la fecha de inicio y de fin
+                                var fechaIni = new Date(document.getElementById('fechaIni').value);
+                                var fechaFin = new Date(this.value);
 
-        // Validar que la fecha de fin sea posterior a la fecha de inicio
-        if (fechaFin <= fechaIni) {
-            alert('La fecha de fin debe ser posterior a la fecha de inicio');
-            this.value = ''; // Limpiar el valor
-        }
-    });
-</script>
+                                // Validar que la fecha de fin sea posterior a la fecha de inicio
+                                if (fechaFin <= fechaIni) {
+                                    alert('La fecha de fin debe ser posterior a la fecha de inicio');
+                                    this.value = ''; // Limpiar el valor
+                                }
+                            });
+                        </script>
 
-<div class="row">
-    <div class="mb-3">
-        <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
-    </div>
-</div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-dark bg-black w-100">Registrar</button>
+                            </div>
+                        </div>
 
                     </form>
                 </div>
@@ -227,16 +227,30 @@
             <tbody>
                 {% for accion in acciones %}
                 <tr>
-                    <td>{{ accion.clave }}</td>
-                    <td>{{ accion.fechaFin }}</td>
+                    <td>{{ accion[0].clave }}</td>
+                    <td>{{ accion[0].fechaFin }}</td>
+                    {% for clave in dictRiesgos.keys() %}
+                        {% if clave == accion[2].clave %}
+                            {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}
+                            <td class="bg-info">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                            {% elif dictRiesgos[clave]['activos'][0][3] == 'Bajo' %}
+                            <td class="bg-success">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                            {% elif dictRiesgos[clave]['activos'][0][3] == 'Medio' %}
+                            <td style="background-color: rgb(255, 214, 31); color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                            {% elif dictRiesgos[clave]['activos'][0][3] == 'Alto' %}
+                            <td style="background-color: rgb(255, 145, 0); color: black;">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                            {% else %}
+                            <td class="bg-danger">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
                     
-                    <td>{{ accion.idRiesgo }}</td>
-                    <td>{{ accion.estado }}</td>
-                    <td>{{ accion.porcentaje }}</td>
+                    <td>{{ accion[0].estado }}</td>
+                    <td>{{ accion[0].porcentaje }}</td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
-                            data-bs-target="#Ventana{{ accion.idAccion }}"><i class="fa fa-plus"></i></button>
-                        <a href="/modificar-accion/{{ accion.idAccion }}" class="btn btn-success"><i
+                            data-bs-target="#Ventana{{ accion[0].idAccion }}"><i class="fa fa-plus"></i></button>
+                        <a href="/modificar-accion/{{ accion[0].idAccion }}" class="btn btn-success"><i
                                 class="fa fa-pencil"></i></a>
                         
                                 
@@ -249,7 +263,7 @@
 </div>
 
 {% for accion in acciones %}
-<div class="modal fade" id="Ventana{{accion.idAccion}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+<div class="modal fade" id="Ventana{{accion[0].idAccion}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -258,8 +272,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
-                <p><b>Porcentaje: </b>{{accion.porcentaje}}</p>
-                <p><b>Responsable: </b>{{accionidParticipante}}</p>
+                <p><b>Porcentaje: </b>{{accion[0].porcentaje}}</p>
+                <p><b>Responsable: </b>{{accion[1].nombre}} - {{accion[1].departamento}}</p>
                 <table class="table">
                     <thead>
                         <th>Fecha Inicio</th>
@@ -268,16 +282,23 @@
                     <tbody>
                         <tbody>
                             <tr>
-                                <td class=""> {{ accion.fechaIni }}</td>
-                                <td class=""> {{ accion.fechaFin }}</td>
+                                <td class=""> {{ accion[0].fechaIni }}</td>
+                                <td class=""> {{ accion[0].fechaFin }}</td>
                                 </li>
                             </tr>
                         </tbody>
                     </table>
+<<<<<<< Updated upstream
                 <p><b>Objetivo: </b>{{accion.objetivo}}</p>
                 <p><b>Descripción: </b>{{accion.descripcion}}</p>
                 <p><b>Categoria: </b>{{accion.categoria}}</p>
                 <p><b>Control: </b>{{accion.control}} : {{descripcionControl}}</p>
+=======
+                <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
+                <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
+                <p><b>Categoria: </b>{{accion[0].categoria}}</p>
+                <p><b>Control: </b>{{accion[0].control}}</p>
+>>>>>>> Stashed changes
                 
             </div>
         </div>

@@ -11,6 +11,14 @@ from datetime import datetime
 
 acciones = Blueprint('acciones', __name__)
 
+def definirUmbral(factor: float) -> str:
+    if factor > 0 and factor < 3:
+        return "Bajo"
+    if factor >= 3 and factor < 6:
+        return "Medio"
+    if factor >= 6 and factor <= 9:
+        return "Alto"
+
 categoriasISO27001 = {
     "5": "Política de seguridad",
     "6": "Organización de seguridad de la información",
@@ -366,8 +374,10 @@ def vistaListaAcciones():
 
     
     for asociacion in proyecto.usuarios_asociados:
-        for actions in asociacion.acciones:
-            acciones.append(actions)
+        if asociacion.acciones:
+            for actions in asociacion.acciones:
+                risk = Riesgo.query.filter_by(idRiesgo = actions.idRiesgo).first()
+                acciones.append(((actions,asociacion.usuario,risk)))
 
     #Diccionario de riesgos para tener solo un riesgo por n activos, no necesitamos manejar el activo, solo el riesgo
     dictRiesgos = {}
@@ -376,7 +386,7 @@ def vistaListaAcciones():
             if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
                 dictRiesgos[asociacion.riesgo.clave] = {
                     'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
-                    #'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                    'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
                 }
     #Diccionario de riesgos siwn accioness
     dictRiesgosSinAcciones = []
@@ -526,3 +536,43 @@ def eliminarRiesgo(idAccion):
     flash('danger')
     flash('La acción fue eliminada exitosamente') 
     return redirect(url_for('acciones.vistaListaAcciones'))
+
+def obtenerProbabilidad(riesgo) -> float:
+    amenazaRiesgo = (riesgo.nivelHabilidad + riesgo.motivacion + riesgo.oportunidad + riesgo.tamaño)/4
+    vulnerabilidadRiesgo = (riesgo.facilidadDescubrimiento + riesgo.facilidadExplotacion + riesgo.conciencia + riesgo.deteccionIntrusiones)/4
+    prob = (amenazaRiesgo + vulnerabilidadRiesgo)/2
+    return prob
+
+def obtenerImpacto(riesgo, activo) -> float:
+    impactoEmpresarialRiesgo = (riesgo.impactoFinanciero + riesgo.impactoReputacion + riesgo.impactoLegal + riesgo.impactoUsuarios)/4
+    impactoTecnicoActivo = (activo.sensibilidad)/3
+    imp = (impactoEmpresarialRiesgo + impactoTecnicoActivo)/2
+    return imp
+
+def obtenerTotal(probabildad: float, impacto: float) -> float:
+    return probabildad * impacto
+
+def obtenerUmbral(probabilidad: float, impacto: float) -> str:
+    umbralProb = definirUmbral(probabilidad)
+    umbralImp = definirUmbral(impacto)
+    if umbralImp == 'Bajo' and umbralProb == 'Bajo':
+            umbral = 'Insignificante'
+    elif umbralImp == 'Bajo' and umbralProb == 'Medio':
+        umbral = 'Bajo'
+    elif umbralImp == 'Bajo' and umbralProb == 'Alto':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Bajo':
+        umbral = 'Bajo'
+    elif umbralImp == 'Medio' and umbralProb == 'Medio':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Alto':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Bajo':
+        umbral = 'Medio'
+    elif umbralImp == 'Alto' and umbralProb == 'Medio':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Alto':
+        umbral = 'Crítico'
+    else:
+        umbral = 'Sin umbral'
+    return umbral
