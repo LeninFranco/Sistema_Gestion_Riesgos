@@ -217,7 +217,7 @@
             <thead>
                 <tr>
                     <th>Clave</th>
-                    <th class="custom-sort">Fecha Fin</th>
+                    <th>Fecha Fin</th>
                     <th class="custom-sort">Umbral Total</th>
                     <th>Estatus</th>
                     <th>Porcentaje</th>
@@ -288,18 +288,11 @@
                             </tr>
                         </tbody>
                     </table>
-<<<<<<< Updated upstream
-                <p><b>Objetivo: </b>{{accion.objetivo}}</p>
-                <p><b>Descripción: </b>{{accion.descripcion}}</p>
-                <p><b>Categoria: </b>{{accion.categoria}}</p>
-                <p><b>Control: </b>{{accion.control}} : {{descripcionControl}}</p>
-=======
                 <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
                 <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
                 <p><b>Categoria: </b>{{accion[0].categoria}}</p>
                 <p><b>Control: </b>{{accion[0].control}}</p>
->>>>>>> Stashed changes
-                
+                <p><b>Detalles del estado: </b>{{accion[0].detalles}}</p>
             </div>
         </div>
     </div>
@@ -326,24 +319,19 @@
             "info": false,
             "language": {
                 "search": "",  // Eliminar el texto "Buscar:"
-                "searchPlaceholder": "Buscar Riesgo o Tipo",  // Establecer el marcador de posición
+                "searchPlaceholder": "Buscar Accion",  // Establecer el marcador de posición
                 "zeroRecords": "No se encontraron registros coincidentes"
             },
             "columnDefs": [
                 {
                     "orderable": false, // Deshabilitar ordenamiento
                     "searchable": true, // Permitir búsqueda
-                    "targets": [0] // Primera columna
+                    "targets": [0, 3] // Primera columna
                 },
                 {
-                    "orderable": false, // Deshabilitar ordenamiento
-                    "searchable": true, // Permitir búsqueda
-                    "targets": [1] // Primera columna
-                },
-                {
-                    "orderable": false, // Deshabilitar ordenamiento
-                    "searchable": true, // Permitir búsqueda
-                    "targets": [2] // Primera columna
+                    "orderable": true, // Deshabilitar ordenamiento
+                    "searchable": false, // Permitir búsqueda
+                    "targets": [1, 4] // Primera columna
                 },
                 {
                     "orderable": true,

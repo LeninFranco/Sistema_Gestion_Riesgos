@@ -17,9 +17,6 @@
 <div class="row">
     <h3 class="text-center">Participantes</h3>
     <div class="row pt-2">
-        <button type="button" class="btn btn-dark bg-black w-100"
-            data-bs-toggle="modal" data-bs-target="#VentanaAdd2">Añadir
-            Participante</button>
         <div class="modal fade" id="VentanaAdd2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -72,7 +69,7 @@
     </div>
     <div class="row pt-2">
         <div class="table-responsive">
-            <table class="table align-middle">
+            <table class="table table-main align-middle">
                 <thead>
                     <th>Nombre</th>
                     <th>Correo</th>
@@ -142,5 +139,42 @@
     </div>
     {% endfor %}
 </div>
+<script>
+    $(document).ready(function () {
+        $('.table-main').DataTable({
+            "lengthChange": false,
+            "paging": false,
+            "info": false,
+            "language": {
+                "search": "",  // Eliminar el texto "Buscar:"
+                "searchPlaceholder": "Buscar Participante",  // Establecer el marcador de posición
+                "zeroRecords": "No se encontraron registros coincidentes"
+            },
+            "columnDefs": [
+                {
+                    "orderable": false,
+                    "searchable": true,
+                    "targets": [0, 1, 3]
+                },
+                {
+                    "orderable": false,
+                    "searchable": false,
+                    "targets": [2, 4, -1],
+                }
+            ]
+        });
+        var addButton = $('<button type="button" class="btn btn-dark bg-black" data-bs-toggle="modal" data-bs-target="#VentanaAdd2">Añadir Participante</button>');
 
+        // Insertar el botón antes de la barra de búsqueda
+        $('.dataTables_filter').prepend(addButton);
+
+        // Ajustar manualmente el ancho del botón
+        addButton.width(200); // Ajusta el valor según sea necesario
+
+        var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
+        addButton.height(alturaBarraBusqueda - 16);
+
+        addButton.css('margin-right', '15px');
+    });
+</script>
 {% endblock %}

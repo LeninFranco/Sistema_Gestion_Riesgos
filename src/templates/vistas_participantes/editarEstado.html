@@ -41,23 +41,25 @@
                         <div class="mb-3">
                             <label class="form-label">Estado de la Acción</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="estado" value="Iniciado">
-                                <label class="form-check-label" {% if accion.estado=='Iniciado' %} checked {% endif %}>
+                                <input class="form-check-input" type="radio" name="estado" value="Iniciado" {% if
+                                    accion.estado=='Iniciado' %} checked {% endif %}>
+                                <label class="form-check-label">
                                     Iniciado</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="estado" value="En Proceso">
-                                <label class="form-check-label" {% if accion.estado=='En Proceso' %} checked {% endif
-                                    %}> En Proceso</label>
+                                <input class="form-check-input" type="radio" name="estado" value="En Proceso" {% if
+                                    accion.estado=='En Proceso' %} checked {% endif %}>
+                                <label class="form-check-label"> En Proceso</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="estado" value="En Revisión">
-                                <label class="form-check-label" {% if accion.estado=='En Revisión' %} checked {% endif
-                                    %}> En Revisión</label>
+                                <input class="form-check-input" type="radio" name="estado" value="En Revisión" {% if
+                                    accion.estado=='En Revisión' %} checked {% endif%}>
+                                <label class="form-check-label"> En Revisión</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="estado" value="Pospuesto">
-                                <label class="form-check-label" {% if accion.estado=='Pospuesto' %} checked {% endif %}>
+                                <input class="form-check-input" type="radio" name="estado" value="Pospuesto" {% if
+                                    accion.estado=='Pospuesto' %} checked {% endif %}>
+                                <label class="form-check-label">
                                     Pospuesto</label>
                             </div>
                             <div class="form-check">
@@ -73,9 +75,10 @@
                     <div class="row" id="inputRange" {% if accion.estado=='En Proceso' %} style="display: block;" {%
                         else %} style="display: none;" {% endif %}>
                         <div class="mb-3">
-                            <label class="form-label">Porcentaje de finalización de la acción</label>
+                            <label class="form-label">Porcentaje de finalización de la acción <span
+                                    id="porcentajeValor">({{accion.porcentaje}}%)</span></label>
                             <input type="range" class="form-range" name="porcentaje" min="0" max="100" step="10"
-                                value="{{accion.porcentaje}}">
+                                value="{{accion.porcentaje}}" id="rangePorcentaje">
                         </div>
                     </div>
                     <div class="row" id="inputText" {% if accion.estado=='Iniciado' or accion.estado=='En Proceso' %}
@@ -120,6 +123,8 @@
         const estadoRadios = document.querySelectorAll('input[name="estado"]');
         const inputRangeDiv = document.getElementById("inputRange");
         const inputTextDiv = document.getElementById("inputText");
+        var range = document.getElementById('rangePorcentaje');
+        var valorSpan = document.getElementById('porcentajeValor');
 
         estadoRadios.forEach(radio => {
             radio.addEventListener("change", function () {
@@ -135,6 +140,17 @@
                 }
             });
         });
+
+        // Función para actualizar el valor del span
+        function actualizarValor() {
+            valorSpan.textContent = range.value + '%';
+        }
+
+        // Actualizar el valor del span cuando el rango cambie
+        range.addEventListener('input', actualizarValor);
+
+        // Mostrar el valor inicial
+        actualizarValor();
     });
 </script>
 {% endblock %}
