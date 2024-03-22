@@ -87,7 +87,7 @@
                 </div>
             </div>
             <div class="list-group list-group-flush mx-3 mt-4">
-                <a href="/listar-planes" class="list-group-item list-group-item-action py-2 ripple"> <!-- Planes, route --> 
+                <a href="/listar-acciones" class="list-group-item list-group-item-action py-2 ripple"> <!-- Planes, route --> 
                     <i class="fas fa-file fa-fw me-3"></i><span>Acciones</span>
                 </a>
             </div>
@@ -101,7 +101,7 @@
     <!-- Sidebar -->
 
     <!-- Navbar -->
-    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light fixed-top">
+    <nav id="main-navbar" class="navbar navbar-expand-lg navbar-light fixed-top" style="background-color: #151515;">
         <!-- Container wrapper -->
         <div class="container-fluid">
             <!-- Toggle button -->
@@ -112,20 +112,20 @@
 
             <!-- Brand -->
             <div class="navbar-brand">
-                <h4 style="color: white;">RiskProtego</h4>
+                <h4 class="marca" style="color: white;">RiskProtego</h4>
             </div>
 
             <!-- Right links -->
             <ul class="navbar-nav ms-auto d-flex flex-row">
                 <li class="nav-item me-3 me-lg-0">
-                    <button class="nav-link" onclick="cambiarTema()">
+                    <button class="nav-link" onclick="cambiarTema()" style="color: white;">
                         <i class="fa-solid fa-circle-half-stroke"></i>
                     </button>
                 </li>
                 <!-- Avatar -->
                 <li class="nav-item dropdown">
                     <div class="nav-link dropdown-toggle d-flex align-items-center" id="navbarDropdownMenuLink"
-                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: white;">
                         <i class="fa-solid fa-user me-2"></i>
                         <span>{% block username %}{% endblock %}</span>
                     </div>

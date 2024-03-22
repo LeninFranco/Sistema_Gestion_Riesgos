@@ -21,7 +21,7 @@ class Accion(db.Model):
     idParticipante = db.Column(db.Integer, db.ForeignKey('Participantes.id', ondelete='CASCADE'), nullable=False)
     idRiesgo = db.Column(db.String(32), db.ForeignKey('Riesgos.idRiesgo', ondelete='CASCADE'), nullable=False)
 
-    def __init__(self, clave, nombre, descripcion, fechaIni, fechaFin, objetivo, categoria, control, porcentaje, estado, idParticipante, idRiesgo) -> None:
+    def __init__(self, clave, nombre, descripcion, fechaIni, fechaFin, objetivo, categoria, control, porcentaje, estado,detalles, idParticipante, idRiesgo) -> None:
         self.clave = clave
         self.nombre = nombre
         self.descripcion = descripcion
@@ -32,5 +32,6 @@ class Accion(db.Model):
         self.control = control
         self.porcentaje = porcentaje
         self.estado = estado
+        self.detalles = detalles
         self.idParticipante = idParticipante
         self.idRiesgo = idRiesgo
