@@ -18,7 +18,7 @@ def vistaListaParticipantes():
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     participantes_proyecto = []
     for asociacion in proyecto.usuarios_asociados:
-        participantes_proyecto.append((asociacion.usuario, asociacion.estado))
+        participantes_proyecto.append((asociacion.usuario, asociacion.estado, asociacion.id, asociacion.acciones))
     return render_template('participantes/listaParticipantes.html', usuario=usuario, participantes_proyecto=participantes_proyecto)
 
 @participantes.route('/get_participantes', methods=['GET'])
@@ -85,6 +85,25 @@ def añadirParticipante():
             flash("danger")
             flash("No existe un participante con el correo que ingresó")
         return redirect(url_for('participantes.vistaListaParticipantes'))
+
+@participantes.route('/editar-estado-participante', methods=['POST'])
+def editarEstadoParticipante():
+    if request.method == 'POST':
+        idParticipante = request.form['idParticipante']
+        participante = Participantes.query.filter_by(id=idParticipante).first()
+        estado = request.form['estado']
+        if not participante.estado == estado:
+            if estado == 'Suspendido':
+                for accion in participante.acciones:
+                    db.session.delete(accion)
+                participante.estado = 'Suspendido'
+            else:
+                participante.estado = 'Activo'
+            db.session.commit()
+            flash("success")
+            flash("El estado del participante ha sido cambiado correctamente")
+        return redirect(url_for('participantes.vistaListaParticipantes'))
+
 
 @participantes.route('/expulsar-participante/<string:idParticipante>')
 def expulsarParticipante(idParticipante):

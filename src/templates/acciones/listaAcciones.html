@@ -292,7 +292,9 @@
                 <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
                 <p><b>Categoria: </b>{{accion[0].categoria}}</p>
                 <p><b>Control: </b>{{accion[0].control}}</p>
-                <p><b>Detalles del estado: </b>{{accion[0].detalles}}</p>
+                {% if accion[0].detalles %}
+                    <p><b>Detalles del estado: </b>{{accion[0].detalles}}</p>
+                {% endif %}
             </div>
         </div>
     </div>

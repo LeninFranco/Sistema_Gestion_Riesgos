@@ -363,7 +363,8 @@ def vistaListaAcciones():
     participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
     participantes_proyecto = []
     for asociacion in proyecto.usuarios_asociados:
-        participantes_proyecto.append((asociacion.usuario, asociacion.estado))
+        if not asociacion.estado == 'Suspendido':
+            participantes_proyecto.append((asociacion.usuario, asociacion.estado))
     usuarios_listado = []
     for participante in participantes_jefe:
         if participante in [x[0] for x in participantes_proyecto]:
@@ -409,10 +410,10 @@ def vistaModificacionAccion(idAccion):
     activos = proyecto.activos
     participantes_proyecto = []
     participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
-    participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
     participantes_proyecto = []
     for asociacion in proyecto.usuarios_asociados:
-        participantes_proyecto.append((asociacion.usuario, asociacion.estado))
+        if not asociacion.estado == 'Suspendido':
+            participantes_proyecto.append((asociacion.usuario, asociacion.estado))
     usuarios_listado = []
     for participante in participantes_jefe:
         if participante in [x[0] for x in participantes_proyecto]:
