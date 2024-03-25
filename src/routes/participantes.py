@@ -2,6 +2,7 @@ from flask import Blueprint, session, redirect, url_for, render_template, reques
 from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
 from src.models.responsables import Participantes
+from src.models.acciones import Accion
 from src.utils.db import db
 
 participantes = Blueprint('participantes', __name__)
@@ -95,7 +96,7 @@ def editarEstadoParticipante():
         if not participante.estado == estado:
             if estado == 'Suspendido':
                 for accion in participante.acciones:
-                    db.session.delete(accion)
+                    accion.idParticipante = None
                 participante.estado = 'Suspendido'
             else:
                 participante.estado = 'Activo'
@@ -111,6 +112,9 @@ def expulsarParticipante(idParticipante):
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     asociacion = Participantes.query.filter_by(usuario = participante, proyecto=proyecto).first()
     db.session.delete(asociacion)
+    acciones = Accion.query.filter_by(idParticipante=asociacion.id).all()
+    for accion in acciones:
+        accion.idParticipante = None
     db.session.commit()
     flash("success")
     flash("El participante ha sido expulsado del proyecto")

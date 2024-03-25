@@ -14,7 +14,7 @@
 {% endif %}
 {% endwith %}
 <div class="row pt-2">
-    <h2>Participantes</h2>
+    <h2>Participantes del Proyecto</h2>
 </div>
 <div class="row pt-2">
     <div class="modal fade" id="VentanaAdd2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -215,7 +215,7 @@
         $.ajax({ url: '/get_participantes' }).done(function (data) {
             $('#email_auto').autocomplete({
                 source: data,
-                minLength: 2
+                minLength: 1
             });
         });
     });

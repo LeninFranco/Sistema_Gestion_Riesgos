@@ -32,7 +32,7 @@ class Riesgo(db.Model):
     impactoReputacion = db.Column(db.Integer, nullable=False)
     impactoLegal = db.Column(db.Integer, nullable=False)
     impactoUsuarios = db.Column(db.Integer, nullable=False)
-    acciones = db.relationship('Accion', backref='riesgo', cascade='all, delete-orphan')
+    acciones = db.relationship('Accion', backref='riesgo')
 
     def __init__(self, clave, nombre, descripcion, tipoRiesgo, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios):
         self.clave = clave

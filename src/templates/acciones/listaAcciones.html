@@ -273,7 +273,11 @@
             </div>
             <div class="modal-body text-justify">
                 <p><b>Porcentaje: </b>{{accion[0].porcentaje}}</p>
+                {% if not accion[1].idParticipante is none %}
                 <p><b>Responsable: </b>{{accion[1].nombre}} - {{accion[1].departamento}}</p>
+                {% else %}
+                <p><b>Responsable: Sin Asignar</p>
+                {% endif %}
                 <table class="table">
                     <thead>
                         <th>Fecha Inicio</th>

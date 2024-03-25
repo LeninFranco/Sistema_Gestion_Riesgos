@@ -11,4 +11,4 @@ class Participantes(db.Model):
     usuario = db.relationship('Usuario', backref='proyectos_asociados')
     proyecto = db.relationship('Proyecto', backref='usuarios_asociados')
     estado = db.Column(db.String(10))
-    acciones = db.relationship('Accion', backref='participante', cascade='all, delete-orphan')
+    acciones = db.relationship('Accion', backref='participante')

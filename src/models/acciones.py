@@ -18,8 +18,9 @@ class Accion(db.Model):
     porcentaje = db.Column(db.Float, nullable=False)
     estado = db.Column(db.String(20), nullable=False)
     detalles = db.Column(db.String(100), nullable=True)
-    idParticipante = db.Column(db.Integer, db.ForeignKey('Participantes.id', ondelete='CASCADE'), nullable=False)
-    idRiesgo = db.Column(db.String(32), db.ForeignKey('Riesgos.idRiesgo', ondelete='CASCADE'), nullable=False)
+    enTiempo = db.Column(db.Integer, nullable=True)
+    idParticipante = db.Column(db.Integer, db.ForeignKey('Participantes.id'))
+    idRiesgo = db.Column(db.String(32), db.ForeignKey('Riesgos.idRiesgo'), nullable=False)
 
     def __init__(self, clave, nombre, descripcion, fechaIni, fechaFin, objetivo, categoria, control, porcentaje, estado,detalles, idParticipante, idRiesgo) -> None:
         self.clave = clave
@@ -33,5 +34,6 @@ class Accion(db.Model):
         self.porcentaje = porcentaje
         self.estado = estado
         self.detalles = detalles
+        self.enTiempo = 1
         self.idParticipante = idParticipante
         self.idRiesgo = idRiesgo

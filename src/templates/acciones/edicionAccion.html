@@ -67,7 +67,11 @@
                                 title="Participante del proyecto que se encargará de revisar el desarrollo de la acción"></i>
                     <select name="idUsuario" class="form-select" style="white-space: pre-line;" required>
                         {% for responsable in usuarios_listado %}
-                        <option value="{{responsable.idUsuario}}">{{responsable.nombre}} - {{responsable.departamento}}</option>
+                        {% if accion.participante.idUsuario == responsable.idUsuario %}
+                            <option value="{{responsable.idUsuario}}" selected>{{responsable.nombre}} - {{responsable.departamento}}</option>
+                        {% else %}
+                            <option value="{{responsable.idUsuario}}">{{responsable.nombre}} - {{responsable.departamento}}</option>
+                        {% endif %}
                         {% endfor %}
                     </select>
                 </div>
