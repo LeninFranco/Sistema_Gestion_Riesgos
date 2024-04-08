@@ -1,0 +1,201 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row pt-5" id="alertRow">
+    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+        {{messages[1]}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="row pt-2">
+    <h2>Acciones sin asignar Responsable</h2>
+</div>
+
+<div class="row pt-2">
+    <div class="table-responsive">
+        <table class="table table-main align-middle">
+            <thead>
+                <tr>
+                    <th>Clave</th>
+                    <th>Fecha Fin</th>
+                    <th class="custom-sort">Umbral Total</th>
+                    <th>Estatus</th>
+                    <th>Porcentaje</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for accion in acciones %}
+                <tr>
+                    <td>{{ accion[0].clave }}</td>
+                    <td>{{ accion[0].fechaFin }}</td>
+                    {% for clave in dictRiesgos.keys() %}
+                    {% if clave == accion[1].clave %}
+                    {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}
+                    <td class="bg-info">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Bajo' %}
+                    <td class="bg-success">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Medio' %}
+                    <td style="background-color: rgb(255, 214, 31); color: black;">{{
+                        dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Alto' %}
+                    <td style="background-color: rgb(255, 145, 0); color: black;">{{ dictRiesgos[clave]['activos'][0][3]
+                        }}</td>
+                    {% else %}
+                    <td class="bg-danger">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% endif %}
+                    {% endif %}
+                    {% endfor %}
+
+                    <td>{{ accion[0].estado }}</td>
+                    <td>{{ accion[0].porcentaje }}</td>
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{ accion[0].idAccion }}"><i class="fa fa-eye"></i></button>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{accion[0].idAccion}}_E"><i
+                                class="fa fa-people-group"></i></button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion[0].idAccion}}_E" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Asignar a un responsable</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <div class="row pt-1">
+                    <form action="/asignar-participante" method="post">
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="hidden" name="idAccion" class="form-control" value="{{accion[0].idAccion}}"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Estado del participante</label>
+                                <select name="responsable" class="form-select" style="white-space: pre-line;" required>
+                                    {% for responsable in usuarios_listado %}
+                                    <option value="{{responsable.idUsuario}}">{{responsable.nombre}} -
+                                        {{responsable.departamento}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-dark bg-black w-100">Asignar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion[0].idAccion}}" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la Accion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <p><b>Porcentaje: </b>{{accion[0].porcentaje}}</p>
+                <table class="table">
+                    <thead>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Final</th>
+                    </thead>
+                    <tbody>
+                    <tbody>
+                        <tr>
+                            <td class=""> {{ accion[0].fechaIni }}</td>
+                            <td class=""> {{ accion[0].fechaFin }}</td>
+                            </li>
+                        </tr>
+                    </tbody>
+                </table>
+                <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
+                <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
+                <p><b>Categoria: </b>{{accion[0].categoria}}</p>
+                <p><b>Control: </b>{{accion[0].control}}</p>
+                {% if accion[0].detalles %}
+                <p><b>Detalles del estado: </b>{{accion[0].detalles}}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+    $(document).ready(function () {
+        var customSortType = $.fn.dataTable.ext.type.order['custom-sort'];
+        var order = { 'Insignificante': 1, 'Bajo': 2, 'Medio': 3, 'Alto': 4, 'Crítico': 5 };
+
+        $.fn.dataTable.ext.type.order['custom-sort-asc'] = function (a, b) {
+            return order[a] - order[b];
+        };
+
+        $.fn.dataTable.ext.type.order['custom-sort-desc'] = function (a, b) {
+            return order[b] - order[a];
+        };
+
+        $('.table-main').DataTable({
+            "lengthChange": false,
+            "paging": false,
+            "info": false,
+            "language": {
+                "search": "",  // Eliminar el texto "Buscar:"
+                "searchPlaceholder": "Buscar Accion",  // Establecer el marcador de posición
+                "zeroRecords": "No se encontraron registros coincidentes"
+            },
+            "columnDefs": [
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [0, 3] // Primera columna
+                },
+                {
+                    "orderable": true, // Deshabilitar ordenamiento
+                    "searchable": false, // Permitir búsqueda
+                    "targets": [1, 4] // Primera columna
+                },
+                {
+                    "orderable": true,
+                    "searchable": false, // Deshabilitar búsqueda
+                    "targets": "custom-sort",
+                    "type": "custom-sort" // Usar el tipo de datos personalizado para la ordenación
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": false, // Deshabilitar búsqueda
+                    "targets": [-1] // Última columna
+                }
+            ]
+        });
+    });
+</script>
+{% endblock %}

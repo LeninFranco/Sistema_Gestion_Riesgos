@@ -445,7 +445,7 @@ def vistaModificacionAccion(idAccion):
     
     
     descripcionControl = controlesISO27001[accion.categoria][accion.control]
-    return render_template('acciones/edicionAccion.html', accion = accion ,usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto, descripcionControl = descripcionControl)
+    return render_template('acciones/edicionAccion.html', accion = accion ,usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, descripcionControl = descripcionControl)
 
 @acciones.route('/anadir-accion', methods=['POST'])
 def añadirAccion():
@@ -537,6 +537,55 @@ def eliminarRiesgo(idAccion):
     flash('danger')
     flash('La acción fue eliminada exitosamente') 
     return redirect(url_for('acciones.vistaListaAcciones'))
+
+@acciones.route('/listar-sin-asignar')
+def vistaListaAccionesSinAsignar():
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
+    participantes_proyecto = []
+    for asociacion in proyecto.usuarios_asociados:
+        if not asociacion.estado == 'Suspendido':
+            participantes_proyecto.append((asociacion.usuario, asociacion.estado))
+    usuarios_listado = []
+    for participante in participantes_jefe:
+        if participante in [x[0] for x in participantes_proyecto]:
+            usuarios_listado.append(participante)
+    dictRiesgos = {}
+    for activo in activos:
+        for asociacion in activo.riesgos_asociados:
+            if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                dictRiesgos[asociacion.riesgo.clave] = {
+                    'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                    'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                }
+    acciones = []
+    for clave in dictRiesgos.keys():
+        for accion in dictRiesgos[clave]['riesgo'].acciones:
+            if accion.idParticipante == None:
+                risk = Riesgo.query.filter_by(idRiesgo = accion.idRiesgo).first()
+                acciones.append(((accion,risk)))
+    return render_template('acciones/listaAccionesSinA.html', usuario=usuario, usuarios_listado=usuarios_listado, acciones=acciones, dictRiesgos = dictRiesgos)
+
+@acciones.route('/asignar-participante', methods=['POST'])
+def asignarNuevoParticipante():
+    if request.method == 'POST':
+        idAccion = request.form['idAccion']
+        idUsuario = request.form['responsable']
+        accion = Accion.query.filter_by(idAccion=idAccion).first()
+        Participante = Participantes.query.filter_by(idUsuario=idUsuario, idProyecto=session['proyecto_id']).first()
+        accion.idParticipante = Participante.id
+        db.session.commit()
+        flash('success')
+        flash('Se ha asignado un nuevo responsable a la acción') 
+        return redirect(url_for('acciones.vistaListaAccionesSinAsignar'))
 
 def obtenerProbabilidad(riesgo) -> float:
     amenazaRiesgo = (riesgo.nivelHabilidad + riesgo.motivacion + riesgo.oportunidad + riesgo.tamaño)/4

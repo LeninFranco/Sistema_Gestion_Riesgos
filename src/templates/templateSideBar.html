@@ -87,9 +87,21 @@
                 </div>
             </div>
             <div class="list-group list-group-flush mx-3 mt-4">
-                <a href="/listar-acciones" class="list-group-item list-group-item-action py-2 ripple"> <!-- Planes, route --> 
+                <div class="list-group-item list-group-item-action py-2 ripple" data-bs-toggle="collapse"
+                    data-bs-target="#submenuPlanes" aria-expanded="false">
                     <i class="fas fa-file fa-fw me-3"></i><span>Acciones</span>
-                </a>
+                </div>
+                <div class="collapse list-group list-group-flush" id="submenuPlanes">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item list-group-item-action py-2 ripple">
+                            <a href="/listar-acciones" class="text-light"
+                                style="text-decoration: none;"><span>Listado</span></a>
+                        </li>
+                        <li class="list-group-item list-group-item-action py-2 ripple">
+                            <a href="/listar-sin-asignar" class="text-light" style="text-decoration: none;"><span>Sin Asignar</span></a>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="list-group list-group-flush mx-3 mt-4">
                 <a href="/regresar-proyectos" class="list-group-item list-group-item-action py-2 ripple">
