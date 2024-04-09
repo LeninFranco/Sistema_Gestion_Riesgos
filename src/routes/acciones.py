@@ -457,6 +457,7 @@ def añadirAccion():
             descripcion = request.form['descripcion']
             fechaIni = request.form['fechaIni']
             fechaFin = request.form['fechaFin']
+            fechaAviso = request.form['fechaAviso']
             objetivo = request.form['objetivo']
             categoria = request.form['categoria']
             control = request.form['control']
@@ -474,6 +475,7 @@ def añadirAccion():
                 fechaIni=datetime.strptime(fechaIni, '%Y-%m-%d').date(),
                 fechaFin=datetime.strptime(fechaFin, '%Y-%m-%d').date(),
                 objetivo=objetivo,
+                fechaAviso=datetime.strptime(fechaAviso, '%Y-%m-%d').date(),
                 categoria = categoria,
                 control = control,
                 porcentaje = float(0),
@@ -498,6 +500,7 @@ def actualizarAccion():
         descripcion = request.form['descripcion']
         fechaIniStr = request.form['fechaIni']
         fechaFinStr = request.form['fechaFin']
+        fechaAviso = request.form['fechaAviso']
         fechaIni = datetime.strptime(fechaIniStr, '%Y-%m-%d')
         fechaFin = datetime.strptime(fechaFinStr, '%Y-%m-%d')
         objetivo = request.form['objetivo']
@@ -514,8 +517,9 @@ def actualizarAccion():
         acc.clave=clave
         acc.nombre=nombre
         acc.descripcion=descripcion
-        acc.fechaIni=fechaIni
-        acc.fechaFin=fechaFin
+        acc.fechaIni=fechaIni.date()
+        acc.fechaFin=fechaFin.date()
+        acc.fechaAviso=datetime.strptime(fechaAviso, '%Y-%m-%d').date()
         acc.objetivo=objetivo
         acc.categoria=categoria
         acc.control=control

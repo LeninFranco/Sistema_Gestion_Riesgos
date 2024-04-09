@@ -134,6 +134,13 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Notificacion</label>
+                                <input id="fechaAviso" type="date" name="fechaAviso" class="form-control">
+                            </div>
+                        </div>
+
                         <hr>
 
                         <script>
@@ -200,6 +207,20 @@
                                     this.value = ''; // Limpiar el valor
                                 }
                             });
+
+
+                            document.getElementById('fechaAviso').addEventListener('change', function () {
+                                // Obtener el valor de la fecha de inicio y de fin
+                                var fechaFin = new Date(document.getElementById('fechaFin').value);
+                                var fechaAviso = new Date(this.value);
+
+                                // Validar que la fecha de fin sea posterior a la fecha de inicio
+                                if (fechaAviso >= fechaFin) {
+                                    alert('La fecha de notificacion debe ser antes a la fecha de fin');
+                                    this.value = ''; // Limpiar el valor
+                                }
+                            });
+
                         </script>
 
                         <div class="row">
@@ -300,6 +321,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <p><b>Fecha de Notificacion: </b>{{accion[0].fechaAviso}}</p>
                 <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
                 <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
                 <p><b>Categoria: </b>{{accion[0].categoria}}</p>
