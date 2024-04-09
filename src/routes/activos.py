@@ -4,6 +4,7 @@ from src.models.usuarios import Usuario
 from src.models.proyectos import Proyecto
 from src.models.activos import Activo
 from src.models.activos_riesgos import ActivosRiesgos
+from src.models.historialActivos import HistorialActivo
 from datetime import datetime
 
 activos = Blueprint('activos', __name__)
@@ -253,7 +254,62 @@ def evaluacionActivos():
         integridad = int(request.form['integridad'])
         a = Activo.query.filter_by(idActivo=idActivo).first()
         a.evaluarActivo(confidencialidad, disponibilidad, integridad)
+        for asociacion in a.riesgos_asociados:
+            probabilidadRiesgo = obtenerProbabilidad(asociacion.riesgo)
+            impactoRiesgoActivo = obtenerImpacto(asociacion.riesgo, a)
+            asociacion.probabilidad = probabilidadRiesgo
+            asociacion.impacto = impactoRiesgoActivo
+            asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
+            asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
         db.session.commit()
         flash('success')
         flash('El activo ha sido evaluado correctamente')
         return redirect(url_for('activos.vistaListaEvaluaciones'))
+
+def definirUmbral(factor: float) -> str:
+    if factor > 0 and factor < 3:
+        return "Bajo"
+    if factor >= 3 and factor < 6:
+        return "Medio"
+    if factor >= 6 and factor <= 9:
+        return "Alto"
+
+def obtenerProbabilidad(riesgo) -> float:
+    amenazaRiesgo = (riesgo.nivelHabilidad + riesgo.motivacion + riesgo.oportunidad + riesgo.tamaño)/4
+    vulnerabilidadRiesgo = (riesgo.facilidadDescubrimiento + riesgo.facilidadExplotacion + riesgo.conciencia + riesgo.deteccionIntrusiones)/4
+    prob = (amenazaRiesgo + vulnerabilidadRiesgo)/2
+    return prob
+
+def obtenerImpacto(riesgo, activo) -> float:
+    impactoEmpresarialRiesgo = (riesgo.impactoFinanciero + riesgo.impactoReputacion + riesgo.impactoLegal + riesgo.impactoUsuarios)/4
+    impactoTecnicoActivo = (activo.sensibilidad)/3
+    imp = (impactoEmpresarialRiesgo + impactoTecnicoActivo)/2
+    return imp
+
+def obtenerTotal(probabildad: float, impacto: float) -> float:
+    return probabildad * impacto
+
+def obtenerUmbral(probabilidad: float, impacto: float) -> str:
+    umbralProb = definirUmbral(probabilidad)
+    umbralImp = definirUmbral(impacto)
+    if umbralImp == 'Bajo' and umbralProb == 'Bajo':
+            umbral = 'Insignificante'
+    elif umbralImp == 'Bajo' and umbralProb == 'Medio':
+        umbral = 'Bajo'
+    elif umbralImp == 'Bajo' and umbralProb == 'Alto':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Bajo':
+        umbral = 'Bajo'
+    elif umbralImp == 'Medio' and umbralProb == 'Medio':
+        umbral = 'Medio'
+    elif umbralImp == 'Medio' and umbralProb == 'Alto':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Bajo':
+        umbral = 'Medio'
+    elif umbralImp == 'Alto' and umbralProb == 'Medio':
+        umbral = 'Alto'
+    elif umbralImp == 'Alto' and umbralProb == 'Alto':
+        umbral = 'Crítico'
+    else:
+        umbral = 'Sin umbral'
+    return umbral

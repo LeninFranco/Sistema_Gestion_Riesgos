@@ -25,6 +25,7 @@
                 <tr>
                     <th>Clave</th>
                     <th>Fecha Fin</th>
+                    <th>Clave Riesgo</th>
                     <th class="custom-sort">Umbral Total</th>
                     <th>Estatus</th>
                     <th>Porcentaje</th>
@@ -36,6 +37,7 @@
                 <tr>
                     <td>{{ accion[0].clave }}</td>
                     <td>{{ accion[0].fechaFin }}</td>
+                    <td>{{ accion[1].clave }}</td>
                     {% for clave in dictRiesgos.keys() %}
                     {% if clave == accion[1].clave %}
                     {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}

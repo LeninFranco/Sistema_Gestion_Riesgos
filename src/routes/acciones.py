@@ -7,6 +7,7 @@ from src.models.riesgo import Riesgo
 from src.models.responsables import Participantes
 from src.models.activos_riesgos import ActivosRiesgos
 from src.models.acciones import Accion
+from src.models.historialAcciones import HistorialAccion
 from datetime import datetime
 
 acciones = Blueprint('acciones', __name__)

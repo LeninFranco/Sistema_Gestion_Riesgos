@@ -1,5 +1,6 @@
 from src.utils.db import db
 from src.models.acciones import Accion
+from src.models.historialRiesgos import HistorialRiesgo
 from uuid import uuid4
 
 def getDefaultID() -> str:
@@ -20,10 +21,12 @@ class Riesgo(db.Model):
     nombre = db.Column(db.String(45), nullable=False)
     descripcion = db.Column(db.String(100), nullable=False)
     tipoRiesgo = db.Column(db.String(20), nullable=False)
+    amenaza = db.Column(db.String(45), nullable=False)
     nivelHabilidad = db.Column(db.Integer, nullable=False)
     motivacion = db.Column(db.Integer, nullable=False)
     oportunidad = db.Column(db.Integer, nullable=False)
     tamaño = db.Column(db.Integer, nullable=False)
+    vulnerabilidad = db.Column(db.String(45), nullable=False)
     facilidadDescubrimiento = db.Column(db.Integer, nullable=False)
     facilidadExplotacion = db.Column(db.Integer, nullable=False)
     conciencia = db.Column(db.Integer, nullable=False)
@@ -33,16 +36,19 @@ class Riesgo(db.Model):
     impactoLegal = db.Column(db.Integer, nullable=False)
     impactoUsuarios = db.Column(db.Integer, nullable=False)
     acciones = db.relationship('Accion', backref='riesgo')
+    historial = db.relationship('HistorialRiesgo', backref='riesgo', cascade='all, delete-orphan')
 
-    def __init__(self, clave, nombre, descripcion, tipoRiesgo, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios):
+    def __init__(self, clave, nombre, descripcion, tipoRiesgo, amenaza, nivelHabilidad, motivacion, oportunidad, tamaño, vulnerabilidad,facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios):
         self.clave = clave
         self.nombre = nombre
         self.descripcion = descripcion
         self.tipoRiesgo = tipoRiesgo
+        self.amenaza = amenaza
         self.nivelHabilidad = nivelHabilidad
         self.motivacion = motivacion
         self.oportunidad = oportunidad
         self.tamaño = tamaño
+        self.vulnerabilidad = vulnerabilidad 
         self.facilidadDescubrimiento = facilidadDescubrimiento
         self.facilidadExplotacion = facilidadExplotacion
         self.conciencia = conciencia

@@ -1,4 +1,5 @@
 from src.utils.db import db
+from src.models.historialActivos import HistorialActivo
 from uuid import uuid4
 
 def getDefaultID() -> str:
@@ -22,6 +23,7 @@ class Activo(db.Model):
     integridad = db.Column(db.Integer, nullable=False)
     sensibilidad = db.Column(db.Integer, nullable=False)
     idProyecto = db.Column(db.String(32), db.ForeignKey('Proyectos.idProyecto', ondelete='CASCADE'), nullable=False)
+    historial = db.relationship('HistorialActivo', backref='activo', cascade='all, delete-orphan')
 
     def __init__(self, clave, nombre, descripcion, propietario, ubicacion, frecMantenimiento, frecRenovacion, fechaAdquisicion, tipoActivo, estatus, idProyecto) -> None:
         self.clave = clave

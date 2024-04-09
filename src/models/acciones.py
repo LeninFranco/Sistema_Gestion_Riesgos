@@ -1,4 +1,5 @@
 from src.utils.db import db
+from src.models.historialAcciones import HistorialAccion
 from uuid import uuid4
 
 def getDefaultID() -> str:
@@ -19,10 +20,12 @@ class Accion(db.Model):
     estado = db.Column(db.String(20), nullable=False)
     detalles = db.Column(db.String(100), nullable=True)
     enTiempo = db.Column(db.Integer, nullable=True)
+    fechaAviso = db.Column(db.Date, nullable=False)
     idParticipante = db.Column(db.Integer, db.ForeignKey('Participantes.id'))
     idRiesgo = db.Column(db.String(32), db.ForeignKey('Riesgos.idRiesgo'), nullable=False)
+    historial = db.relationship('HistorialAccion', backref='accion', cascade='all, delete-orphan')
 
-    def __init__(self, clave, nombre, descripcion, fechaIni, fechaFin, objetivo, categoria, control, porcentaje, estado,detalles, idParticipante, idRiesgo) -> None:
+    def __init__(self, clave, nombre, descripcion, fechaIni, fechaFin, objetivo, categoria, control, porcentaje, estado,detalles, fechaAviso, idParticipante, idRiesgo) -> None:
         self.clave = clave
         self.nombre = nombre
         self.descripcion = descripcion
@@ -35,5 +38,6 @@ class Accion(db.Model):
         self.estado = estado
         self.detalles = detalles
         self.enTiempo = 1
+        self.fechaAviso = fechaAviso
         self.idParticipante = idParticipante
         self.idRiesgo = idRiesgo

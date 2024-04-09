@@ -5,6 +5,7 @@ from src.models.proyectos import Proyecto
 from src.models.activos import Activo
 from src.models.riesgo import Riesgo
 from src.models.activos_riesgos import ActivosRiesgos
+from src.models.historialRiesgos import HistorialRiesgo
 from datetime import datetime
 
 riesgos = Blueprint('riesgos', __name__)
@@ -284,6 +285,18 @@ estatus = [
     'Desuso'
 ]
 
+agentes_amenaza = [
+    'Hackers',
+    'Ciberdelincuentes',
+    'Estado-Nación',
+    'Empleados Descontentos o Desleales',
+    'Activistas Cibernéticos',
+    'Competidores Comerciales',
+    'Usuarios Malintencionados Internos',
+    'Bots y Botnets',
+    'Grupos de Crimen Organizado'
+]
+
 
 @riesgos.route('/listar-riesgos')
 def vistaListaRiesgos():
@@ -399,7 +412,7 @@ def actualizarRiesgo():
         clave = request.form['clave']
         nombre = request.form['nombre']
         descripcion = request.form['descripcion']
-        idTipoRiesgo = request.form['idTipoRiesgo']
+        TipoRiesgo = request.form['idTipoRiesgo']
         nivelHabilidad = request.form['nivelHabilidad']
         motivacion = request.form['motivacion']
         oportunidad = request.form['oportunidad']
@@ -416,6 +429,7 @@ def actualizarRiesgo():
         r.clave=clave
         r.nombre=nombre
         r.descripcion=descripcion
+        r.tipoRiesgo = TipoRiesgo
         r.nivelHabilidad=int(nivelHabilidad)
         r.motivacion=int(motivacion)
         r.oportunidad=int(oportunidad)
@@ -428,28 +442,15 @@ def actualizarRiesgo():
         r.impactoReputacion=int(impactoReputacion)
         r.impactoLegal=int(impactoLegal)
         r.impactoUsuarios=int(impactoUsuarios)
-        #r.idActivo=idActivo
-        #activo = Activo.query.filter_by(idActivo=idActivo).first()
-        #r.priorizarRiesgo(activo.sensibilidad)
-        db.session.commit()
-        asociaciones = []
-        asociacionesAntiguas = []
-        asociacionesAux = []
-        for activo in r.activos_asociados:
-            asociacion = ActivosRiesgos.query.filter_by(riesgo = r, activo=activo).first()
-            asociacionesAntiguas.append(asociacion)
-            asociacionesAux.append(asociacion)
 
-        for asociacion in asociacionesAntiguas:
-            db.session.delete(asociacion)
-        
-        for asociacion in asociacionesAux:
+        for asociacion in r.activos_asociados:
             probabilidadRiesgo = obtenerProbabilidad(r)
             impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
-            asociacion = ActivosRiesgos(riesgo = r, activo = asociacion.activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
-            asociaciones.append(asociacion)
-        
-        db.session.add_all(asociaciones)
+            asociacion.probabilidad = probabilidadRiesgo
+            asociacion.impacto = impactoRiesgoActivo
+            asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
+            asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
+
         db.session.commit()
 
         flash('success')

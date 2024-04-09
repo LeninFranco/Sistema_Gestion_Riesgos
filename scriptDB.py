@@ -82,6 +82,17 @@ def generarActivosRiesgos(idProyecto, subnumero):
     tipos_activo = ['Información/Documentos','Aplicaciones','Plataformas','Bases de Datos','Red/Telecomunicaciones','Intangibles','Gente/Personal','Físico']
     departamentos = ["Desarrollo de Software", "Diseño UX/UI", "Calidad de Software", "Gestión de Proyectos", "Soporte Técnico", "Redes", "Bases de Datos"]
     tipos_riesgos = ['Lógico', 'Físico', 'Organizacional']
+    agentes_amenaza = [
+    'Hackers',
+    'Ciberdelincuentes',
+    'Estado-Nación',
+    'Empleados Descontentos o Desleales',
+    'Activistas Cibernéticos',
+    'Competidores Comerciales',
+    'Usuarios Malintencionados Internos',
+    'Bots y Botnets',
+    'Grupos de Crimen Organizado'
+]
     activos = []
     riesgos = []
     asociaciones = []
@@ -123,7 +134,8 @@ def generarActivosRiesgos(idProyecto, subnumero):
         impactoReputacion = random.randint(1, 9)
         impactoLegal = random.randint(1, 9)
         impactoUsuarios = random.randint(1, 9)
-        riesgo = Riesgo(clave, nombre, descripcion, tipo, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion,conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios)
+        amenaza = random.choice(agentes_amenaza)
+        riesgo = Riesgo(clave, nombre, descripcion, tipo, amenaza, nivelHabilidad, motivacion, oportunidad, tamaño, 'Vulnerabilidad X', facilidadDescubrimiento, facilidadExplotacion,conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios)
         riesgos.append(riesgo)
 
     #Generar asociaciones
@@ -171,4 +183,4 @@ def obtenerTareasSinAsignar(idProyecto):
 
 
 with app.app_context():
-    pass
+    generarActivosRiesgos('aae39ecc16e744f3ae0038c1a31b2367', 1)
