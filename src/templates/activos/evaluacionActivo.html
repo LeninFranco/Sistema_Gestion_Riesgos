@@ -22,11 +22,13 @@
                     <div class="mb-3">
                         <label class="form-label">Descripción del Activo</label>
                         <textarea name="descripcion" cols="30" rows="10" class="form-control"
-                            placeholder="Descripción completa del activo(Sin saltos de linea)" readonly>{{activo.descripcion}}</textarea>
+                            placeholder="Descripción completa del activo(Sin saltos de linea)"
+                            readonly>{{activo.descripcion}}</textarea>
                     </div>
                     <div class="mb-3">
                         <div class="row">
-                            <label class="form-label">Confidencialidad</label>
+                            <label class="form-label"><b>Confidencialidad</b></label>
+                            <p style="text-justify: auto">Evalúa el grado de sensibilidad de la información del activo. Considera quién debe acceder a esta información y selecciona la opción que refleje el nivel de restricción necesario para protegerla.</p>
                         </div>
                         <div class="row">
                             <select name="confidencialidad" class="form-select" style="white-space: pre-line;" required>
@@ -42,7 +44,8 @@
                     </div>
                     <div class="mb-3">
                         <div class="row">
-                            <label class="form-label">Disponibilidad</label>
+                            <label class="form-label"><b>Disponibilidad</b></label>
+                            <p style="text-justify: auto;">Determina la importancia de que el activo esté siempre accesible para respaldar las operaciones. Piensa en las consecuencias de una interrupción en el acceso al activo y elige la opción que mejor se ajuste.</p>
                         </div>
                         <div class="row">
                             <select name="disponibilidad" class="form-select" style="white-space: pre-line;" required>
@@ -58,7 +61,8 @@
                     </div>
                     <div class="mb-3">
                         <div class="row">
-                            <label class="form-label">Integridad</label>
+                            <label class="form-label"><b>Integridad</b></label>
+                            <p style="text-justify: auto;">Refleja la importancia de mantener la exactitud y la integridad de la información del activo. Considera las posibles consecuencias de modificaciones no autorizadas y selecciona la opción adecuada.</p>
                         </div>
                         <div class="row">
                             <select name="integridad" class="form-select" style="white-space: pre-line;" required>

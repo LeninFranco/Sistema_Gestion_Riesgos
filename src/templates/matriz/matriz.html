@@ -248,10 +248,60 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
+                <p><b>Clave: </b>{{dictRiesgos[clave]['riesgo'].clave}}</p>
+                <p><b>Nombre: </b>{{dictRiesgos[clave]['riesgo'].nombre}}</p>
                 <p><b>Descripción: </b>{{dictRiesgos[clave]['riesgo'].descripcion}}</p>
                 <p><b>Tipo de Riesgo: </b>{{dictRiesgos[clave]['riesgo'].tipoRiesgo}}</p>
                 <p><b>Probabilidad: </b>{{ dictRiesgos[clave]['activos'][0][1] }}</p>
+                <p><b>Factores de amenaza:</b></p>
+                <table>
+                    <thead>
+                        
+                        <th>Nivel de habilidad</th>
+                        <th>Motivacion</th>
+                        <th>Oportunidad</th>
+                        <th>Tamaño</th>
+                    </thead>
+                    <tr>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].nivelHabilidad}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].motivacion}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].oportunidad}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].tamaño}}</td>
+                    </tr>
+                </table>
+                <p><b>Factores de vulnerabilidad:</b></p>
+                <table>
+                    <thead>
+                        
+                        <th>Facilidad de descubrimiento</th>
+                        <th>Facilidad de explotación</th>
+                        <th>Conciencia</th>
+                        <th>Detección de intrusiones</th>
+                    </thead>
+                    <tr>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].facilidadDescubrimiento}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].facilidadExplotacion}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].conciencia}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].deteccionIntrusiones}}</td>
+                    </tr>
+                </table>
                 <p><b>Impacto: </b>{{ dictRiesgos[clave]['activos'][0][2] }}</p>
+                <p><b>Impacto empresarial:</b></p>
+                <table>
+                    <thead>
+                        
+                        <th>Impacto Financiero</th>
+                        <th>Impacto Reputacion</th>
+                        <th>Impacto Legal</th>
+                        <th>Impacto Usuarios</th>
+                    </thead>
+                    <tr>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoFinanciero}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoReputacion}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoLegal}}</td>
+                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoUsuarios}}</td>
+                    </tr>
+                </table>
                 <p><b>Umbral Total: </b>{{ dictRiesgos[clave]['activos'][0][3] }}</p>
                 <p><b>Activos asociados: </b></p>
                 <table class="table">
