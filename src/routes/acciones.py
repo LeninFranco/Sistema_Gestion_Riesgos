@@ -631,3 +631,46 @@ def obtenerUmbral(probabilidad: float, impacto: float) -> str:
     else:
         umbral = 'Sin umbral'
     return umbral
+
+@acciones.route('/modificar-estado-accionG/<string:idAccion>')
+def vistaModificacionEstadoAccion(idAccion):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    accion = Accion.query.filter_by(idAccion = idAccion).first()
+    return render_template('acciones/editarEstadoG.html', usuario=usuario, accion=accion)
+
+@acciones.route('/actualizar-estado-accionG', methods=['POST'])
+def actualizarEstadoAccion():
+    if request.method == 'POST':
+        idAccion = request.form['idaccion']
+        accion = Accion.query.filter_by(idAccion = idAccion).first()
+        estado = request.form['estado']
+        if estado == 'Iniciado':
+            accion.porcentaje = 0.0
+            accion.estado = estado
+            accion.detalles = ''
+        elif estado == 'En Proceso':
+            accion.porcentaje = float(request.form['porcentaje'])
+            accion.estado = estado
+        elif estado == 'En Revisión':
+            accion.estado = estado
+            accion.detalles = request.form['detalles']
+        elif estado == 'Pospuesto':
+            accion.estado = estado
+            accion.detalles = request.form['detalles']
+        elif estado == 'Cancelado':
+            accion.estado = estado
+            accion.detalles = request.form['detalles']
+        elif estado == 'Finalizado':
+            accion.porcentaje = 100.00
+            accion.estado = estado
+            accion.detalles = request.form['detalles']
+        db.session.commit()
+        flash('success')
+        flash('El estado de la acción ha sido actualizada correctamente')
+        return redirect(url_for('acciones.vistaListaAcciones'))

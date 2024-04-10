@@ -328,7 +328,7 @@ def vistaListaRiesgos():
 
     for clave in dictRiesgos.keys():
         dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
-    return render_template('riesgos/listaRiesgos.html', usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    return render_template('riesgos/listaRiesgos.html', usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
 
 @riesgos.route('/modificar-riesgo/<string:idRiesgo>')
 def vistaModificacionRiesgo(idRiesgo):
@@ -341,7 +341,7 @@ def vistaModificacionRiesgo(idRiesgo):
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
-    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=riesgo.activos_asociados, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activosProyecto=proyecto.activos , factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+    return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=riesgo.activos_asociados, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activosProyecto=proyecto.activos , factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
 
 @riesgos.route('/anadir-riesgo', methods=['POST'])
 def añadirRiesgo():
@@ -351,6 +351,8 @@ def añadirRiesgo():
         descripcion = request.form['descripcion']
         idTipoRiesgo = request.form['idTipoRiesgo']
         nivelHabilidad = request.form['nivelHabilidad']
+        amenaza = request.form['amenaza']
+        vulnerabilidad = request.form['vulnerabilidad']
         motivacion = request.form['motivacion']
         oportunidad = request.form['oportunidad']
         tamaño = request.form['tamaño']
@@ -370,6 +372,8 @@ def añadirRiesgo():
             descripcion=descripcion,
             tipoRiesgo=idTipoRiesgo,
             nivelHabilidad=int(nivelHabilidad),
+            amenaza=amenaza,
+            vulnerabilidad=vulnerabilidad,
             motivacion=int(motivacion),
             oportunidad=int(oportunidad),
             tamaño=int(tamaño),
@@ -416,6 +420,8 @@ def actualizarRiesgo():
         nivelHabilidad = request.form['nivelHabilidad']
         motivacion = request.form['motivacion']
         oportunidad = request.form['oportunidad']
+        amenaza = request.form['amenaza']
+        vulnerabilidad = request.form['vulnerabilidad']
         tamaño = request.form['tamaño']
         facilidadDescubrimiento = request.form['facilidadDescubrimiento']
         facilidadExplotacion = request.form['facilidadExplotacion']
@@ -430,6 +436,8 @@ def actualizarRiesgo():
         r.nombre=nombre
         r.descripcion=descripcion
         r.tipoRiesgo = TipoRiesgo
+        r.amenaza = amenaza
+        r.vulneravilidad = vulnerabilidad
         r.nivelHabilidad=int(nivelHabilidad)
         r.motivacion=int(motivacion)
         r.oportunidad=int(oportunidad)

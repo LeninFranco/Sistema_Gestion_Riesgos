@@ -304,16 +304,34 @@
                                 })
                             </script>
 
+                            
+                                    
+                                    
                             <!-- Factores de amenaza -->
                             <div class="">
                                 <hr>
                                 <h5 class="">Factores de amenaza</h5>
+
+                                <!-- Agente de amenaza -->
+                            <div class="row">
+                                <div class="mb-3">
+                                    <label class="form-label">Agente de amenaza</label>
+                                    <!--Lista despegable-->
+                                <select name="amenaza" class="form-select" style="white-space: pre-line;"
+                                required>
+                                {% for valor in agentes_amenaza %}
+                                <option value="{{valor}}">{{valor}}</option>
+                                {% endfor %}
+                            </select>
+                            </div>
                                 <!--Nivel de habilidad-->
+                              
+                        </div>
                                 <div class="mb-3">
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Nivel de habilidad</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿Qué nivel técnico tiene este grupo de agentes de amenazas?"></i>
+                                        title="Evalúa el nivel de habilidad técnica del grupo de amenazas que podría explotar el riesgo. Selecciona la opción que mejor describa las habilidades técnicas del posible atacante en función de la descripción proporcionada."></i>
 
                                     <!--Lista despegable-->
                                     <select name="nivelHabilidad" class="form-select" style="white-space: pre-line;"
@@ -328,7 +346,7 @@
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Motivación</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿Qué motivación tiene este grupo de agentes de amenazas para encontrar y explotar esta vulnerabilidad?"></i>
+                                        title="Determina la motivación del posible atacante para explotar el riesgo. Considera el incentivo o la recompensa que podría impulsar al atacante a realizar el ataque y selecciona la opción que mejor se ajuste."></i>
 
                                     <!--Lista despegable-->
                                     <select name="motivacion" class="form-select" style="white-space: pre-line;"
@@ -343,7 +361,7 @@
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Oportunidad</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿Qué recursos y oportunidades necesita este grupo de agentes de amenazas para encontrar y explotar esta vulnerabilidad?"></i>
+                                        title="Evalúa la disponibilidad de recursos y oportunidades para llevar a cabo un ataque exitoso. Selecciona la opción que describa mejor el acceso y los recursos disponibles para el atacante en función de la descripción proporcionada."></i>
 
                                     <!--Lista despegable-->
                                     <select name="oportunidad" class="form-select" style="white-space: pre-line;"
@@ -358,7 +376,7 @@
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Tamaño</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿Qué tamaño tiene este grupo de agentes de amenazas?"></i>
+                                        title="Determina el tamaño del grupo de amenazas que podría llevar a cabo el ataque. Considera el número de individuos involucrados en el ataque y selecciona la opción que mejor represente el tamaño del grupo de ataque según la descripción proporcionada."></i>
 
                                     <!--Lista despegable-->
                                     <select name="tamaño" class="form-select" style="white-space: pre-line;" required>
@@ -368,17 +386,26 @@
                                     </select>
                                 </div>
                             </div>
-
+                                
                             <!-- Factores de vulnerabilidad -->
                             <div>
                                 <hr>
                                 <h5 class="">Factores de vulnerabilidad</h4>
+
+                                    <!-- Vulnerabilidad -->
+                                <div class="row">
+                                    <div class="mb-3">
+                                        <input type="text" name="vulnerabilidad" class="form-control" placeholder="Vulnerabilidad"
+                                            required autofocus>
+                                    </div>
+                                </div>
+
                                     <!--Facilidad descubrimiento-->
                                     <div class="mb-3">
                                         <!--Titulo de valor y tooltip-->
                                         <label class="form-label">Facilidad de descubrimiento</label>
                                         <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                            title="¿Cómo de fácil es para este grupo de agentes de amenazas descubrir esta vulnerabilidad?"></i>
+                                            title="Evalúa la dificultad para descubrir la vulnerabilidad por parte de los atacantes. Selecciona la opción que mejor describa la probabilidad de que los atacantes descubran la vulnerabilidad según la descripción proporcionada."></i>
 
                                         <!--Lista despegable-->
                                         <select name="facilidadDescubrimiento" class="form-select"
@@ -394,7 +421,7 @@
                                         <!--Titulo de valor y tooltip-->
                                         <label class="form-label">Facilidad de explotación</label>
                                         <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                            title="¿Hasta qué punto es fácil para este grupo de agentes de amenazas explotar realmente esta vulnerabilidad?"></i>
+                                            title="Determina la facilidad con la que los atacantes pueden explotar la vulnerabilidad una vez descubierta. Selecciona la opción que mejor describa la probabilidad de éxito de un ataque explotando la vulnerabilidad según la descripción proporcionada."></i>
 
                                         <!--Lista despegable-->
                                         <select name="facilidadExplotacion" class="form-select"
@@ -410,7 +437,7 @@
                                         <!--Titulo de valor y tooltip-->
                                         <label class="form-label">Conciencia</label>
                                         <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                            title="¿Hasta qué punto es conocida esta vulnerabilidad por este grupo de agentes de amenazas?"></i>
+                                            title="Evalúa el nivel de conocimiento de los atacantes sobre la vulnerabilidad. Selecciona la opción que mejor describa el grado de conocimiento de los atacantes sobre la vulnerabilidad según la descripción proporcionada."></i>
 
                                         <!--Lista despegable-->
                                         <select name="conciencia" class="form-select" style="white-space: pre-line;"
@@ -425,7 +452,7 @@
                                         <!--Titulo de valor y tooltip-->
                                         <label class="form-label">Detección de intrusiones</label>
                                         <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                            title="¿Qué probabilidades hay de que se detecte un exploit?"></i>
+                                            title="Determina la probabilidad de que un ataque sea detectado por sistemas de detección de intrusiones. Selecciona la opción que mejor describa la probabilidad de que un ataque sea detectado según la descripción proporcionada."></i>
 
                                         <!--Lista despegable-->
                                         <select name="deteccionIntrusiones" class="form-select"
@@ -455,7 +482,7 @@
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Daño financiero</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿A cuánto ascienden los daños económicos derivados de un exploit?"></i>
+                                        title="Evalúa el impacto financiero que podría tener la explotación del riesgo en la organización. Selecciona la opción que mejor describa el nivel de daño financiero potencial según la descripción proporcionada."></i>
 
                                     <!--Lista despegable-->
                                     <select name="impactoFinanciero" class="form-select" style="white-space: pre-line;"
@@ -472,7 +499,7 @@
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Daño a la reputación</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿Supondría un exploit un daño para la reputación que perjudicaría a la empresa?"></i>
+                                        title="Determina el impacto que la explotación del riesgo podría tener en la reputación de la organización. Selecciona la opción que mejor describa el nivel de daño a la reputación potencial según la descripción proporcionada."></i>
 
                                     <!--Lista despegable-->
                                     <select name="impactoReputacion" class="form-select" style="white-space: pre-line;"
@@ -489,7 +516,7 @@
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Incumplimiento legal</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿Qué grado de exposición introduce el incumplimiento?"></i>
+                                        title="Evalúa las consecuencias legales y regulatorias que podrían resultar de la explotación del riesgo. Selecciona la opción que mejor describa el nivel de incumplimiento potencial según la descripción proporcionada."></i>
 
                                     <!--Lista despegable-->
                                     <select name="impactoLegal" class="form-select" style="white-space: pre-line;"
@@ -505,7 +532,7 @@
                                     <!--Titulo de valor y tooltip-->
                                     <label class="form-label">Violación a la privacidad</label>
                                     <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                        title="¿Cuánta información personal identificable podría divulgarse?"></i>
+                                        title="Determina el alcance de la divulgación de información personal que podría resultar de la explotación del riesgo. Selecciona la opción que mejor describa el nivel de violación de la privacidad potencial según la descripción proporcionada."></i>
 
                                     <!--Lista despegable-->
                                     <select name="impactoUsuarios" class="form-select" style="white-space: pre-line;"
