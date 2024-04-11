@@ -851,9 +851,21 @@
                 <p><b>Nombre: </b>{{dictRiesgos[clave]['riesgo'].nombre}}</p>
                 <p><b>Descripción: </b>{{dictRiesgos[clave]['riesgo'].descripcion}}</p>
                 <p><b>Tipo de Riesgo: </b>{{dictRiesgos[clave]['riesgo'].tipoRiesgo}}</p>
-                <p><b>Probabilidad: </b>{{ dictRiesgos[clave]['activos'][0][1] }}</p>
-                <p><b>Factores de amenaza:</b></p>
-                <table>
+                
+                
+                {% if dictRiesgos[clave]['activos'][0][1] == "Alto" %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                    style="pointer-events: none;"> Alta </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][1] ==  "Medio" %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                    style="pointer-events: none;"> Media </button></p>
+                {% else %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                    style="pointer-events: none;"> Baja </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Probabilidad - Factores de amenaza</b></h5>
+                <p><b>Agente de amenaza:</b> {{ dictRiesgos[clave]['riesgo'].amenaza}}</p>
+                <table class="table table-responsive">
                     <thead>
                         
                         <th style="text-align: center;padding: 10px;">Nivel de habilidad</th>
@@ -868,8 +880,10 @@
                         <td class=""style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].tamaño}}</td>
                     </tr>
                 </table>
-                <p><b>Factores de vulnerabilidad:</b></p>
-                <table>
+                
+                <h5 class="text-center"><b>Probabilidad - Factores de vulnerabilidad</b></h5>
+                <p><b>Vulnerabilidad:</b> {{ dictRiesgos[clave]['riesgo'].vulnerabilidad}}</p>
+                <table class="table table-responsive">
                     <thead>
                         
                         <th style="text-align: center;padding: 10px;">Facilidad de descubrimiento</th>
@@ -884,9 +898,19 @@
                         <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].deteccionIntrusiones}}</td>
                     </tr>
                 </table>
-                <p><b>Impacto: </b>{{ dictRiesgos[clave]['activos'][0][2] }}</p>
-                <p><b>Impacto empresarial:</b></p>
-                <table>
+                
+                {% if dictRiesgos[clave]['activos'][0][2] == "Alto" %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                    style="pointer-events: none;"> Alto </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][2] ==  "Medio" %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                    style="pointer-events: none;"> Medio </button></p>
+                {% else %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                    style="pointer-events: none;"> Bajo </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Impacto - Impacto empresarial</b></h5>
+                <table class="table table-responsive">
                     <thead>
                         
                         <th style="text-align: center;padding: 10px;">Impacto Financiero</th>
@@ -901,7 +925,18 @@
                         <td class=""style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].impactoUsuarios}}</td>
                     </tr>
                 </table>
-                <p><b>Umbral Total: </b>{{ dictRiesgos[clave]['activos'][0][3] }}</p>
+
+                {% if dictRiesgos[clave]['activos'][0][3] == "Alto" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                    style="pointer-events: none;"> Alto </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][3] ==  "Medio" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                    style="pointer-events: none;"> Medio </button></p>
+                {% else %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                    style="pointer-events: none;"> Bajo </button></p>
+                {% endif %}
+
                 <p><b>Activos asociados: </b></p>
                 <table class="table">
                     <thead>

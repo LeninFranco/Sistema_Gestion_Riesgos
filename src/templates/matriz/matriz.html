@@ -248,61 +248,97 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
+                
                 <p><b>Clave: </b>{{dictRiesgos[clave]['riesgo'].clave}}</p>
                 <p><b>Nombre: </b>{{dictRiesgos[clave]['riesgo'].nombre}}</p>
                 <p><b>Descripción: </b>{{dictRiesgos[clave]['riesgo'].descripcion}}</p>
                 <p><b>Tipo de Riesgo: </b>{{dictRiesgos[clave]['riesgo'].tipoRiesgo}}</p>
-                <p><b>Probabilidad: </b>{{ dictRiesgos[clave]['activos'][0][1] }}</p>
-                <p><b>Factores de amenaza:</b></p>
-                <table>
+                
+                
+                {% if dictRiesgos[clave]['activos'][0][1] == "Alto" %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                    style="pointer-events: none;"> Alta </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][1] ==  "Medio" %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                    style="pointer-events: none;"> Media </button></p>
+                {% else %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                    style="pointer-events: none;"> Baja </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Probabilidad - Factores de amenaza</b></h5>
+                <p><b>Agente de amenaza:</b> {{ dictRiesgos[clave]['riesgo'].amenaza}}</p>
+                <table class="table table-responsive">
                     <thead>
                         
-                        <th>Nivel de habilidad</th>
-                        <th>Motivacion</th>
-                        <th>Oportunidad</th>
-                        <th>Tamaño</th>
+                        <th style="text-align: center;padding: 10px;">Nivel de habilidad</th>
+                        <th style="text-align: center;padding: 10px;">Motivacion</th>
+                        <th style="text-align: center;padding: 10px;">Oportunidad</th>
+                        <th style="text-align: center;padding: 10px;">Tamaño</th>
                     </thead>
                     <tr>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].nivelHabilidad}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].motivacion}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].oportunidad}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].tamaño}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].nivelHabilidad}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].motivacion}}</td>
+                        <td class=""style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].oportunidad}}</td>
+                        <td class=""style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].tamaño}}</td>
                     </tr>
                 </table>
-                <p><b>Factores de vulnerabilidad:</b></p>
-                <table>
+                
+                <h5 class="text-center"><b>Probabilidad - Factores de vulnerabilidad</b></h5>
+                <p><b>Vulnerabilidad:</b> {{ dictRiesgos[clave]['riesgo'].vulnerabilidad}}</p>
+                <table class="table table-responsive">
                     <thead>
                         
-                        <th>Facilidad de descubrimiento</th>
-                        <th>Facilidad de explotación</th>
-                        <th>Conciencia</th>
-                        <th>Detección de intrusiones</th>
+                        <th style="text-align: center;padding: 10px;">Facilidad de descubrimiento</th>
+                        <th style="text-align: center;padding: 10px;">Facilidad de explotación</th>
+                        <th style="text-align: center;padding: 10px;">Conciencia</th>
+                        <th style="text-align: center;padding: 10px;">Detección de intrusiones</th>
                     </thead>
                     <tr>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].facilidadDescubrimiento}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].facilidadExplotacion}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].conciencia}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].deteccionIntrusiones}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].facilidadDescubrimiento}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].facilidadExplotacion}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].conciencia}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].deteccionIntrusiones}}</td>
                     </tr>
                 </table>
-                <p><b>Impacto: </b>{{ dictRiesgos[clave]['activos'][0][2] }}</p>
-                <p><b>Impacto empresarial:</b></p>
-                <table>
+                
+                {% if dictRiesgos[clave]['activos'][0][2] == "Alto" %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                    style="pointer-events: none;"> Alto </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][2] ==  "Medio" %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                    style="pointer-events: none;"> Medio </button></p>
+                {% else %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                    style="pointer-events: none;"> Bajo </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Impacto - Impacto empresarial</b></h5>
+                <table class="table table-responsive">
                     <thead>
                         
-                        <th>Impacto Financiero</th>
-                        <th>Impacto Reputacion</th>
-                        <th>Impacto Legal</th>
-                        <th>Impacto Usuarios</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Financiero</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Reputacion</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Legal</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Usuarios</th>
                     </thead>
                     <tr>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoFinanciero}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoReputacion}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoLegal}}</td>
-                        <td class=""> {{ dictRiesgos[clave]['riesgo'].impactoUsuarios}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].impactoFinanciero}}</td>
+                        <td class=""style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].impactoReputacion}}</td>
+                        <td class=""style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].impactoLegal}}</td>
+                        <td class=""style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].impactoUsuarios}}</td>
                     </tr>
                 </table>
-                <p><b>Umbral Total: </b>{{ dictRiesgos[clave]['activos'][0][3] }}</p>
+
+                {% if dictRiesgos[clave]['activos'][0][3] == "Alto" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                    style="pointer-events: none;"> Alto </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][3] ==  "Medio" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                    style="pointer-events: none;"> Medio </button></p>
+                {% else %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                    style="pointer-events: none;"> Bajo </button></p>
+                {% endif %}
+
                 <p><b>Activos asociados: </b></p>
                 <table class="table">
                     <thead>
@@ -312,29 +348,31 @@
                         <th>Sensibildad</th>
                     </thead>
                     <tbody>
-                        
+
                         {% for activo in dictRiesgos[clave]['activos'] %}
-                            <tr>
-                                <td><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top" 
+                        <tr>
+                            <td><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
                                     title="Descripción: {{activo[0].descripcion}}"></i></td>
-                                <td class=""> {{ activo[0].nombre }}</td> 
-                                <td>{{ activo[0].clave }}</td>  
-                                <td>
+                            <td class=""> {{ activo[0].nombre }}</td>
+                            <td>{{ activo[0].clave }}</td>
+                            <td>
                                 {% if activo[0].sensibilidad > 18 %}
-                                <button type="button" class="btn btn-sm btn-block btn-danger" style="pointer-events: none;"> Sensibilidad alta </button>
+                                <button type="button" class="btn btn-sm btn-block btn-danger"
+                                    style="pointer-events: none;"> Sensibilidad alta </button>
                                 {% elif activo[0].sensibilidad > 9 %}
-                                <button type="button" class="btn btn-sm btn-block btn-warning" style="pointer-events: none;"> Sensibilidad media </button>
+                                <button type="button" class="btn btn-sm btn-block btn-warning"
+                                    style="pointer-events: none;"> Sensibilidad media </button>
                                 {% else %}
-                                <button type="button" class="btn btn-sm btn-block btn-success" style="pointer-events: none;"> Sensibilidad baja </button>       
+                                <button type="button" class="btn btn-sm btn-block btn-success"
+                                    style="pointer-events: none;"> Sensibilidad baja </button>
                                 {% endif %}
                             </td>
-                                </li>
-                            </tr>
+                            </li>
+                        </tr>
                         {% endfor %}
-                        
                     </tbody>
                 </table>
-                
+
             </div>
         </div>
     </div>
