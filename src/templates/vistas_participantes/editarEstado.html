@@ -55,20 +55,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row" id="inputRange" {% if accion.estado=='En Proceso' %} style="display: block;" {%
-                        else %} style="display: none;" {% endif %}>
+                    <div class="row" id="inputRange" {% if accion.estado=='Iniciado' %} style="display: none;" {%
+                        else %} style="display: block;" {% endif %}>
                         <div class="mb-3">
                             <label class="form-label">Porcentaje de finalización de la acción <h3><span id="porcentajeValor">({{accion.porcentaje}}%)</span></h3></label>
                             <input type="range" class="form-range" name="porcentaje" min="0" max="100" step="10"
                                 value="{{accion.porcentaje}}" id="rangePorcentaje">
                         </div>
                     </div>
-                    <div class="row" id="inputText" {% if accion.estado=='Iniciado' or accion.estado=='En Proceso' %}
+                    <div class="row" id="inputText" {% if accion.estado=='Iniciado' %}
                         style="display: none;" {% else %} style="display: block;" {% endif %}>
                         <div class="mb-3">
                             <label class="form-label">Describe los detalles del cambio de estado</label>
                             <textarea name="detalles" id="cajita" cols="30" rows="10" class="form-control"
-                                placeholder="Descripción completa del cambio de estado(Sin saltos de linea)">{{accion.detalles}}</textarea>
+                                placeholder="Descripción completa del cambio de estado(Sin saltos de linea)"></textarea>
                         </div>
                     </div>
                     <div class="row">
@@ -116,17 +116,12 @@
                     inputTextDiv.style.display = "none";
                 } else if (this.value === "En Proceso") {
                     inputRangeDiv.style.display = "block";
-                    inputTextDiv.style.display = "none";
+                    inputTextDiv.style.display = "block";
+                    cajita.placeholder = 'Describa a detalle las actividades que realizaron en esta acción (Sin saltos de linea)'
                 } else {
                     inputRangeDiv.style.display = "none";
                     inputTextDiv.style.display = "block";
-                    if(this.value === 'En Revisión'){
-                        cajita.placeholder = 'Describa por qué la acción esta en revisión (Sin saltos de linea)'
-                    }
-                    else if (this.value === 'Pospuesto'){
-                        cajita.placeholder = 'Describa el motivo por el cual se pospuso esta acción (Sin saltos de linea)'
-                    }
-                    else if (this.value === 'Cancelado'){ 
+                    if (this.value === 'Cancelado'){ 
                         cajita.placeholder = 'Describa por qué la acción fue cancelada (Sin saltos de linea)'
                     }
                     else{

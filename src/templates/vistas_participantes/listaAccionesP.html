@@ -49,6 +49,8 @@
                         <td>
                             <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{accion.idAccion}}"><i class="fa fa-eye"></i></button>
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{accion.idAccion}}_H"><i class="fa fa-clipboard-list"></i></button>
                             {% if accion.estado == 'Cancelado' or accion.estado == 'Finalizado' %}
                                 <a href="#" class="btn btn-success disabled"><i class="fa fa-pencil"></i></a>
                             {% else %}
@@ -74,10 +76,42 @@
             <div class="modal-body text-justify">
                 <p><b>Descripción: </b>{{accion.descripcion}}</p>
                 <p><b>Objetivo: </b>{{accion.objetivo}}</p>
-                <p><b>Categoria: </b>{{accion.categoria}}</p>
-                <p><b>Control: </b>{{accion.control}}</p>
-                {% if accion.detalles %}
-                <p><b>Detalles del Estado</b> {{accion.detalles}}</p>
+                <p><b>Categoria: </b>{{accion.categoria}}: {{categoriasISO27001[accion.categoria]}}</p>
+                <p><b>Control: </b>{{accion.control}}: {{controlesISO27001[accion.categoria][accion.control]}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion.idAccion}}_H" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Historial de la Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                {% if accion.historial %}
+                <table class="table">
+                    <thead>
+                        <th>Fecha</th>
+                        <th>Porcentaje</th>
+                        <th>Estado</th>
+                        <th>Detalles</th>
+                    </thead>
+                    <tbody>
+                        {% for registro in accion.historial %}
+                            <tr>
+                                <td>{{registro.fecha}}</td>
+                                <td>{{registro.porcentaje}}%</td>
+                                <td>{{registro.estado}}</td>
+                                <td>{{registro.detalles}}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 {% endif %}
             </div>
         </div>

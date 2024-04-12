@@ -58,7 +58,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
 
                         <div class="row">
                             <div class="mb-3">
@@ -283,8 +283,12 @@
                             data-bs-target="#Ventana{{ accion[0].idAccion }}"><i class="fa fa-eye"></i></button>
                         <a href="/modificar-accion/{{ accion[0].idAccion }}" class="btn btn-success"><i
                                 class="fa fa-pencil"></i></a>
-                                <a href="/modificar-estado-accionG/{{accion[0].idAccion}}" class="btn btn-warning"><i class="fa fa-list"></i></a>
-                    
+                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{accion[0].idAccion}}_E"><i class="fa fa-gear"></i></button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{accion[0].idAccion}}_H"><i
+                                class="fa fa-clipboard-list"></i></button>
+
                     </td>
                 </tr>
                 {% endfor %}
@@ -326,17 +330,120 @@
                 <p><b>Fecha de Notificacion: </b>{{accion[0].fechaAviso}}</p>
                 <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
                 <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
-                <p><b>Categoria: </b>{{accion[0].categoria}}</p>
-                <p><b>Control: </b>{{accion[0].control}}</p>
-                {% if accion[0].detalles %}
-                <p><b>Detalles del estado: </b>{{accion[0].detalles}}</p>
-                {% endif %}
+                <p><b>Categoria: </b>{{accion[0].categoria}}: {{categoriasISO27001[accion[0].categoria]}}</p>
+                <p><b>Control: </b>{{accion[0].control}}: {{controlesISO27001[accion[0].categoria][accion[0].control]}}
+                </p>
             </div>
         </div>
     </div>
 </div>
 {% endfor %}
 
+
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion[0].idAccion}}_E" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Estado de la Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <div class="row">
+                    <p><b>Advertencia: </b>Al cambiar de un estado 'Cancelado' o 'Finalizado' a 'Iniciado' va a
+                        reestablecer el porcentaje de progreso de la acción y el responsable encargado de realizar esa
+                        acción podrá reportar sus avances de nuevo. Si se cambia de un estado 'Cancelado' a 'Iniciado'
+                        se
+                        mantendrá el procentaje de progreso actual y el responsable encargado de realizar esa
+                        acción podrá reportar sus avances de nuevo. Finalemente, en caso de cambiar una tarea a
+                        'Cancelado' o
+                        'Finalizado' no permitira al responsable realizar mas reportes en su sesión.</p>
+                </div>
+                <div class="row pt-1">
+                    <form action="/actualizar-estado-accionG" method="post">
+                        <div class="row">
+                            <div class="mb-3">
+                                <input type="hidden" name="idAccion" class="form-control" value="{{accion[0].idAccion}}"
+                                    readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label class="form-label">Estado de la Acción</label>
+                                <select name="estado" class="form-select" style="white-space: pre-line;" required>
+                                    {% if accion[0].estado == 'En Proceso'%}
+                                    <option value="Iniciado">Iniciado</option>
+                                    <option value="En Proceso" selected>En Proceso</option>
+                                    <option value="Caneclado">Cancelado</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                    {% elif accion[0].estado == 'Iniciado' %}
+                                    <option value="Iniciado" selected>Iniciado</option>
+                                    <option value="En Proceso">En Proceso</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                    {% elif accion[0].estado == 'Cancelado' %}
+                                    <option value="Iniciado">Iniciado</option>
+                                    <option value="En Proceso">En Proceso</option>
+                                    <option value="Cancelado" selected>Cancelado</option>
+                                    <option value="Finalizado">Finalizado</option>
+                                    {% else %}
+                                    <option value="Iniciado">Iniciado</option>
+                                    <option value="En Proceso">En Proceso</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                    <option value="Finalizado" selected>Finalizado</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-dark bg-black w-100">Cambiar estado</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion[0].idAccion}}_H" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Historial de la Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                {% if accion[0].historial %}
+                <table class="table">
+                    <thead>
+                        <th>Fecha</th>
+                        <th>Porcentaje</th>
+                        <th>Estado</th>
+                        <th>Detalles</th>
+                    </thead>
+                    <tbody>
+                        {% for registro in accion[0].historial %}
+                        <tr>
+                            <td>{{registro.fecha}}</td>
+                            <td>{{registro.porcentaje}}%</td>
+                            <td>{{registro.estado}}</td>
+                            <td>{{registro.detalles}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 <script>
     $(document).ready(function () {
@@ -399,4 +506,5 @@
         addButton.css('margin-right', '15px');
     });
 </script>
+
 {% endblock %}

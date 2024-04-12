@@ -11,10 +11,12 @@ class HistorialAccion(db.Model):
     porcentaje = db.Column(db.Float, nullable=False)
     estado = db.Column(db.String(20), nullable=False)
     detalles = db.Column(db.String(100), nullable=True)
+    autor = db.Column(db.String(100), nullable=True)
     idAccion = db.Column(db.String(32), db.ForeignKey('Acciones.idAccion', ondelete='CASCADE'), nullable=False)
 
-    def __init__(self, porcentaje, estado, detalles, idAccion) -> None:
+    def __init__(self, porcentaje, estado, detalles, autor, idAccion) -> None:
         self.porcentaje = porcentaje
         self.estado = estado
         self.detalles = detalles
+        self.autor = autor
         self.idAccion = idAccion

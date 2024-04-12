@@ -6,6 +6,7 @@ from src.models.activos import Activo
 from src.models.riesgo import Riesgo
 from src.models.activos_riesgos import ActivosRiesgos
 from src.models.historialRiesgos import HistorialRiesgo
+from src.models.historialActivos import HistorialActivo
 from datetime import datetime
 
 riesgos = Blueprint('riesgos', __name__)
@@ -386,6 +387,7 @@ def añadirRiesgo():
             impactoLegal=int(impactoLegal),
             impactoUsuarios=int(impactoUsuarios)
         )
+        
         # Obtener activos de formulario
         activos = []
         for idActivo in idActivos:
@@ -400,8 +402,10 @@ def añadirRiesgo():
             probabilidadRiesgo = obtenerProbabilidad(r)
             impactoRiesgoActivo = obtenerImpacto(r, activo)
             asociacion = ActivosRiesgos(riesgo = r, activo = activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
+            histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios,  probabilidadRiesgo, impactoRiesgoActivo, obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo), f'{activo.clave}: {activo.nombre}', r.idRiesgo)
+            db.session.add(histRisk)
             asociaciones.append(asociacion)
-        
+
         db.session.add_all(asociaciones)
         db.session.commit()
 
@@ -458,6 +462,8 @@ def actualizarRiesgo():
             asociacion.impacto = impactoRiesgoActivo
             asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
             asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
+            histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios,  probabilidadRiesgo, impactoRiesgoActivo, obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo), f'{asociacion.activo.clave}: {asociacion.activo.nombre}', r.idRiesgo)
+            db.session.add(histRisk)
 
         db.session.commit()
 
@@ -565,6 +571,8 @@ def añadirActivoEnRiesgo():
             )
             a.evaluarActivo(confidencialidad, disponibilidad, integridad)
             db.session.add(a)
+            histAct = HistorialActivo(confidencialidad, disponibilidad, integridad, a.idActivo)
+            db.session.add(histAct)
             db.session.commit()
             return jsonify('Ok')
         except:

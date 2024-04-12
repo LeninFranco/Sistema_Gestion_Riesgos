@@ -261,6 +261,8 @@ def evaluacionActivos():
             asociacion.impacto = impactoRiesgoActivo
             asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
             asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
+        histAct = HistorialActivo(confidencialidad, disponibilidad, integridad, a.idActivo)
+        db.session.add(histAct)
         db.session.commit()
         flash('success')
         flash('El activo ha sido evaluado correctamente')

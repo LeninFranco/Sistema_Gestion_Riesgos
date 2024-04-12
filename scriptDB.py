@@ -3,6 +3,8 @@ from src.models.activos import Activo
 from src.models.riesgo import Riesgo
 from src.models.proyectos import Proyecto
 from src.models.activos_riesgos import ActivosRiesgos
+from src.models.historialActivos import HistorialActivo
+from src.models.historialRiesgos import HistorialRiesgo
 from src.utils.db import db
 from app import app
 from faker import Faker
@@ -148,39 +150,13 @@ def generarActivosRiesgos(idProyecto, subnumero):
             impactoRiesgoActivo = obtenerImpacto(asociacion[i], asociacion[0])
             a = ActivosRiesgos(riesgo = asociacion[i], activo = asociacion[0], probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
             db.session.add(a)
-    db.session.commit()
-
-def obtenerTareasSinAsignar(idProyecto):
-    proyecto = Proyecto.query.filter_by(idProyecto = idProyecto).first()
-    activos = proyecto.activos
-    riesgos = []
-    tareas = []
-    
-    for activo in activos:
-        for asociacion in activo.riesgos_asociados:
-            riesgos.append(asociacion.riesgo)     
-    riesgos_umbrales = []
-    dictRiesgos = {}
-    for activo in activos:
-        for asociacion in activo.riesgos_asociados:
-            if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
-                dictRiesgos[asociacion.riesgo.clave] = {
-                    'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
-                    'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
-                }
-            else:
-                dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
-    
-    for clave in dictRiesgos.keys():
-        riesgo = dictRiesgos[clave]['riesgo']
-        for accion in riesgo.acciones:
-            if accion.idParticipante == None:
-                tareas.append(accion)
-    
-    for tarea in tareas:
-        print(tarea.clave)
-
+            db.session.commit()
+            rH = HistorialRiesgo(a.riesgo.nivelHabilidad, a.riesgo.motivacion, a.riesgo.oportunidad, a.riesgo.tamaño, a.riesgo.facilidadDescubrimiento, a.riesgo.facilidadExplotacion, a.riesgo.conciencia, a.riesgo.deteccionIntrusiones, a.riesgo.impactoFinanciero, a.riesgo.impactoReputacion, a.riesgo.impactoLegal, a.riesgo.impactoUsuarios, a.probabilidad, a.impacto, a.total, a.umbral, f'{a.activo.clave}: {a.activo.nombre}', a.riesgo.idRiesgo)
+            db.session.add(rH)
+        aH = HistorialActivo(a.activo.confidencialidad, a.activo.disponibilidad, a.activo.integridad, a.activo.idActivo)
+        db.session.add(aH)
+        db.session.commit()
 
 
 with app.app_context():
-    generarActivosRiesgos('aae39ecc16e744f3ae0038c1a31b2367', 1)
+    generarActivosRiesgos('ec89c4adf02c489f8530ac646cbd1b65',1)

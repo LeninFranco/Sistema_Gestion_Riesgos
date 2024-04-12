@@ -64,6 +64,10 @@
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{accion[0].idAccion}}_E"><i
                                 class="fa fa-people-group"></i></button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{accion[0].idAccion}}_H"><i
+                                class="fa fa-clipboard-list"></i></button>
+
                     </td>
                 </tr>
                 {% endfor %}
@@ -141,10 +145,43 @@
                 </table>
                 <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
                 <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
-                <p><b>Categoria: </b>{{accion[0].categoria}}</p>
-                <p><b>Control: </b>{{accion[0].control}}</p>
-                {% if accion[0].detalles %}
-                <p><b>Detalles del estado: </b>{{accion[0].detalles}}</p>
+                <p><b>Categoria: </b>{{accion[0].categoria}}: {{categoriasISO27001[accion[0].categoria]}}</p>
+                <p><b>Control: </b>{{accion[0].control}}: {{controlesISO27001[accion[0].categoria][accion[0].control]}}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% for accion in acciones %}
+<div class="modal fade" id="Ventana{{accion[0].idAccion}}_H" data-bs-backdrop="static" data-bs-keyboard="false"
+    tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Historial de la Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                {% if accion[0].historial %}
+                <table class="table">
+                    <thead>
+                        <th>Fecha</th>
+                        <th>Porcentaje</th>
+                        <th>Estado</th>
+                        <th>Detalles</th>
+                    </thead>
+                    <tbody>
+                        {% for registro in accion[0].historial %}
+                        <tr>
+                            <td>{{registro.fecha}}</td>
+                            <td>{{registro.porcentaje}}%</td>
+                            <td>{{registro.estado}}</td>
+                            <td>{{registro.detalles}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
                 {% endif %}
             </div>
         </div>

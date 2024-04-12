@@ -20,13 +20,14 @@ class HistorialRiesgo(db.Model):
     impactoReputacion = db.Column(db.Integer, nullable=False)
     impactoLegal = db.Column(db.Integer, nullable=False)
     impactoUsuarios = db.Column(db.Integer, nullable=False)
-    probabilidad = db.Column(db.Float)
-    impacto = db.Column(db.Float)
-    total = db.Column(db.Float)
-    umbral = db.Column(db.String(10))
+    probabilidad = db.Column(db.Float, nullable=False)
+    impacto = db.Column(db.Float, nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    umbral = db.Column(db.String(10), nullable=False)
+    activo = db.Column(db.String(100), nullable=False)
     idRiesgo = db.Column(db.String(32), db.ForeignKey('Riesgos.idRiesgo', ondelete='CASCADE'), nullable=False)
 
-    def __init__(self, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios, probabilidad, impacto, total, umbral, idRiesgo):
+    def __init__(self, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios, probabilidad, impacto, total, umbral, activo, idRiesgo):
         self.nivelHabilidad = nivelHabilidad
         self.motivacion = motivacion
         self.oportunidad = oportunidad
@@ -43,4 +44,5 @@ class HistorialRiesgo(db.Model):
         self.impacto = impacto
         self.total = total
         self.umbral = umbral
+        self.activo = activo
         self.idRiesgo = idRiesgo

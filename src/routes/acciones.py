@@ -484,7 +484,11 @@ def añadirAccion():
                 idParticipante = participante.id,
                 idRiesgo = idRiesgo
             )
+            autor = Usuario.query.filter_by(idUsuario=session['user_id']).first()
             db.session.add(acc)
+            db.session.commit()
+            histAcc = HistorialAccion(float(0), 'Iniciado', 'Acción Creada Correctamente', f'{autor.nombre} {autor.apellidoPaterno} {autor.apellidoMaterno} - {autor.departamento}', acc.idAccion)
+            db.session.add(histAcc)
             db.session.commit()
             flash('success')
             flash('La acción ha sido añadida correctamente')
@@ -527,8 +531,7 @@ def actualizarAccion():
         acc.estado=estado
         acc.detalles=detalles
         acc.idRiesgo=idRiesgo
-        acc.idParticipante=participante.id      
-        db.session.add(acc)
+        acc.idParticipante=participante.id
         db.session.commit()
         flash('success')
         flash('La acción ha sido actualizada correctamente')
@@ -632,44 +635,25 @@ def obtenerUmbral(probabilidad: float, impacto: float) -> str:
         umbral = 'Sin umbral'
     return umbral
 
-@acciones.route('/modificar-estado-accionG/<string:idAccion>')
-def vistaModificacionEstadoAccion(idAccion):
-    if not 'user_id' in session:
-        return redirect(url_for('login.vistaLogin'))
-    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
-    if usuario.rol == 1:
-        return redirect(url_for('login.logout'))
-    if not 'proyecto_id' in session:
-        return redirect(url_for('proyectos.vistaListaProyectos'))
-    accion = Accion.query.filter_by(idAccion = idAccion).first()
-    return render_template('acciones/editarEstadoG.html', usuario=usuario, accion=accion)
-
 @acciones.route('/actualizar-estado-accionG', methods=['POST'])
 def actualizarEstadoAccion():
     if request.method == 'POST':
-        idAccion = request.form['idaccion']
+        idAccion = request.form['idAccion']
         accion = Accion.query.filter_by(idAccion = idAccion).first()
         estado = request.form['estado']
         if estado == 'Iniciado':
+            accion.estado = estado
             accion.porcentaje = 0.0
+        if estado == 'En Proceso':
             accion.estado = estado
-            accion.detalles = ''
-        elif estado == 'En Proceso':
-            accion.porcentaje = float(request.form['porcentaje'])
-            accion.estado = estado
-        elif estado == 'En Revisión':
-            accion.estado = estado
-            accion.detalles = request.form['detalles']
-        elif estado == 'Pospuesto':
-            accion.estado = estado
-            accion.detalles = request.form['detalles']
         elif estado == 'Cancelado':
             accion.estado = estado
-            accion.detalles = request.form['detalles']
         elif estado == 'Finalizado':
             accion.porcentaje = 100.00
             accion.estado = estado
-            accion.detalles = request.form['detalles']
+        autor = Usuario.query.filter_by(idUsuario=session['user_id']).first()
+        histAcc = HistorialAccion(accion.porcentaje, accion.estado, 'Cambio de Estado realizado por el Gestor', f'{autor.nombre} {autor.apellidoPaterno} {autor.apellidoMaterno} - {autor.departamento}', accion.idAccion)
+        db.session.add(histAcc)
         db.session.commit()
         flash('success')
         flash('El estado de la acción ha sido actualizada correctamente')
