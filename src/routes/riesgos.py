@@ -436,6 +436,22 @@ def actualizarRiesgo():
         impactoLegal = request.form['impactoLegal']
         impactoUsuarios = request.form['impactoUsuarios']
         r = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
+
+        valores_anteriores = {
+            'nivelHabilidad': r.nivelHabilidad,
+            'motivacion': r.motivacion,
+            'oportunidad': r.oportunidad,
+            'tamaño': r.tamaño,
+            'facilidadDescubrimiento': r.facilidadDescubrimiento,
+            'facilidadExplotacion': r.facilidadExplotacion,
+            'conciencia': r.conciencia,
+            'deteccionIntrusiones': r.deteccionIntrusiones,
+            'impactoFinanciero': r.impactoFinanciero,
+            'impactoReputacion': r.impactoReputacion,
+            'impactoLegal': r.impactoLegal,
+            'impactoUsuarios': r.impactoUsuarios
+        }
+
         r.clave=clave
         r.nombre=nombre
         r.descripcion=descripcion
@@ -454,17 +470,24 @@ def actualizarRiesgo():
         r.impactoReputacion=int(impactoReputacion)
         r.impactoLegal=int(impactoLegal)
         r.impactoUsuarios=int(impactoUsuarios)
+        
+        cambios_enteros = False
+        for key in valores_anteriores:
+            if getattr(r, key) != valores_anteriores[key]:
+                cambios_enteros = True
+                break
 
-        for asociacion in r.activos_asociados:
-            probabilidadRiesgo = obtenerProbabilidad(r)
-            impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
-            asociacion.probabilidad = probabilidadRiesgo
-            asociacion.impacto = impactoRiesgoActivo
-            asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
-            asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
-            histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios,  probabilidadRiesgo, impactoRiesgoActivo, obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo), f'{asociacion.activo.clave}: {asociacion.activo.nombre}', r.idRiesgo)
-            db.session.add(histRisk)
-
+        if cambios_enteros:
+            for asociacion in r.activos_asociados:
+                probabilidadRiesgo = obtenerProbabilidad(r)
+                impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
+                asociacion.probabilidad = probabilidadRiesgo
+                asociacion.impacto = impactoRiesgoActivo
+                asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
+                asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
+                histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios,  probabilidadRiesgo, impactoRiesgoActivo, obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo), f'{asociacion.activo.clave}: {asociacion.activo.nombre}', r.idRiesgo)
+                db.session.add(histRisk)
+        
         db.session.commit()
 
         flash('success')

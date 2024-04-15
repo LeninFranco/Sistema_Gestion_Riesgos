@@ -333,6 +333,29 @@
                 <p><b>Categoria: </b>{{accion[0].categoria}}: {{categoriasISO27001[accion[0].categoria]}}</p>
                 <p><b>Control: </b>{{accion[0].control}}: {{controlesISO27001[accion[0].categoria][accion[0].control]}}
                 </p>
+                <hr>
+                <h5>Modificar Activos y/o Riesgos asociados</h5>
+                <h6>Riesgo</h6>
+                <div class="row pt-2">
+                    <div class="col-10">
+                        <input type="text" class="form-control" value="{{accion[2].clave}} - {{accion[2].nombre}}" readonly>
+                    </div>
+                    <div class="col-2">
+                        <a href="/modificar-riesgo/{{accion[2].idRiesgo}}" class="btn btn-dark bg-black w-100">Modificar</a>
+                    </div>
+                </div>
+                <br>
+                <h6>Activos</h6>
+                {% for asociacion in accion[2].activos_asociados %}
+                <div class="row pt-2">
+                    <div class="col-10">
+                        <input type="text" class="form-control" value="{{asociacion.activo.clave}} - {{asociacion.activo.nombre}}" readonly>
+                    </div>
+                    <div class="col-2">
+                        <a href="/evaluar-activo/{{asociacion.activo.idActivo}}" class="btn btn-dark bg-black w-100">Modificar</a>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
