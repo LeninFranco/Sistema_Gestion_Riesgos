@@ -17,6 +17,75 @@
 <div class="row pt-2">
     <h2>Acciones</h2>
 </div>
+<div class="row pt-1">
+    <div class="col-6">
+        <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal"
+            data-bs-target="#VentanaAddAccion">Añadir Acción</button>
+    </div>
+    <div class="col-6">
+        <input type="text" class="form-control w-100" id="search" name="search"
+            placeholder="Buscar (Clave Acción o Riesgo)" autocomplete="off">
+    </div>
+</div>
+<div class="row pt-2">
+    <div class="col-3">
+        <select class="form-select" id="filter-tipo">
+            <option value="">Filtrar Tipo</option>
+            <option value="Físico">Físico</option>
+            <option value="Lógico">Lógico</option>
+            <option value="Organizacional">Organizacional</option>
+        </select>
+    </div>
+    <div class="col-2">
+        <select class="form-select" id="filter-estado">
+            <option value="">Filtrar Estado</option>
+            <option value="Iniciado">Iniciado</option>
+            <option value="En Proceso">En Proceso</option>
+            <option value="Cancelado">Cancelado</option>
+            <option value="Finalizado">Finalizado</option>
+        </select>
+    </div>
+    <div class="col-2">
+        <select id="filter-umbral" class="form-select">
+            <option value="">Filtrar Umbral</option>
+            <option value="Insignificante">Insignificante</option>
+            <option value="Bajo">Bajo</option>
+            <option value="Medio">Medio</option>
+            <option value="Alto">Alto</option>
+            <option value="Crítico">Crítico</option>
+        </select>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-2">
+        <select class="form-select" id="filter-year">
+            <option value="">Filtrar Año</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+        </select>
+    </div>
+    <div class="col-2">
+        <select class="form-select" id="filter-month">
+            <option value="">Filtrar Mes</option>
+            <option value="01">Enero</option>
+            <option value="02">Febrero</option>
+            <option value="03">Marzo</option>
+            <option value="04">Abril</option>
+            <option value="05">Mayo</option>
+            <option value="06">Junio</option>
+            <option value="07">Julio</option>
+            <option value="08">Agosto</option>
+            <option value="09">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+        </select>
+    </div>
+</div>
 <div class="row pt-2">
     <div class="modal fade" id="VentanaAddAccion" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-hidden="true">
@@ -35,7 +104,7 @@
                         </script>
                         <div class="row">
                             <div class="mb-3">
-                                <input type="text" name="clave" class="form-control"
+                                <input type="text" name="clave" value="{{claveSig}}" class="form-control"
                                     placeholder="Clave de identificación de la acción" required autofocus>
                             </div>
                         </div>
@@ -49,13 +118,19 @@
                         <div class="row">
                             <div class="mb-3">
                                 <label class="form-label">Riesgo</label>
-                                <select name="idRiesgo" class="form-select" style="white-space: pre-line;" required>
+                                <select id="idRiesgo" name="idRiesgo" class="form-select" style="white-space: pre-line;"
+                                    required>
                                     {% for clave in dictRiesgos.keys() %}
-                                    <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}">
+                                    <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}"
+                                        data-descripcion="{{dictRiesgos[clave]['riesgo'].descripcion}}">
                                         {{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}}
+                                        con Umbral {{dictRiesgos[clave]['activos'][0][3]}}
                                     </option>
                                     {% endfor %}
                                 </select>
+                                <br>
+                                <label class="form-label">Descripción</label>
+                                <p id="descripcionRiesgo"></p>
                             </div>
                         </div>
 
@@ -240,15 +315,18 @@
 
 <div class="row pt-2">
     <div class="table-responsive">
-        <table class="table table-main align-middle">
+        <table class="table table-main">
             <thead>
                 <tr>
                     <th>Clave</th>
+                    <th>Nombre</th>
                     <th>Fecha Fin</th>
                     <th>Clave Riesgo</th>
-                    <th class="custom-sort">Umbral Total</th>
+                    <th>Nombre Riesgo</th>
+                    <th>Tipo Riesgo</th>
+                    <th class="custom-sort">Umbral</th>
                     <th>Estatus</th>
-                    <th>Porcentaje</th>
+                    <th>%</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -256,8 +334,11 @@
                 {% for accion in acciones %}
                 <tr>
                     <td>{{ accion[0].clave }}</td>
+                    <td>{{ accion[0].nombre }}</td>
                     <td>{{ accion[0].fechaFin }}</td>
                     <td>{{ accion[2].clave }}</td>
+                    <td>{{ accion[2].nombre }}</td>
+                    <td>{{ accion[2].tipoRiesgo }}</td>
                     {% for clave in dictRiesgos.keys() %}
                     {% if clave == accion[2].clave %}
                     {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}
@@ -307,7 +388,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
-                <p><b>Porcentaje: </b>{{accion[0].porcentaje}}</p>
+                <p><b>Clave: </b>{{accion[0].clave}}</p>
+                <p><b>Nombre: </b>{{accion[0].nombre}}</p>
+                <p><b>Porcentaje: </b>{{accion[0].porcentaje}}%</p>
                 {% if not accion[1].idParticipante is none %}
                 <p><b>Responsable: </b>{{accion[1].nombre}} - {{accion[1].departamento}}</p>
                 {% else %}
@@ -328,7 +411,7 @@
                     </tbody>
                 </table>
                 <p><b>Fecha de Notificacion: </b>{{accion[0].fechaAviso}}</p>
-                <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
+                <p><b>Objetivo: </b>{{accion[0].objetivo}}: {{objetivos[accion[0].objetivo]}}</p>
                 <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
                 <p><b>Categoria: </b>{{accion[0].categoria}}: {{categoriasISO27001[accion[0].categoria]}}</p>
                 <p><b>Control: </b>{{accion[0].control}}: {{controlesISO27001[accion[0].categoria][accion[0].control]}}
@@ -338,10 +421,12 @@
                 <h6>Riesgo</h6>
                 <div class="row pt-2">
                     <div class="col-10">
-                        <input type="text" class="form-control" value="{{accion[2].clave}} - {{accion[2].nombre}}" readonly>
+                        <input type="text" class="form-control" value="{{accion[2].clave}} - {{accion[2].nombre}}"
+                            readonly>
                     </div>
                     <div class="col-2">
-                        <a href="/modificar-riesgo/{{accion[2].idRiesgo}}" class="btn btn-dark bg-black w-100">Modificar</a>
+                        <a href="/modificar-nuevo-riesgo/{{accion[2].idRiesgo}}"
+                            class="btn btn-dark bg-black w-100">Actualizar</a>
                     </div>
                 </div>
                 <br>
@@ -349,10 +434,12 @@
                 {% for asociacion in accion[2].activos_asociados %}
                 <div class="row pt-2">
                     <div class="col-10">
-                        <input type="text" class="form-control" value="{{asociacion.activo.clave}} - {{asociacion.activo.nombre}}" readonly>
+                        <input type="text" class="form-control"
+                            value="{{asociacion.activo.clave}} - {{asociacion.activo.nombre}}" readonly>
                     </div>
                     <div class="col-2">
-                        <a href="/evaluar-activo/{{asociacion.activo.idActivo}}" class="btn btn-dark bg-black w-100">Modificar</a>
+                        <a href="/evaluar-nuevo-activo/{{asociacion.activo.idActivo}}"
+                            class="btn btn-dark bg-black w-100">Actualizar</a>
                     </div>
                 </div>
                 {% endfor %}
@@ -435,7 +522,7 @@
 {% for accion in acciones %}
 <div class="modal fade" id="Ventana{{accion[0].idAccion}}_H" data-bs-backdrop="static" data-bs-keyboard="false"
     tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Historial de la Acción</h5>
@@ -445,10 +532,11 @@
                 {% if accion[0].historial %}
                 <table class="table">
                     <thead>
-                        <th>Fecha</th>
+                        <th>Fecha de Actualización</th>
                         <th>Porcentaje</th>
                         <th>Estado</th>
                         <th>Detalles</th>
+                        <th>Autor</th>
                     </thead>
                     <tbody>
                         {% for registro in accion[0].historial %}
@@ -457,6 +545,7 @@
                             <td>{{registro.porcentaje}}%</td>
                             <td>{{registro.estado}}</td>
                             <td>{{registro.detalles}}</td>
+                            <td>{{registro.autor}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -467,7 +556,16 @@
     </div>
 </div>
 {% endfor %}
-
+<style>
+    .table-main td {
+        white-space: nowrap;
+        /* Evita que el texto se divida en varias líneas */
+        overflow: hidden;
+        /* Oculta el contenido que excede el ancho de la celda */
+        text-overflow: ellipsis;
+        /* Agrega puntos suspensivos (...) si el texto es demasiado largo */
+    }
+</style>
 <script>
     $(document).ready(function () {
         var customSortType = $.fn.dataTable.ext.type.order['custom-sort'];
@@ -481,29 +579,29 @@
             return order[b] - order[a];
         };
 
-        $('.table-main').DataTable({
+        var table = $('.table-main').DataTable({
+            "scrollX": true,
             "lengthChange": false,
             "paging": false,
             "info": false,
+            "searching": true,
             "language": {
-                "search": "",  // Eliminar el texto "Buscar:"
-                "searchPlaceholder": "Buscar Accion",  // Establecer el marcador de posición
                 "zeroRecords": "No se encontraron registros coincidentes"
             },
             "columnDefs": [
                 {
                     "orderable": false, // Deshabilitar ordenamiento
                     "searchable": true, // Permitir búsqueda
-                    "targets": [0, 3] // Primera columna
+                    "targets": [0, 1, 2, 3, 4, 5, 7] // Primera columna
                 },
                 {
                     "orderable": true, // Deshabilitar ordenamiento
                     "searchable": false, // Permitir búsqueda
-                    "targets": [1, 4] // Primera columna
+                    "targets": [8] // Primera columna
                 },
                 {
                     "orderable": true,
-                    "searchable": false, // Deshabilitar búsqueda
+                    "searchable": true, // Deshabilitar búsqueda
                     "targets": "custom-sort",
                     "type": "custom-sort" // Usar el tipo de datos personalizado para la ordenación
                 },
@@ -515,18 +613,62 @@
             ]
         });
 
-        var addButton = $('<button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAddAccion">Añadir Acción</button>');
+        $('#filter-month').prop('disabled', true);
 
-        // Insertar el botón antes de la barra de búsqueda
-        $('.dataTables_filter').prepend(addButton);
+        $('#filter-year').on('change', function () {
+            var year = $(this).val();
+            if (year) {
+                table.column(2).search(year + '-', true, false).draw();
+                $('#filter-month').prop('disabled', false);
+                $('#filter-month').val('')
+                $('#filter-month').on('change', function () {
+                    var month = $(this).val();
+                    if (month) {
+                        table.column(2).search(year + '-' + month + '-', true, false).draw();
+                    }
+                    else {
+                        table.column(2).search(year + '-', true, false).draw();
+                    }
+                });
+            }
+            else {
+                $('#filter-month').prop('disabled', true);
+                $('#filter-month').val('')
+                table.column(2).search(year + '-', true, false).draw();
+            }
+        });
 
-        // Ajustar manualmente el ancho del botón
-        addButton.width(200); // Ajusta el valor según sea necesario
+        $('#filter-tipo').on('change', function () {
+            var tipo = $(this).val();
+            table.column(5).search(tipo, true, false).draw();
+        });
 
-        var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
-        addButton.height(alturaBarraBusqueda - 16);
+        $('#filter-umbral').on('change', function () {
+            var umbral = $(this).val();
+            table.column(6).search(umbral, true, false).draw();
+        });
 
-        addButton.css('margin-right', '15px');
+        $('#filter-estado').on('change', function () {
+            var estado = $(this).val();
+            table.column(7).search(estado, true, false).draw();
+        });
+
+        $('input[name="search"]').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+
+        $('.dataTables_filter').css('display', 'none')
+
+        var selectRiesgo = document.getElementById('idRiesgo');
+        var descripcionRiesgo = document.getElementById('descripcionRiesgo');
+        descripcionRiesgo.textContent = selectRiesgo.options[selectRiesgo.selectedIndex].getAttribute('data-descripcion')
+
+
+        selectRiesgo.addEventListener('change', function () {
+            var selectedOption = selectRiesgo.options[selectRiesgo.selectedIndex];
+            var descripcion = selectedOption.getAttribute('data-descripcion');
+            descripcionRiesgo.textContent = descripcion;
+        });
     });
 </script>
 

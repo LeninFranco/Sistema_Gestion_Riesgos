@@ -5,6 +5,7 @@ from src.models.proyectos import Proyecto
 from src.models.activos import Activo
 from src.models.activos_riesgos import ActivosRiesgos
 from src.models.historialActivos import HistorialActivo
+from src.models.historialRiesgos import HistorialRiesgo
 from datetime import datetime
 
 activos = Blueprint('activos', __name__)
@@ -115,7 +116,8 @@ def vistaListaActivos():
         return redirect(url_for('proyectos.vistaListaProyectos'))
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos
-    return render_template('activos/listaActivosI.html', usuario=usuario, activos=activos, frecuencia=frecuencia, tiposActivo=tiposActivo, estatus=estatus)
+    claveSig = f'{proyecto.clave}:A-{str(len(activos)+1).zfill(4)}'
+    return render_template('activos/listaActivosI.html', usuario=usuario, claveSig=claveSig, activos=activos, frecuencia=frecuencia, tiposActivo=tiposActivo, estatus=estatus)
 
 @activos.route('/modificar-activo/<string:idActivo>')
 def vistaModificacionActivos(idActivo):
@@ -245,6 +247,18 @@ def vistaEvaluacionActivos(idActivo):
     activo = Activo.query.filter_by(idActivo=idActivo).first()
     return render_template('activos/evaluacionActivo.html', usuario=usuario, activo=activo, cdi=cdi);
 
+@activos.route('/evaluar-nuevo-activo/<string:idActivo>')
+def vistaEvaluacionActivosA(idActivo):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    activo = Activo.query.filter_by(idActivo=idActivo).first()
+    return render_template('historialActivos/actualizarActivo.html', usuario=usuario, activo=activo, cdi=cdi);
+
 @activos.route('/evaluando-activos', methods=['POST'])
 def evaluacionActivos():
     if request.method == 'POST':
@@ -261,12 +275,64 @@ def evaluacionActivos():
             asociacion.impacto = impactoRiesgoActivo
             asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
             asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
-        histAct = HistorialActivo(confidencialidad, disponibilidad, integridad, a.idActivo)
-        db.session.add(histAct)
+        if len(a.historial) == 0:
+            histAct = HistorialActivo(confidencialidad, disponibilidad, integridad, 'Primera Evaluación del Activo', a.idActivo)
+            db.session.add(histAct)
         db.session.commit()
         flash('success')
         flash('El activo ha sido evaluado correctamente')
         return redirect(url_for('activos.vistaListaEvaluaciones'))
+
+@activos.route('/actualizar-evaluación-activos', methods=['POST'])
+def evaluacionActivosA():
+    if request.method == 'POST':
+        idActivo = request.form['idactivo']
+        confidencialidad = int(request.form['confidencialidad'])
+        disponibilidad = int(request.form['disponibilidad'])
+        integridad = int(request.form['integridad'])
+        detalles = request.form['detalles']
+        a = Activo.query.filter_by(idActivo=idActivo).first()
+        a.evaluarActivo(confidencialidad, disponibilidad, integridad)
+        for asociacion in a.riesgos_asociados:
+            probabilidadRiesgo = obtenerProbabilidad(asociacion.riesgo)
+            impactoRiesgoActivo = obtenerImpacto(asociacion.riesgo, a)
+            asociacion.probabilidad = probabilidadRiesgo
+            asociacion.impacto = impactoRiesgoActivo
+            asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
+            asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
+            histRisk = HistorialRiesgo(asociacion.riesgo.nivelHabilidad, asociacion.riesgo.motivacion, asociacion.riesgo.oportunidad, asociacion.riesgo.tamaño, asociacion.riesgo.facilidadDescubrimiento, asociacion.riesgo.facilidadExplotacion, asociacion.riesgo.conciencia, asociacion.riesgo.deteccionIntrusiones, asociacion.riesgo.impactoFinanciero, asociacion.riesgo.impactoReputacion, asociacion.riesgo.impactoLegal, asociacion.riesgo.impactoUsuarios, asociacion.probabilidad , asociacion.impacto, asociacion.total, asociacion.umbral, f'Actualización del activo {a.clave} ({a.nombre}): {detalles}', asociacion.riesgo.idRiesgo)
+            db.session.add(histRisk)
+        histAct = HistorialActivo(confidencialidad, disponibilidad, integridad, detalles, a.idActivo)
+        db.session.add(histAct)
+        db.session.commit()
+        flash('success')
+        flash('El activo ha sido evaluado correctamente')
+        return redirect(url_for('acciones.vistaListaAcciones'))
+
+@activos.route('/historial-activos')
+def vistaHistorialActivos():
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    return render_template('historialActivos/listaActivos.html', usuario=usuario, activos=activos, tiposActivo=tiposActivo,cdi=cdi)
+
+@activos.route('/historial-activos/<string:idActivo>')
+def vistaHistorialActivo(idActivo):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    activo = Activo.query.filter_by(idActivo=idActivo).first()
+    return render_template('historialActivos/detallesActivo.html', usuario=usuario, activo=activo, cdi=cdi)
 
 def definirUmbral(factor: float) -> str:
     if factor > 0 and factor < 3:

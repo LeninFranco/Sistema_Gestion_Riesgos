@@ -381,7 +381,6 @@ def vistaListaAcciones():
                 risk = Riesgo.query.filter_by(idRiesgo = actions.idRiesgo).first()
                 acciones.append(((actions,asociacion.usuario,risk)))
 
-    #Diccionario de riesgos para tener solo un riesgo por n activos, no necesitamos manejar el activo, solo el riesgo
     dictRiesgos = {}
     for activo in activos:
         for asociacion in activo.riesgos_asociados:
@@ -390,12 +389,19 @@ def vistaListaAcciones():
                     'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
                     'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
                 }
-    #Diccionario de riesgos siwn accioness
-    dictRiesgosSinAcciones = []
+            else:
+                dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+    
     for clave in dictRiesgos.keys():
-        if len(dictRiesgos[clave]['riesgo'].acciones) < 1:
-            dictRiesgosSinAcciones.append(dictRiesgos[clave]['riesgo'])
-    return render_template('acciones/listaAcciones.html', usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto)
+        dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+
+    
+    nivel_riesgo_valor = {'Insignificante': 0, 'Bajo': 1, 'Medio': 2, 'Alto': 3, 'Crítico': 4}
+    dictRiesgos = {clave: valor for clave, valor in sorted(dictRiesgos.items(), key=lambda x: nivel_riesgo_valor[x[1]['activos'][0][3]], reverse=True)}
+
+    claveSig = f'{proyecto.clave}:PA-{str(len(acciones)+1).zfill(4)}'
+
+    return render_template('acciones/listaAcciones.html', usuario=usuario, claveSig=claveSig, acciones=acciones, dictRiesgos = dictRiesgos, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto)
 
 @acciones.route('/modificar-accion/<string:idAccion>')
 def vistaModificacionAccion(idAccion):
@@ -428,25 +434,26 @@ def vistaModificacionAccion(idAccion):
         for actions in asociacion.acciones:
             acciones.append(actions)
 
-    #Diccionario de riesgos para tener solo un riesgo por n activos, no necesitamos manejar el activo, solo el riesgo
     dictRiesgos = {}
     for activo in activos:
         for asociacion in activo.riesgos_asociados:
             if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
                 dictRiesgos[asociacion.riesgo.clave] = {
                     'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
-                    #'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                    'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
                 }
-    #Diccionario de riesgos siwn accioness
-    dictRiesgosSinAcciones = []
-    for clave in dictRiesgos.keys():
-        if len(dictRiesgos[clave]['riesgo'].acciones) < 1:
-            dictRiesgosSinAcciones.append(dictRiesgos[clave]['riesgo'])
-            
+            else:
+                dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
     
+    for clave in dictRiesgos.keys():
+        dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+
+    
+    nivel_riesgo_valor = {'Insignificante': 0, 'Bajo': 1, 'Medio': 2, 'Alto': 3, 'Crítico': 4}
+    dictRiesgos = {clave: valor for clave, valor in sorted(dictRiesgos.items(), key=lambda x: nivel_riesgo_valor[x[1]['activos'][0][3]], reverse=True)}
     
     descripcionControl = controlesISO27001[accion.categoria][accion.control]
-    return render_template('acciones/edicionAccion.html', accion = accion ,usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, dictRiesgosSinAcciones = dictRiesgosSinAcciones, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, descripcionControl = descripcionControl)
+    return render_template('acciones/edicionAccion.html', accion = accion ,usuario=usuario, acciones=acciones, dictRiesgos = dictRiesgos, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, descripcionControl = descripcionControl)
 
 @acciones.route('/anadir-accion', methods=['POST'])
 def añadirAccion():

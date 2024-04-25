@@ -67,15 +67,10 @@
 </div>
 <div class="row pt-2">
     <form action="/anadir-participante" method="post">
-        <div class="row">
+        <div class="row pt-2">
             <div class="col-6">
                 <input type="text" class="form-control" name="correo" id="email_auto"
                     placeholder="Ingrese el correo del participante" required>
-                <!-- <select name="idParticipante" class="form-select" style="white-space: pre-line;" required>
-                    {% for participante in participantes_listado %}
-                    <option value="{{participante.idUsuario}}">{{participante.correo}}</option>
-                    {% endfor %}
-                </select> -->
             </div>
             <div class="col-3">
                 <button type="submit" class="btn btn-dark bg-black w-100">Añadir</button>
@@ -84,6 +79,12 @@
                 <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal"
                     data-bs-target="#VentanaAdd2">Crear
                     Cuenta de Participante</button>
+            </div>
+        </div>
+        <div class="row pt-2">
+            <div class="col-6"></div>
+            <div class="col-6">
+                <input type="text" class="form-control w-100" id="search" name="search" placeholder="Buscar/Filtrar (Nombre, Correo o Departamento)" autocomplete="off">
             </div>
         </div>
     </form>
@@ -220,13 +221,11 @@
         });
     });
     $(document).ready(function () {
-        $('.table-main').DataTable({
+        var table = $('.table-main').DataTable({
             "lengthChange": false,
             "paging": false,
             "info": false,
             "language": {
-                "search": "",  // Eliminar el texto "Buscar:"
-                "searchPlaceholder": "Buscar Participante",  // Establecer el marcador de posición
                 "zeroRecords": "No se encontraron registros coincidentes"
             },
             "columnDefs": [
@@ -242,6 +241,13 @@
                 }
             ]
         });
+
+        $('input[name="search"]').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+
+        $('.dataTables_filter').css('display', 'none')
+
     });
 </script>
 {% endblock %}

@@ -295,7 +295,11 @@ agentes_amenaza = [
     'Competidores Comerciales',
     'Usuarios Malintencionados Internos',
     'Bots y Botnets',
-    'Grupos de Crimen Organizado'
+    'Grupos de Crimen Organizado',
+    'Agentes Ambientales',
+    'Agentes Externos a la Organización',
+    'Errores Humanos del Personal',
+    'Fallas Informáticas'
 ]
 
 
@@ -329,7 +333,9 @@ def vistaListaRiesgos():
 
     for clave in dictRiesgos.keys():
         dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
-    return render_template('riesgos/listaRiesgos.html', usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
+    
+    claveSig = f'{proyecto.clave}:R-{str(len(dictRiesgos.keys())+1).zfill(4)}'
+    return render_template('riesgos/listaRiesgos.html', usuario=usuario, claveSig=claveSig, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
 
 @riesgos.route('/modificar-riesgo/<string:idRiesgo>')
 def vistaModificacionRiesgo(idRiesgo):
@@ -343,6 +349,20 @@ def vistaModificacionRiesgo(idRiesgo):
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
     return render_template('riesgos/edicionRiesgo.html', usuario=usuario, riesgo=riesgo, tiposRiesgo=tiposRiesgo, activos=riesgo.activos_asociados, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activosProyecto=proyecto.activos , factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
+
+
+@riesgos.route('/modificar-nuevo-riesgo/<string:idRiesgo>')
+def vistaModificacionRiesgoA(idRiesgo):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
+    return render_template('historialRiesgos/actualizarRiesgo.html', usuario=usuario, riesgo=riesgo, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
 
 @riesgos.route('/anadir-riesgo', methods=['POST'])
 def añadirRiesgo():
@@ -402,11 +422,26 @@ def añadirRiesgo():
             probabilidadRiesgo = obtenerProbabilidad(r)
             impactoRiesgoActivo = obtenerImpacto(r, activo)
             asociacion = ActivosRiesgos(riesgo = r, activo = activo, probabilidad = probabilidadRiesgo, impacto = impactoRiesgoActivo, total = obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo))
-            histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios,  probabilidadRiesgo, impactoRiesgoActivo, obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo), f'{activo.clave}: {activo.nombre}', r.idRiesgo)
-            db.session.add(histRisk)
             asociaciones.append(asociacion)
-
         db.session.add_all(asociaciones)
+        db.session.commit()
+
+        dictRiesgos = {}
+
+        for asociacion in r.activos_asociados:
+            if not asociacion.riesgo.clave in dictRiesgos:
+                dictRiesgos[asociacion.riesgo.clave] = {
+                    'riesgo' : asociacion.riesgo,
+                    'activos' : [ (asociacion.activo, obtenerProbabilidad(asociacion.riesgo), obtenerImpacto(asociacion.riesgo,asociacion.activo), asociacion.umbral, asociacion.total) ]
+                }
+            else:
+                dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, obtenerProbabilidad(asociacion.riesgo), obtenerImpacto(asociacion.riesgo,asociacion.activo), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+
+        for clave in dictRiesgos.keys():
+            dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+
+        histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios, dictRiesgos[r.clave]['activos'][0][1] , dictRiesgos[r.clave]['activos'][0][2], dictRiesgos[r.clave]['activos'][0][4], dictRiesgos[r.clave]['activos'][0][2], 'Primera Evaluación del Riesgos', r.idRiesgo)
+        db.session.add(histRisk)
         db.session.commit()
 
         flash('success')
@@ -437,21 +472,6 @@ def actualizarRiesgo():
         impactoUsuarios = request.form['impactoUsuarios']
         r = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
 
-        valores_anteriores = {
-            'nivelHabilidad': r.nivelHabilidad,
-            'motivacion': r.motivacion,
-            'oportunidad': r.oportunidad,
-            'tamaño': r.tamaño,
-            'facilidadDescubrimiento': r.facilidadDescubrimiento,
-            'facilidadExplotacion': r.facilidadExplotacion,
-            'conciencia': r.conciencia,
-            'deteccionIntrusiones': r.deteccionIntrusiones,
-            'impactoFinanciero': r.impactoFinanciero,
-            'impactoReputacion': r.impactoReputacion,
-            'impactoLegal': r.impactoLegal,
-            'impactoUsuarios': r.impactoUsuarios
-        }
-
         r.clave=clave
         r.nombre=nombre
         r.descripcion=descripcion
@@ -470,29 +490,84 @@ def actualizarRiesgo():
         r.impactoReputacion=int(impactoReputacion)
         r.impactoLegal=int(impactoLegal)
         r.impactoUsuarios=int(impactoUsuarios)
-        
-        cambios_enteros = False
-        for key in valores_anteriores:
-            if getattr(r, key) != valores_anteriores[key]:
-                cambios_enteros = True
-                break
 
-        if cambios_enteros:
-            for asociacion in r.activos_asociados:
-                probabilidadRiesgo = obtenerProbabilidad(r)
-                impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
-                asociacion.probabilidad = probabilidadRiesgo
-                asociacion.impacto = impactoRiesgoActivo
-                asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
-                asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
-                histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios,  probabilidadRiesgo, impactoRiesgoActivo, obtenerTotal(probabilidadRiesgo,impactoRiesgoActivo), obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo), f'{asociacion.activo.clave}: {asociacion.activo.nombre}', r.idRiesgo)
-                db.session.add(histRisk)
-        
+        for asociacion in r.activos_asociados:
+            probabilidadRiesgo = obtenerProbabilidad(r)
+            impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
+            asociacion.probabilidad = probabilidadRiesgo
+            asociacion.impacto = impactoRiesgoActivo
+            asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
+            asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
+
         db.session.commit()
 
         flash('success')
         flash('El riesgo ha sido actualizado correctamente')
         return redirect(url_for('riesgos.vistaListaRiesgos'))
+
+
+@riesgos.route('/actualizar-nuevo-riesgo', methods=['POST'])
+def actualizarRiesgoA():
+    if request.method == 'POST':
+        idRiesgo = request.form['idRiesgo']
+        nivelHabilidad = request.form['nivelHabilidad']
+        motivacion = request.form['motivacion']
+        oportunidad = request.form['oportunidad']
+        tamaño = request.form['tamaño']
+        facilidadDescubrimiento = request.form['facilidadDescubrimiento']
+        facilidadExplotacion = request.form['facilidadExplotacion']
+        conciencia = request.form['conciencia']
+        deteccionIntrusiones = request.form['deteccionIntrusiones']
+        impactoFinanciero = request.form['impactoFinanciero']
+        impactoReputacion = request.form['impactoReputacion']
+        impactoLegal = request.form['impactoLegal']
+        impactoUsuarios = request.form['impactoUsuarios']
+        detalles = request.form['detalles']
+        r = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
+
+        r.nivelHabilidad=int(nivelHabilidad)
+        r.motivacion=int(motivacion)
+        r.oportunidad=int(oportunidad)
+        r.tamaño=int(tamaño)
+        r.facilidadDescubrimiento=int(facilidadDescubrimiento)
+        r.facilidadExplotacion=int(facilidadExplotacion)
+        r.conciencia=int(conciencia)
+        r.deteccionIntrusiones=int(deteccionIntrusiones)
+        r.impactoFinanciero=int(impactoFinanciero)
+        r.impactoReputacion=int(impactoReputacion)
+        r.impactoLegal=int(impactoLegal)
+        r.impactoUsuarios=int(impactoUsuarios)
+
+        dictRiesgos = {}
+        for asociacion in r.activos_asociados:
+            probabilidadRiesgo = obtenerProbabilidad(r)
+            impactoRiesgoActivo = obtenerImpacto(r, asociacion.activo)
+            asociacion.probabilidad = probabilidadRiesgo
+            asociacion.impacto = impactoRiesgoActivo
+            asociacion.total = obtenerTotal(probabilidadRiesgo, impactoRiesgoActivo)
+            asociacion.umbral = obtenerUmbral(probabilidadRiesgo,impactoRiesgoActivo)
+
+        db.session.commit()
+        
+        for asociacion in r.activos_asociados:
+            if not asociacion.riesgo.clave in dictRiesgos:
+                dictRiesgos[asociacion.riesgo.clave] = {
+                    'riesgo' : asociacion.riesgo,
+                    'activos' : [ (asociacion.activo, obtenerProbabilidad(asociacion.riesgo), obtenerImpacto(asociacion.riesgo,asociacion.activo), asociacion.umbral, asociacion.total) ]
+                }
+            else:
+                dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, obtenerProbabilidad(asociacion.riesgo), obtenerImpacto(asociacion.riesgo,asociacion.activo), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+
+        for clave in dictRiesgos.keys():
+            dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+
+        histRisk = HistorialRiesgo(r.nivelHabilidad, r.motivacion, r.oportunidad, r.tamaño, r.facilidadDescubrimiento, r.facilidadExplotacion, r.conciencia, r.deteccionIntrusiones, r.impactoFinanciero, r.impactoReputacion, r.impactoLegal, r.impactoUsuarios, dictRiesgos[r.clave]['activos'][0][1] , dictRiesgos[r.clave]['activos'][0][2], dictRiesgos[r.clave]['activos'][0][4], dictRiesgos[r.clave]['activos'][0][3], detalles, r.idRiesgo)
+        db.session.add(histRisk)
+        db.session.commit()
+
+        flash('success')
+        flash('El riesgo ha sido actualizado correctamente')
+        return redirect(url_for('acciones.vistaListaAcciones'))
 
 @riesgos.route('/eliminar-riesgo/<string:idRiesgo>')
 def eliminarRiesgo(idRiesgo):
@@ -634,6 +709,58 @@ def vistaMatrizRiesgos():
         dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
     
     return render_template('matriz/matriz.html', proyecto=proyecto, usuario=usuario, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad)
+
+@riesgos.route('/historial-riesgos')
+def vistaHistorialRiesgos():
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
+    activos = proyecto.activos
+    riesgos = []
+    
+    for activo in activos:
+        for asociacion in activo.riesgos_asociados:
+            riesgos.append(asociacion.riesgo)     
+    riesgos_umbrales = []
+    dictRiesgos = {}
+    for activo in activos:
+        for asociacion in activo.riesgos_asociados:
+            if not asociacion.riesgo.clave in dictRiesgos: #Si el riesgo aun no esta en el diccionario lo añadimos
+                dictRiesgos[asociacion.riesgo.clave] = {
+                    'riesgo' : asociacion.riesgo,  #Para tener el objeto del riesgo para sus detalles
+                    'activos' : [ (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ]
+                }
+            else:
+                dictRiesgos[asociacion.riesgo.clave]['activos'].append( (asociacion.activo, definirUmbral(obtenerProbabilidad(asociacion.riesgo)), definirUmbral(obtenerImpacto(asociacion.riesgo,asociacion.activo)), asociacion.umbral, asociacion.total) ) #La lista de activos con la que esta asociado el riesgo con sus valores
+
+    for clave in dictRiesgos.keys():
+        dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
+
+    return render_template('historialRiesgos/listaRiesgos.html', usuario=usuario, dictRiesgos=dictRiesgos, tiposRiesgo=tiposRiesgo, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
+
+@riesgos.route('/historial-riesgos/<string:idRiesgo>')
+def vistaHistorialRiesgo(idRiesgo):
+    if not 'user_id' in session:
+        return redirect(url_for('login.vistaLogin'))
+    usuario = Usuario.query.filter_by(idUsuario = session['user_id']).first()
+    if usuario.rol == 1:
+        return redirect(url_for('login.logout'))
+    if not 'proyecto_id' in session:
+        return redirect(url_for('proyectos.vistaListaProyectos'))
+    riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
+    umbral_actual = ""
+    total_mayor = 0
+    for asociacion in riesgo.activos_asociados:
+        if asociacion.total > total_mayor:
+            total_mayor = asociacion.total
+            umbral_actual = asociacion.umbral
+
+    return render_template('historialRiesgos/detallesRiesgo.html', usuario=usuario, riesgo=riesgo, umbral_actual=umbral_actual, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
 
 @riesgos.route('/obtener-activos-json', methods=['POST'])
 def obtenerActivosJSON():

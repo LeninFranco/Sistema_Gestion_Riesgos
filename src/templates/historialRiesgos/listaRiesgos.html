@@ -1,0 +1,320 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="row pt-5" id="alertRow">
+    <div class="alert alert-{{messages[0]}} alert-dismissible fade show" role="alert">
+        {{messages[1]}}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" id="closeAlert"></button>
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="row pt-2">
+    <h2>Historial de cambios en los Riesgos</h2>
+</div>
+<div class="row">
+    <div class="col-4">
+        <input type="text" class="form-control w-100" id="search" name="search" placeholder="Buscar (Clave o Nombre)"
+            autocomplete="off">
+    </div>
+    <div class="col-4">
+        <select id="filter-tipo" class="form-select">
+            <option value="">Filtrar por Tipo</option>
+            {% for tipoRiesgo in tiposRiesgo %}
+            <option value="{{tipoRiesgo}}">{{tipoRiesgo}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-4">
+        <select id="filter-umbral" class="form-select">
+            <option value="">Filtrar por Umbral</option>
+            <option value="Insignificante">Insignificante</option>
+            <option value="Bajo">Bajo</option>
+            <option value="Medio">Medio</option>
+            <option value="Alto">Alto</option>
+            <option value="Crítico">Crítico</option>
+        </select>
+    </div>
+</div>
+
+
+<div class="row pt-2">
+    <div class="table-responsive">
+        <table class="table table-main align-middle">
+            <thead>
+                <th>Clave</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th class="custom-sort">Umbral Actual</th>
+                <th>Acciones</th>
+            </thead>
+            <tbody>
+
+                {% for clave in dictRiesgos.keys() %}
+                <tr>
+                    <td>{{ dictRiesgos[clave]['riesgo'].clave }}</td>
+                    <td>{{ dictRiesgos[clave]['riesgo'].nombre }}</td>
+                    <td>{{ dictRiesgos[clave]['riesgo'].tipoRiesgo}}</td>
+                    {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}
+                    <td class="bg-info">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Bajo' %}
+                    <td class="bg-success">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Medio' %}
+                    <td style="background-color: rgb(255, 214, 31); color: black;">{{
+                        dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% elif dictRiesgos[clave]['activos'][0][3] == 'Alto' %}
+                    <td style="background-color: rgb(255, 145, 0); color: black;">{{ dictRiesgos[clave]['activos'][0][3]
+                        }}</td>
+                    {% else %}
+                    <td class="bg-danger">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
+                    {% endif %}
+                    <td>
+                        <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
+                            data-bs-target="#Ventana{{dictRiesgos[clave]['riesgo'].idRiesgo}}"><i
+                                class="fa fa-eye"></i></button>
+                        <a href="/historial-riesgos/{{dictRiesgos[clave]['riesgo'].idRiesgo}}" class="btn btn-primary"><i
+                                class="fa fa-right-to-bracket"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% for clave in dictRiesgos.keys() %}
+<div class="modal fade" id="Ventana{{dictRiesgos[clave]['riesgo'].idRiesgo}}" data-bs-backdrop="static"
+    data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Riesgo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+
+                <p><b>Clave: </b>{{dictRiesgos[clave]['riesgo'].clave}}</p>
+                <p><b>Nombre: </b>{{dictRiesgos[clave]['riesgo'].nombre}}</p>
+                <p><b>Descripción: </b>{{dictRiesgos[clave]['riesgo'].descripcion}}</p>
+                <p><b>Tipo de Riesgo: </b>{{dictRiesgos[clave]['riesgo'].tipoRiesgo}}</p>
+
+
+                {% if dictRiesgos[clave]['activos'][0][1] == "Alto" %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Alta </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][1] == "Medio" %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                        style="pointer-events: none;"> Media </button></p>
+                {% else %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                        style="pointer-events: none;"> Baja </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Probabilidad - Factores de amenaza</b></h5>
+                <p><b>Agente de amenaza:</b> {{ dictRiesgos[clave]['riesgo'].amenaza}}</p>
+                <table class="table table-responsive">
+                    <thead>
+                        <th style="text-align: center;padding: 10px;">Nivel de habilidad</th>
+                        <th style="text-align: center;padding: 10px;">Motivacion</th>
+                        <th style="text-align: center;padding: 10px;">Oportunidad</th>
+                        <th style="text-align: center;padding: 10px;">Tamaño</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].nivelHabilidad}}<br>{{factores_de_amenaza['nivel_de_habilidad'][dictRiesgos[clave]['riesgo'].nivelHabilidad]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].motivacion}}<br>{{factores_de_amenaza['motivación'][dictRiesgos[clave]['riesgo'].motivacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].oportunidad}}<br>{{factores_de_amenaza['oportunidad'][dictRiesgos[clave]['riesgo'].oportunidad]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ dictRiesgos[clave]['riesgo'].tamaño}}<br>{{factores_de_amenaza['tamaño'][dictRiesgos[clave]['riesgo'].tamaño]}}</td>
+                    </tr>
+                </table>
+
+                <h5 class="text-center"><b>Probabilidad - Factores de vulnerabilidad</b></h5>
+                <p><b>Vulnerabilidad:</b> {{ dictRiesgos[clave]['riesgo'].vulnerabilidad}}</p>
+                <table class="table table-responsive">
+                    <thead>
+
+                        <th style="text-align: center;padding: 10px;">Facilidad de descubrimiento</th>
+                        <th style="text-align: center;padding: 10px;">Facilidad de explotación</th>
+                        <th style="text-align: center;padding: 10px;">Conciencia</th>
+                        <th style="text-align: center;padding: 10px;">Detección de intrusiones</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].facilidadDescubrimiento}}<br>{{factores_de_vulnerabilidad['facilidad_de_descubrimiento'][dictRiesgos[clave]['riesgo'].facilidadDescubrimiento]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].facilidadExplotacion}}<br>{{factores_de_vulnerabilidad['facilidad_de_explotación'][dictRiesgos[clave]['riesgo'].facilidadExplotacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].conciencia}}<br>{{factores_de_vulnerabilidad['conciencia'][dictRiesgos[clave]['riesgo'].conciencia]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].deteccionIntrusiones}}<br>{{factores_de_vulnerabilidad['detección_de_intrusiones'][dictRiesgos[clave]['riesgo'].deteccionIntrusiones]}}</td>
+                    </tr>
+                </table>
+
+                {% if dictRiesgos[clave]['activos'][0][2] == "Alto" %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Alto </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][2] == "Medio" %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                        style="pointer-events: none;"> Medio </button></p>
+                {% else %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                        style="pointer-events: none;"> Bajo </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Impacto - Impacto empresarial</b></h5>
+                <table class="table table-responsive">
+                    <thead>
+
+                        <th style="text-align: center;padding: 10px;">Impacto Financiero</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Reputacion</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Legal</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Usuarios</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].impactoFinanciero}}<br>{{factores_de_impacto_empresarial['daño_financiero'][dictRiesgos[clave]['riesgo'].impactoFinanciero]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].impactoReputacion}}<br>{{factores_de_impacto_empresarial['daño_a_la_reputación'][dictRiesgos[clave]['riesgo'].impactoReputacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].impactoLegal}}<br>{{factores_de_impacto_empresarial['incumplimiento'][dictRiesgos[clave]['riesgo'].impactoLegal]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            dictRiesgos[clave]['riesgo'].impactoUsuarios}}<br>{{factores_de_impacto_empresarial['violación_de_la_privacidad'][dictRiesgos[clave]['riesgo'].impactoUsuarios]}}</td>
+                    </tr>
+                </table>
+
+                {% if dictRiesgos[clave]['activos'][0][3] == "Alto" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Alto </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][3] == "Medio" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                        style="pointer-events: none;"> Medio </button></p>
+                {% else %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                        style="pointer-events: none;"> Bajo </button></p>
+                {% endif %}
+
+                <p><b>Activos asociados: </b></p>
+                <table class="table">
+                    <thead>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Clave</th>
+                        <th>Sensibildad</th>
+                    </thead>
+                    <tbody>
+
+                        {% for activo in dictRiesgos[clave]['activos'] %}
+                        <tr>
+                            <td><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                    title="Descripción: {{activo[0].descripcion}}"></i></td>
+                            <td class=""> {{ activo[0].nombre }}</td>
+                            <td>{{ activo[0].clave }}</td>
+                            <td>
+                                {% if activo[0].sensibilidad > 18 %}
+                                <button type="button" class="btn btn-sm btn-block btn-danger"
+                                    style="pointer-events: none;"> Sensibilidad alta </button>
+                                {% elif activo[0].sensibilidad > 9 %}
+                                <button type="button" class="btn btn-sm btn-block btn-warning"
+                                    style="pointer-events: none;"> Sensibilidad media </button>
+                                {% else %}
+                                <button type="button" class="btn btn-sm btn-block btn-success"
+                                    style="pointer-events: none;"> Sensibilidad baja </button>
+                                {% endif %}
+                            </td>
+                            </li>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<style>
+    .table-main td {
+        white-space: nowrap;
+        /* Evita que el texto se divida en varias líneas */
+        overflow: hidden;
+        /* Oculta el contenido que excede el ancho de la celda */
+        text-overflow: ellipsis;
+        /* Agrega puntos suspensivos (...) si el texto es demasiado largo */
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        var customSortType = $.fn.dataTable.ext.type.order['custom-sort'];
+        var order = { 'Insignificante': 1, 'Bajo': 2, 'Medio': 3, 'Alto': 4, 'Crítico': 5 };
+
+        $.fn.dataTable.ext.type.order['custom-sort-asc'] = function (a, b) {
+            return order[a] - order[b];
+        };
+
+        $.fn.dataTable.ext.type.order['custom-sort-desc'] = function (a, b) {
+            return order[b] - order[a];
+        };
+
+        var table = $('.table-main').DataTable({
+            "scrollX": true,
+            "lengthChange": false,
+            "paging": false,
+            "info": false,
+            "language": {
+                "search": "",  // Eliminar el texto "Buscar:"
+                "searchPlaceholder": "Buscar Riesgo o Tipo",  // Establecer el marcador de posición
+                "zeroRecords": "No se encontraron registros coincidentes"
+            },
+            "columnDefs": [
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [0] // Primera columna
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [1] // Primera columna
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [2] // Primera columna
+                },
+                {
+                    "orderable": true,
+                    "searchable": true, // Deshabilitar búsqueda
+                    "targets": "custom-sort",
+                    "type": "custom-sort" // Usar el tipo de datos personalizado para la ordenación
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": false, // Deshabilitar búsqueda
+                    "targets": [-1] // Última columna
+                }
+            ]
+        });
+        $('input[name="search"]').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+
+        $('#filter-tipo').on('change', function () {
+            var tipo = $(this).val();
+            table.column(2).search(tipo, true, false).draw();
+        });
+
+        $('#filter-umbral').on('change', function () {
+            var umbral = $(this).val();
+            table.column(3).search(umbral, true, false).draw();
+        });
+
+        $('.dataTables_filter').css('display', 'none')
+
+    });
+</script>
+
+{% endblock %}

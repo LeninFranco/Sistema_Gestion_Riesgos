@@ -44,9 +44,9 @@
                     <select name="idRiesgo" class="form-select" style="white-space: pre-line;" required>
                         {% for clave in dictRiesgos.keys() %}
                             {% if accion.riesgo.clave == clave %}
-                            <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}" selected>{{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}}</option>
+                            <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}" selected> {{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}} con Umbral {{dictRiesgos[clave]['activos'][0][3]}}</option>
                             {% else %}
-                            <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}">{{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}}</option>
+                            <option value="{{dictRiesgos[clave]['riesgo'].idRiesgo}}"> {{dictRiesgos[clave]['riesgo'].clave}} - {{dictRiesgos[clave]['riesgo'].nombre}} con Umbral {{dictRiesgos[clave]['activos'][0][3]}}</option>
                             {% endif %}
                         {% endfor %}
                     </select>

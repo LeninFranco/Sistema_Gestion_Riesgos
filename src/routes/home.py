@@ -101,7 +101,7 @@ def vistaHome():
     nivel_riesgo_valor = {'Insignificante': 0, 'Bajo': 1, 'Medio': 2, 'Alto': 3, 'Crítico': 4}
 
     top_10_riesgos = sorted(dictRiesgos.values(), key=lambda x: (nivel_riesgo_valor[x['activos'][0][3]], x['activos'][0][4]), reverse=True)[:10]
-    top_10_riesgos_con_umbral = [(riesgo['riesgo'], riesgo['activos'][0][3]) for riesgo in top_10_riesgos]
+    top_10_riesgos_con_umbral = [(riesgo['riesgo'], (riesgo['activos'][0][1],riesgo['activos'][0][2],riesgo['activos'][0][3])) for riesgo in top_10_riesgos]
 
     participantes_jefe = Usuario.query.filter_by(idJefe = usuario.idUsuario).all()
     participantes_proyecto = []
@@ -131,7 +131,7 @@ def vistaHome():
             acciones_finalizadas_canceladas.append(accion)
         else:
             otras_acciones.append(accion)
-    acciones_ordenadas = sorted(otras_acciones, key=lambda x: abs((datetime.now() - datetime.combine(x[0].fechaFin, datetime.min.time())).total_seconds())) + acciones_finalizadas_canceladas
+    acciones_ordenadas = sorted(otras_acciones, key=lambda x: abs((datetime.now() - datetime.combine(x[0].fechaFin, datetime.min.time())).total_seconds()))
     return render_template('home/home.html', usuario=usuario, proyecto=proyecto, grafica=grafica, top10=top_10_riesgos_con_umbral, acciones=acciones_ordenadas[:10])
 
 @home.route('/regresar-proyectos')

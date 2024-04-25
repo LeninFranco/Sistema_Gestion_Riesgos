@@ -16,6 +16,20 @@
 <div class="row pt-2"></div>
 <div class="row">
     <h3 class="text-center">Participantes</h3>
+</div>
+<div class="row">
+    <div class="row pt-2">
+        <div class="col-4">
+            <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal"
+                data-bs-target="#VentanaAdd2">Añadir
+                Participante</button>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-6">
+            <input type="text" class="form-control w-100" id="search" name="search" placeholder="Buscar/Filtrar (Nombre, Correo o Departamento)"
+                autocomplete="off">
+        </div>
+    </div>
     <div class="row pt-2">
         <div class="modal fade" id="VentanaAdd2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
             aria-hidden="true">
@@ -51,8 +65,7 @@
                                     required>
                             </div>
                             <div class="mb-3">
-                                <input type="text" name="cargo" class="form-control" placeholder="Cargo"
-                                    required>
+                                <input type="text" name="cargo" class="form-control" placeholder="Cargo" required>
                             </div>
                             <div class="mb-3">
                                 <input type="text" name="password" class="form-control" placeholder="Contraseña"
@@ -129,7 +142,7 @@
                         </tbody>
                     </table>
                     {% else %}
-                        <p>No esta participando en ningún proyecto</p>
+                    <p>No esta participando en ningún proyecto</p>
                     {% endif %}
                 </div>
             </div>
@@ -139,13 +152,12 @@
 </div>
 <script>
     $(document).ready(function () {
-        $('.table-main').DataTable({
+        var table = $('.table-main').DataTable({
             "lengthChange": false,
             "paging": false,
             "info": false,
+            "searching": true,
             "language": {
-                "search": "",  // Eliminar el texto "Buscar:"
-                "searchPlaceholder": "Buscar Participante",  // Establecer el marcador de posición
                 "zeroRecords": "No se encontraron registros coincidentes"
             },
             "columnDefs": [
@@ -161,18 +173,13 @@
                 }
             ]
         });
-        var addButton = $('<button type="button" class="btn btn-dark bg-black" data-bs-toggle="modal" data-bs-target="#VentanaAdd2">Añadir Participante</button>');
 
-        // Insertar el botón antes de la barra de búsqueda
-        $('.dataTables_filter').prepend(addButton);
+        $('input[name="search"]').on('keyup', function () {
+            table.search(this.value).draw();
+        });
 
-        // Ajustar manualmente el ancho del botón
-        addButton.width(200); // Ajusta el valor según sea necesario
+        $('.dataTables_filter').css('display', 'none')
 
-        var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
-        addButton.height(alturaBarraBusqueda - 16);
-
-        addButton.css('margin-right', '15px');
     });
 </script>
 {% endblock %}

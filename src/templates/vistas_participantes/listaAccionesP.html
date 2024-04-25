@@ -86,7 +86,7 @@
 {% for accion in acciones %}
 <div class="modal fade" id="Ventana{{accion.idAccion}}_H" data-bs-backdrop="static" data-bs-keyboard="false"
     tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Historial de la Acción</h5>
@@ -94,28 +94,33 @@
             </div>
             <div class="modal-body text-justify">
                 {% if accion.historial %}
-                <table class="table">
-                    <thead>
-                        <th>Fecha</th>
-                        <th>Porcentaje</th>
-                        <th>Estado</th>
-                        <th>Detalles</th>
-                    </thead>
-                    <tbody>
-                        {% for registro in accion.historial %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>{{registro.fecha}}</td>
-                                <td>{{registro.porcentaje}}%</td>
-                                <td>{{registro.estado}}</td>
-                                <td>{{registro.detalles}}</td>
+                                <th>Fecha de Actualización</th>
+                                <th>Porcentaje</th>
+                                <th>Estado</th>
+                                <th>Detalles</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {% for registro in accion.historial %}
+                                <tr>
+                                    <td>{{registro.fecha}}</td>
+                                    <td>{{registro.porcentaje}}%</td>
+                                    <td>{{registro.estado}}</td>
+                                    <td>{{registro.detalles}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
+
 {% endfor %}
 {% endblock %}

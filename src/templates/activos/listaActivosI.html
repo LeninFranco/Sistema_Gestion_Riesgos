@@ -17,6 +17,25 @@
     <h2>Activos</h2>
 </div>
 <div class="row pt-2">
+    <div class="row">
+        <div class="col-3">
+            <button type="button" class="btn btn-dark bg-black w-100" data-bs-toggle="modal"
+                data-bs-target="#VentanaAdd">Añadir Activo</button>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-4">
+            <select class="form-select" id="filter-tipo">
+                <option value="">Filtrar por Tipo</option>
+                {% for opcion in tiposActivo %}
+                <option value="{{opcion}}">{{opcion}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-3">
+            <input type="text" class="form-control w-100" id="search" name="search"
+                placeholder="Buscar (Clave o Nombre)" autocomplete="off">
+        </div>
+    </div>
     <div class="modal fade" id="VentanaAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -29,7 +48,7 @@
                     <form action="/anadir-activos" method="post" autocomplete="off">
                         <div class="row">
                             <div class="mb-3">
-                                <input type="text" name="clave" class="form-control" placeholder="Clave del Activo"
+                                <input type="text" name="clave" value="{{claveSig}}" class="form-control" placeholder="Clave del Activo"
                                     required autofocus>
                             </div>
                         </div>
@@ -153,6 +172,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
+                <p><b>Clave: </b>{{activo.clave}}</p>
+                <p><b>Nombre: </b>{{activo.nombre}}</p>
+                <p><b>Tipo: </b>{{activo.tipoActivo}}</p>
                 <p><b>Descripción: </b>{{activo.descripcion}}</p>
                 <p><b>Propietario: </b>{{activo.propietario}}</p>
                 <p><b>Ubicación: </b>{{activo.ubicacion}}</p>
@@ -166,7 +188,7 @@
 {% endfor %}
 <script>
     $(document).ready(function () {
-        $('.table-main').DataTable({
+        var table = $('.table-main').DataTable({
             "lengthChange": false,
             "paging": false,
             "info": false,
@@ -193,18 +215,18 @@
                 }
             ]
         });
-        var addButton = $('<button type="button" class="btn btn-dark bg-black ml-2" data-bs-toggle="modal" data-bs-target="#VentanaAdd">Añadir Activo</button>');
 
-        // Insertar el botón antes de la barra de búsqueda
-        $('.dataTables_filter').prepend(addButton);
+        $('#filter-tipo').on('change', function () {
+            var tipo = $(this).val();
+            table.column(2).search(tipo, true, false).draw();
+        });
 
-        // Ajustar manualmente el ancho del botón
-        addButton.width(200); // Ajusta el valor según sea necesario
+        $('input[name="search"]').on('keyup', function () {
+            table.search(this.value).draw();
+        });
 
-        var alturaBarraBusqueda = $('.dataTables_filter').outerHeight();
-        addButton.height(alturaBarraBusqueda - 16);
+        $('.dataTables_filter').css('display', 'none')
 
-        addButton.css('margin-right', '15px');
     });
 </script>
 

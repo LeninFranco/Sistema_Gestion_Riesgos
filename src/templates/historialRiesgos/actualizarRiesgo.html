@@ -1,0 +1,360 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+<div class="row pt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Actualizar variables del Riesgo {{riesgo.clave}}</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <p><b>Nombre: </b>{{riesgo.nombre}}</p>
+                    <p><b>Descripción: </b>{{riesgo.descripcion}}</p>
+                    <p><b>Tipo de Riesgo: </b>{{riesgo.tipoRiesgo}}</p>
+                    <p><b>Amenaza: </b>{{riesgo.amenaza}}</p>
+                    <p><b>Vulnerabilidad: </b>{{riesgo.vulnerabilidad}}</p>
+                </div>
+                <div class="row">
+                    <form action="/actualizar-nuevo-riesgo" method="post" autocomplete="off">
+                        <div class="mb-3">
+                            <input type="hidden" name="idRiesgo" class="form-control" placeholder="Nombre del riesgo"
+                                value="{{riesgo.idRiesgo}}" readonly required>
+                        </div>
+                        <div class="row">
+                            <div class="bg-body mb-3">
+                                <h4 class="text-center ">Factores de probabilidad</h4>
+                            </div>
+                            <script>
+                                $(function () {
+                                    $('[data-toggle="tooltip"]').tooltip()
+                                })
+                            </script>
+
+                            <!-- Factores de amenaza -->
+
+                            <div class="mb-3">
+                                <hr>
+                                <h5 class="">Factores de amenaza</h5>
+
+                                <!-- Agente de amenaza -->
+                                <div class="row">
+
+                                    <!--Nivel de habilidad-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Nivel de habilidad</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Evalúa el nivel de habilidad técnica del grupo de amenazas que podría explotar el riesgo. Selecciona la opción que mejor describa las habilidades técnicas del posible atacante en función de la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="nivelHabilidad" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_amenaza['nivel_de_habilidad'].items() %}
+                                                {% if riesgo.nivelHabilidad == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Motivacion-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Motivación</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Determina la motivación del posible atacante para explotar el riesgo. Considera el incentivo o la recompensa que podría impulsar al atacante a realizar el ataque y selecciona la opción que mejor se ajuste."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="motivacion" class="form-select" style="white-space: pre-line;"
+                                                required>
+                                                {% for valor, opcion in factores_de_amenaza['motivación'].items() %}
+                                                {% if riesgo.motivacion == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Oportunidad-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Oportunidad</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Evalúa la disponibilidad de recursos y oportunidades para llevar a cabo un ataque exitoso. Selecciona la opción que describa mejor el acceso y los recursos disponibles para el atacante en función de la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="oportunidad" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in factores_de_amenaza['oportunidad'].items() %}
+                                                {% if riesgo.oportunidad == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Tamaño-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Tamaño</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Determina el tamaño del grupo de amenazas que podría llevar a cabo el ataque. Considera el número de individuos involucrados en el ataque y selecciona la opción que mejor represente el tamaño del grupo de ataque según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="tamaño" class="form-select" style="white-space: pre-line;"
+                                                required>
+                                                {% for valor, opcion in factores_de_amenaza['tamaño'].items() %}
+                                                {% if riesgo.tamaño == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <hr>
+                                    <h5 class="">Factores de vulnerabilidad</h4>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Facilidad descubrimiento-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Facilidad de descubrimiento</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Evalúa la dificultad para descubrir la vulnerabilidad por parte de los atacantes. Selecciona la opción que mejor describa la probabilidad de que los atacantes descubran la vulnerabilidad según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="facilidadDescubrimiento" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_vulnerabilidad['facilidad_de_descubrimiento'].items()
+                                                %}
+                                                {% if riesgo.facilidadDescubrimiento == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Facilidad de explotación-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Facilidad de explotación</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Determina la facilidad con la que los atacantes pueden explotar la vulnerabilidad una vez descubierta. Selecciona la opción que mejor describa la probabilidad de éxito de un ataque explotando la vulnerabilidad según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="facilidadExplotacion" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_vulnerabilidad['facilidad_de_explotación'].items() %}
+                                                {% if riesgo.facilidadExplotacion == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Conciencia-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Conciencia</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Evalúa el nivel de conocimiento de los atacantes sobre la vulnerabilidad. Selecciona la opción que mejor describa el grado de conocimiento de los atacantes sobre la vulnerabilidad según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="conciencia" class="form-select" style="white-space: pre-line;"
+                                                required>
+                                                {% for valor, opcion in factores_de_vulnerabilidad['conciencia'].items()
+                                                %}
+                                                {% if riesgo.conciencia == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Detección de intrusiones-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Detección de intrusiones</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Determina la probabilidad de que un ataque sea detectado por sistemas de detección de intrusiones. Selecciona la opción que mejor describa la probabilidad de que un ataque sea detectado según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="deteccionIntrusiones" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_vulnerabilidad['detección_de_intrusiones'].items() %}
+                                                {% if riesgo.deteccionIntrusiones == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="bg-body mb-3">
+                                        <h4 class="text-center ">Factores de impacto</h4>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <hr>
+                                    <h5>Impacto Empresarial</h5>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Daño financiero-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Daño financiero</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Evalúa el impacto financiero que podría tener la explotación del riesgo en la organización. Selecciona la opción que mejor describa el nivel de daño financiero potencial según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="impactoFinanciero" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_impacto_empresarial['daño_financiero'].items()
+                                                %}
+                                                {% if riesgo.impactoFinanciero == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Daño a la reputación-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Daño a la reputación</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Determina el impacto que la explotación del riesgo podría tener en la reputación de la organización. Selecciona la opción que mejor describa el nivel de daño a la reputación potencial según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="impactoReputacion" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_impacto_empresarial['daño_a_la_reputación'].items() %}
+                                                {% if riesgo.impactoReputacion == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Incumplimiento-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Incumplimiento legal</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Evalúa las consecuencias legales y regulatorias que podrían resultar de la explotación del riesgo. Selecciona la opción que mejor describa el nivel de incumplimiento potencial según la descripción proporcionada."></i>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="impactoLegal" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_impacto_empresarial['incumplimiento'].items() %}
+                                                {% if riesgo.impactoLegal == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <!--Violación a la privacidad-->
+                                    <div class="mb-3">
+                                        <!--Titulo de valor y tooltip-->
+                                        <label class="form-label">Violación a la privacidad</label>
+                                        <i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
+                                            title="Determina el alcance de la divulgación de información personal que podría resultar de la explotación del riesgo. Selecciona la opción que mejor describa el nivel de violación de la privacidad potencial según la descripción proporcionada."></i>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <select name="impactoUsuarios" class="form-select"
+                                                style="white-space: pre-line;" required>
+                                                {% for valor, opcion in
+                                                factores_de_impacto_empresarial['violación_de_la_privacidad'].items() %}
+                                                {% if riesgo.impactoUsuarios == valor %}
+                                                <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                                {% else %}
+                                                <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Descripción de los detalles de la actualización del riesgo</label>
+                                    <textarea name="detalles" cols="30" rows="10" class="form-control"
+                                        placeholder="Escriba la descripción completa del por qué se actualizaron los valores de evaluación de este riesgo (Sin saltos de linea)"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-dark bg-black w-100">Modificar</button>
+                                </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

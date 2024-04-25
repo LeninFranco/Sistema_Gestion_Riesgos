@@ -1,0 +1,91 @@
+{% extends "templateSideBar.html" %}
+
+{% block username %} {{usuario.nombre}} {% endblock %}
+
+{% block content %}
+<div class="row pt-2">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Actualizar variables del Activo {{activo.clave}}</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <p><b>Nombre: </b>{{activo.nombre}}</p>
+                    <p><b>Descripción: </b>{{activo.descripcion}}</p>
+                    <p><b>Propietario: </b>{{activo.propietario}}</p>
+                    <p><b>Ubicación: </b>{{activo.ubicacion}}</p>
+                    <p><b>Tipo de Activo: </b>{{activo.tipoActivo}}</p>
+                </div>
+                <div class="row">
+                    <form action="/actualizar-evaluación-activos" method="post" autocomplete="off">
+                        <div class="mb-3">
+                            <input type="hidden" name="idactivo" class="form-control" value="{{activo.idActivo}}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <label class="form-label"><b>Confidencialidad</b></label>
+                                <p style="text-justify: auto">Evalúa el grado de sensibilidad de la información del activo. Considera quién debe acceder a esta información y selecciona la opción que refleje el nivel de restricción necesario para protegerla.</p>
+                            </div>
+                            <div class="row">
+                                <select name="confidencialidad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['confidencialidad'].items() %}
+                                    {% if activo.confidencialidad == valor %}
+                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                    {% else %}
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <label class="form-label"><b>Disponibilidad</b></label>
+                                <p style="text-justify: auto;">Determina la importancia de que el activo esté siempre accesible para respaldar las operaciones. Piensa en las consecuencias de una interrupción en el acceso al activo y elige la opción que mejor se ajuste.</p>
+                            </div>
+                            <div class="row">
+                                <select name="disponibilidad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['disponibilidad'].items() %}
+                                    {% if activo.disponibilidad == valor %}
+                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                    {% else %}
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="row">
+                                <label class="form-label"><b>Integridad</b></label>
+                                <p style="text-justify: auto;">Refleja la importancia de mantener la exactitud y la integridad de la información del activo. Considera las posibles consecuencias de modificaciones no autorizadas y selecciona la opción adecuada.</p>
+                            </div>
+                            <div class="row">
+                                <select name="integridad" class="form-select" style="white-space: pre-line;" required>
+                                    {% for valor, opcion in cdi['integridad'].items() %}
+                                    {% if activo.integridad == valor %}
+                                    <option value="{{valor}}" selected>{{valor}}: {{opcion}}</option>
+                                    {% else %}
+                                    <option value="{{valor}}">{{valor}}: {{opcion}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción de los detalles de la actualización del activo</label>
+                            <textarea name="detalles" cols="30" rows="10" class="form-control"
+                                placeholder="Escriba la descripción completa del por qué se actualizaron los valores de evaluación de este activo (Sin saltos de linea)"></textarea>
+
+                        </div>
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-dark bg-black w-100">Evaluar Activo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

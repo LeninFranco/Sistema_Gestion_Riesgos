@@ -128,7 +128,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
-                <p><b>Porcentaje: </b>{{accion[0].porcentaje}}</p>
+                <p><b>Porcentaje: </b>{{accion[0].porcentaje}}%</p>
                 <table class="table">
                     <thead>
                         <th>Fecha Inicio</th>
@@ -188,7 +188,16 @@
     </div>
 </div>
 {% endfor %}
-
+<style>
+    .table-main td {
+        white-space: nowrap;
+        /* Evita que el texto se divida en varias líneas */
+        overflow: hidden;
+        /* Oculta el contenido que excede el ancho de la celda */
+        text-overflow: ellipsis;
+        /* Agrega puntos suspensivos (...) si el texto es demasiado largo */
+    }
+</style>
 <script>
     $(document).ready(function () {
         var customSortType = $.fn.dataTable.ext.type.order['custom-sort'];
@@ -203,6 +212,7 @@
         };
 
         $('.table-main').DataTable({
+            "scrollX": true,
             "lengthChange": false,
             "paging": false,
             "info": false,

@@ -16,9 +16,16 @@
 <div class="row pt-2">
     <h2>Evaluación de Activos</h2>
 </div>
+<div class="row">
+    <div class="col-6"></div>
+    <div class="col-6">
+        <input type="text" class="form-control w-100" id="search" name="search" placeholder="Buscar (Clave o Nombre)"
+            autocomplete="off">
+    </div>
+</div>
 <div class="row pt-2">
     <div class="table-responsive">
-        <table class="table table-main align-middle">
+        <table class="table table-main">
             <thead>
                 <th>Clave</th>
                 <th>Nombre</th>
@@ -95,7 +102,7 @@
                         {% for asociacion in activo.riesgos_asociados %}
                         <tr>
                             <td><i class="fa-solid fa-circle-info" data-toggle="tooltip" data-placement="top"
-                                title="Descripción: {{asociacion.riesgo.descripcion}}"></i></td>
+                                    title="Descripción: {{asociacion.riesgo.descripcion}}"></i></td>
                             <td>{{asociacion.riesgo.nombre}}</td>
                             <td>{{asociacion.riesgo.clave}}</td>
                             <td>
@@ -129,9 +136,20 @@
     </div>
 </div>
 {% endfor %}
+<style>
+    .table-main td {
+        white-space: nowrap;
+        /* Evita que el texto se divida en varias líneas */
+        overflow: hidden;
+        /* Oculta el contenido que excede el ancho de la celda */
+        text-overflow: ellipsis;
+        /* Agrega puntos suspensivos (...) si el texto es demasiado largo */
+    }
+</style>
 <script>
     $(document).ready(function () {
-        $('.table-main').DataTable({
+        var table = $('.table-main').DataTable({
+            "scrollX": true,
             "lengthChange": false,
             "paging": false,
             "info": false,
@@ -144,7 +162,7 @@
                 {
                     "orderable": false,
                     "searchable": true,
-                    "targets": [0,1]
+                    "targets": [0, 1]
                 },
                 {
                     "orderable": true,
@@ -158,6 +176,13 @@
                 }
             ]
         });
+
+        $('input[name="search"]').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+
+        $('.dataTables_filter').css('display', 'none')
+
     });
 </script>
 {% endblock %}

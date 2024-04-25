@@ -12,11 +12,13 @@ class HistorialActivo(db.Model):
     disponibilidad = db.Column(db.Integer, nullable=False)
     integridad = db.Column(db.Integer, nullable=False)
     sensibilidad = db.Column(db.Integer, nullable=False)
+    detalles = db.Column(db.String(255), nullable=False)
     idActivo = db.Column(db.String(32), db.ForeignKey('Activos.idActivo', ondelete='CASCADE'), nullable=False)
 
-    def __init__(self, confidencialidad, disponibilidad, integridad, idActivo) -> None:
+    def __init__(self, confidencialidad, disponibilidad, integridad, detalles,idActivo) -> None:
         self.confidencialidad = confidencialidad
         self.disponibilidad = disponibilidad
         self.integridad = integridad
         self.sensibilidad = confidencialidad + disponibilidad + integridad
+        self.detalles = detalles
         self.idActivo = idActivo
