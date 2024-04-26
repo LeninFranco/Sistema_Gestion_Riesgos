@@ -8,6 +8,7 @@ from src.models.activos_riesgos import ActivosRiesgos
 from src.models.historialRiesgos import HistorialRiesgo
 from src.models.historialActivos import HistorialActivo
 from datetime import datetime
+import re
 
 riesgos = Blueprint('riesgos', __name__)
 
@@ -752,6 +753,7 @@ def vistaHistorialRiesgo(idRiesgo):
         return redirect(url_for('login.logout'))
     if not 'proyecto_id' in session:
         return redirect(url_for('proyectos.vistaListaProyectos'))
+    proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     riesgo = Riesgo.query.filter_by(idRiesgo=idRiesgo).first()
     umbral_actual = ""
     total_mayor = 0
@@ -760,7 +762,16 @@ def vistaHistorialRiesgo(idRiesgo):
             total_mayor = asociacion.total
             umbral_actual = asociacion.umbral
 
-    return render_template('historialRiesgos/detallesRiesgo.html', usuario=usuario, riesgo=riesgo, umbral_actual=umbral_actual, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
+    detalle_activo = {}
+
+    for historial in riesgo.historial:
+        clave = re.findall(r'A-\d{4}', historial.detalles)
+        if clave:
+            claveA = f'{proyecto.clave}:{clave[0]}'
+            activo = Activo.query.filter_by(clave=claveA).first()
+            detalle_activo[historial.fecha] = (HistorialActivo.query.filter_by(fecha=historial.fecha, idActivo=activo.idActivo).first(), claveA)
+
+    return render_template('historialRiesgos/detallesRiesgo.html', usuario=usuario, riesgo=riesgo, detalle_activo=detalle_activo, umbral_actual=umbral_actual, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
 
 @riesgos.route('/obtener-activos-json', methods=['POST'])
 def obtenerActivosJSON():

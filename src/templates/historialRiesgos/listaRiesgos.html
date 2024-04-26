@@ -155,16 +155,20 @@
                     </tr>
                 </table>
 
-                {% if dictRiesgos[clave]['activos'][0][2] == "Alto" %}
-                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                {% if dictRiesgos[clave]['activos'][0][3] == "Crítico" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Crítico </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][3] == "Alto" %}
+                <p><b>Umbral total: </b><button type="button" style="background-color: rgb(255, 145, 0); color: black;" class="btn btn-sm btn-block"
                         style="pointer-events: none;"> Alto </button></p>
-                {% elif dictRiesgos[clave]['activos'][0][2] == "Medio" %}
-                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                {% elif dictRiesgos[clave]['activos'][0][3] == "Medio" %}
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-warning"
                         style="pointer-events: none;"> Medio </button></p>
                 {% else %}
-                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-success"
                         style="pointer-events: none;"> Bajo </button></p>
                 {% endif %}
+                
                 <h5 class="text-center"><b>Impacto - Impacto empresarial</b></h5>
                 <table class="table table-responsive">
                     <thead>
@@ -183,6 +187,24 @@
                             dictRiesgos[clave]['riesgo'].impactoLegal}}<br>{{factores_de_impacto_empresarial['incumplimiento'][dictRiesgos[clave]['riesgo'].impactoLegal]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
                             dictRiesgos[clave]['riesgo'].impactoUsuarios}}<br>{{factores_de_impacto_empresarial['violación_de_la_privacidad'][dictRiesgos[clave]['riesgo'].impactoUsuarios]}}</td>
+                    </tr>
+                </table>
+
+                <h5 class="text-center"><b>Impacto - Impacto Técnico</b></h5>
+                <p><b>Nota: </b>Se selecciona la asociación con el activo que produce el umbral de riesgo más elevado.</p>
+                <p><b>{{dictRiesgos[clave]['activos'][0][0].clave}}</b> - {{dictRiesgos[clave]['activos'][0][0].nombre}}</p>
+                <table class="table table-responsive">
+                    <thead>
+                        <th style="text-align: center;padding: 10px;">Confidencialidad</th>
+                        <th style="text-align: center;padding: 10px;">Disponibilidad</th>
+                        <th style="text-align: center;padding: 10px;">Integridad</th>
+                        <th style="text-align: center;padding: 10px;">Sensibilidad</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;">{{dictRiesgos[clave]['activos'][0][0].confidencialidad}}</td>
+                        <td class="" style="text-align: center;padding: 10px;">{{dictRiesgos[clave]['activos'][0][0].disponibilidad}}</td>
+                        <td class="" style="text-align: center;padding: 10px;">{{dictRiesgos[clave]['activos'][0][0].integridad}}</td>
+                        <td class="" style="text-align: center;padding: 10px;">{{dictRiesgos[clave]['activos'][0][0].sensibilidad}}</td>
                     </tr>
                 </table>
 

@@ -113,7 +113,7 @@
 {% for registro in riesgo.historial %}
 <div class="modal fade" id="Ventana{{registro.id}}" data-bs-backdrop="static"
     data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Detalles de la Actualización</h5>
@@ -203,6 +203,25 @@
                 <br>
                 <h5 class="text-center"><b>Detalles de la actualización del riesgo</b></h5>
                 <p>{{registro.detalles}}</p>
+                {% if registro.fecha in detalle_activo %}
+                {% if detalle_activo[registro.fecha][1] in registro.detalles %}
+                <p><b>Detalles de la actualización del activo.</b></p>
+                <table class="table">
+                    <thead>
+                        <th>Confidencialidad</th>
+                        <th>Disponibilidad</th>
+                        <th>Integridad</th>
+                        <th>Sensibilidad</th>
+                    </thead>
+                    <tbody>
+                        <td>{{detalle_activo[registro.fecha][0].confidencialidad}}</td>
+                        <td>{{detalle_activo[registro.fecha][0].disponibilidad}}</td>
+                        <td>{{detalle_activo[registro.fecha][0].integridad}}</td>
+                        <td>{{detalle_activo[registro.fecha][0].sensibilidad}}</td>
+                    </tbody>
+                </table>
+                {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>
