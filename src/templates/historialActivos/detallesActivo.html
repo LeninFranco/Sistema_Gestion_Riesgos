@@ -94,24 +94,43 @@
 
 <div class="row pt-2"></div>
 
-{% for registro in activo.historial %}
-<div class="modal fade" id="Ventana{{registro.id}}" data-bs-backdrop="static"
+{% for i in range(activo.historial|length) %}
+<div class="modal fade" id="Ventana{{activo.historial[i].id}}" data-bs-backdrop="static"
     data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Detalles de la Actualización</h5>
+                <h5 class="modal-title">Detalles del Registro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
-                <h5 class="text-center"><b>Detalles de las variables de evaluación</b></h5>
-                <p><b>Confidencialidad: </b>{{cdi['confidencialidad'][activo.confidencialidad]}}</p>
-                <p><b>Disponibilidad: </b>{{cdi['disponibilidad'][activo.disponibilidad]}}</p>
-                <p><b>Integridad: </b>{{cdi['integridad'][activo.integridad]}}</p>
-                <p><b>Sensibilidad: </b>{{cdi['sensibilidad'][activo.sensibilidad]}}</p>
+                {% if i >= 1 %}
+                <h5>Detalles antes de la actualización</h5>
+                <p><b>Fecha: </b>{{activo.historial[i-1].fecha}}</p>
+                <p><b>Confidencialidad({{activo.historial[i-1].confidencialidad}}): </b>{{cdi['confidencialidad'][activo.historial[i-1].confidencialidad]}}</p>
+                <p><b>Disponibilidad({{activo.historial[i-1].disponibilidad}}): </b>{{cdi['disponibilidad'][activo.historial[i-1].disponibilidad]}}</p>
+                <p><b>Integridad({{activo.historial[i-1].integridad}}): </b>{{cdi['integridad'][activo.historial[i-1].integridad]}}</p>
+                <p><b>Sensibilidad({{activo.historial[i-1].sensibilidad}}): </b>{{cdi['sensibilidad'][activo.historial[i-1].sensibilidad]}}</p>
+                <hr><br>
+                <h5>Detalles de la actualización</h5>
+                <p><b>Fecha: </b>{{activo.historial[i].fecha}}</p>
+                <p><b>Confidencialidad ({{activo.historial[i].confidencialidad}}): </b>{{cdi['confidencialidad'][activo.historial[i].confidencialidad]}}</p>
+                <p><b>Disponibilidad ({{activo.historial[i].disponibilidad}}): </b>{{cdi['disponibilidad'][activo.historial[i].disponibilidad]}}</p>
+                <p><b>Integridad ({{activo.historial[i].integridad}}): </b>{{cdi['integridad'][activo.historial[i].integridad]}}</p>
+                <p><b>Sensibilidad ({{activo.historial[i].sensibilidad}}): </b>{{cdi['sensibilidad'][activo.historial[i].sensibilidad]}}</p>
                 <br>
                 <h5 class="text-center"><b>Detalles de la actualización del activo</b></h5>
-                <p>{{registro.detalles}}</p>
+                <p>{{activo.historial[i].detalles}}</p>
+                {% else %}
+                <p><b>Fecha: </b>{{activo.historial[i].fecha}}</p>
+                <p><b>Confidencialidad ({{activo.historial[i].confidencialidad}}): </b>{{cdi['confidencialidad'][activo.historial[i].confidencialidad]}}</p>
+                <p><b>Disponibilidad ({{activo.historial[i].disponibilidad}}): </b>{{cdi['disponibilidad'][activo.historial[i].disponibilidad]}}</p>
+                <p><b>Integridad ({{activo.historial[i].integridad}}): </b>{{cdi['integridad'][activo.historial[i].integridad]}}</p>
+                <p><b>Sensibilidad ({{activo.historial[i].sensibilidad}}): </b>{{cdi['sensibilidad'][activo.historial[i].sensibilidad]}}</p>
+                <br>
+                <h5 class="text-center"><b>Detalles de la actualización del activo</b></h5>
+                <p>{{activo.historial[i].detalles}}</p>
+                {% endif %}
             </div>
         </div>
     </div>

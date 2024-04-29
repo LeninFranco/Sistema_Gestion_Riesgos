@@ -110,20 +110,23 @@
 
 <div class="row pt-2"></div>
 
-{% for registro in riesgo.historial %}
-<div class="modal fade" id="Ventana{{registro.id}}" data-bs-backdrop="static"
+{% for i in range(riesgo.historial|length) %}
+<div class="modal fade" id="Ventana{{riesgo.historial[i].id}}" data-bs-backdrop="static"
     data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Detalles de la Actualización</h5>
+                <h5 class="modal-title">Detalles del Registro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
-                {% if registro.probabilidad >= 6 %}
+                {% if i >= 1 %}
+                <h5>Detalles antes de la actualización</h5>
+                <p><b>Fecha: </b>{{riesgo.historial[i-1].fecha}}</p>
+                {% if riesgo.historial[i-1].probabilidad >= 6 %}
                 <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-danger"
                         style="pointer-events: none;"> Alta </button></p>
-                {% elif registro.probabilidad >= 3 %}
+                {% elif riesgo.historial[i-1].probabilidad >= 3 %}
                 <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-warning"
                         style="pointer-events: none;"> Media </button></p>
                 {% else %}
@@ -140,12 +143,12 @@
                     </thead>
                     <tr>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.nivelHabilidad}}<br>{{factores_de_amenaza['nivel_de_habilidad'][registro.nivelHabilidad]}}</td>
+                            riesgo.historial[i-1].nivelHabilidad}}<br>{{factores_de_amenaza['nivel_de_habilidad'][riesgo.historial[i-1].nivelHabilidad]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.motivacion}}<br>{{factores_de_amenaza['motivación'][registro.motivacion]}}</td>
+                            riesgo.historial[i-1].motivacion}}<br>{{factores_de_amenaza['motivación'][riesgo.historial[i-1].motivacion]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.oportunidad}}<br>{{factores_de_amenaza['oportunidad'][registro.oportunidad]}}</td>
-                        <td class="" style="text-align: center;padding: 10px;"> {{ registro.tamaño}}<br>{{factores_de_amenaza['tamaño'][registro.tamaño]}}</td>
+                            riesgo.historial[i-1].oportunidad}}<br>{{factores_de_amenaza['oportunidad'][riesgo.historial[i-1].oportunidad]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ riesgo.historial[i-1].tamaño}}<br>{{factores_de_amenaza['tamaño'][riesgo.historial[i-1].tamaño]}}</td>
                     </tr>
                 </table>
 
@@ -160,20 +163,20 @@
                     </thead>
                     <tr>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.facilidadDescubrimiento}}<br>{{factores_de_vulnerabilidad['facilidad_de_descubrimiento'][registro.facilidadDescubrimiento]}}</td>
+                            riesgo.historial[i-1].facilidadDescubrimiento}}<br>{{factores_de_vulnerabilidad['facilidad_de_descubrimiento'][riesgo.historial[i-1].facilidadDescubrimiento]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.facilidadExplotacion}}<br>{{factores_de_vulnerabilidad['facilidad_de_explotación'][registro.facilidadExplotacion]}}</td>
+                            riesgo.historial[i-1].facilidadExplotacion}}<br>{{factores_de_vulnerabilidad['facilidad_de_explotación'][riesgo.historial[i-1].facilidadExplotacion]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.conciencia}}<br>{{factores_de_vulnerabilidad['conciencia'][registro.conciencia]}}</td>
+                            riesgo.historial[i-1].conciencia}}<br>{{factores_de_vulnerabilidad['conciencia'][riesgo.historial[i-1].conciencia]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.deteccionIntrusiones}}<br>{{factores_de_vulnerabilidad['detección_de_intrusiones'][registro.deteccionIntrusiones]}}</td>
+                            riesgo.historial[i-1].deteccionIntrusiones}}<br>{{factores_de_vulnerabilidad['detección_de_intrusiones'][riesgo.historial[i-1].deteccionIntrusiones]}}</td>
                     </tr>
                 </table>
 
-                {% if registro.impacto >= 6 %}
+                {% if riesgo.historial[i-1].impacto >= 6 %}
                 <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-danger"
                         style="pointer-events: none;"> Alta </button></p>
-                {% elif registro.impacto >= 3 %}
+                {% elif riesgo.historial[i-1].impacto >= 3 %}
                 <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-warning"
                         style="pointer-events: none;"> Media </button></p>
                 {% else %}
@@ -191,20 +194,18 @@
                     </thead>
                     <tr>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.impactoFinanciero}}<br>{{factores_de_impacto_empresarial['daño_financiero'][registro.impactoFinanciero]}}</td>
+                            riesgo.historial[i-1].impactoFinanciero}}<br>{{factores_de_impacto_empresarial['daño_financiero'][riesgo.historial[i-1].impactoFinanciero]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.impactoReputacion}}<br>{{factores_de_impacto_empresarial['daño_a_la_reputación'][registro.impactoReputacion]}}</td>
+                            riesgo.historial[i-1].impactoReputacion}}<br>{{factores_de_impacto_empresarial['daño_a_la_reputación'][riesgo.historial[i-1].impactoReputacion]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.impactoLegal}}<br>{{factores_de_impacto_empresarial['incumplimiento'][registro.impactoLegal]}}</td>
+                            riesgo.historial[i-1].impactoLegal}}<br>{{factores_de_impacto_empresarial['incumplimiento'][riesgo.historial[i-1].impactoLegal]}}</td>
                         <td class="" style="text-align: center;padding: 10px;"> {{
-                            registro.impactoUsuarios}}<br>{{factores_de_impacto_empresarial['violación_de_la_privacidad'][registro.impactoUsuarios]}}</td>
+                            riesgo.historial[i-1].impactoUsuarios}}<br>{{factores_de_impacto_empresarial['violación_de_la_privacidad'][riesgo.historial[i-1].impactoUsuarios]}}</td>
                     </tr>
                 </table>
                 <br>
-                <h5 class="text-center"><b>Detalles de la actualización del riesgo</b></h5>
-                <p>{{registro.detalles}}</p>
-                {% if registro.fecha in detalle_activo %}
-                {% if detalle_activo[registro.fecha][1] in registro.detalles %}
+                {% if riesgo.historial[i-1].fecha in detalle_activo %}
+                {% if detalle_activo[riesgo.historial[i-1].fecha][1] in riesgo.historial[i-1].detalles %}
                 <p><b>Detalles de la actualización del activo.</b></p>
                 <table class="table">
                     <thead>
@@ -214,12 +215,222 @@
                         <th>Sensibilidad</th>
                     </thead>
                     <tbody>
-                        <td>{{detalle_activo[registro.fecha][0].confidencialidad}}</td>
-                        <td>{{detalle_activo[registro.fecha][0].disponibilidad}}</td>
-                        <td>{{detalle_activo[registro.fecha][0].integridad}}</td>
-                        <td>{{detalle_activo[registro.fecha][0].sensibilidad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i-1].fecha][0].confidencialidad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i-1].fecha][0].disponibilidad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i-1].fecha][0].integridad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i-1].fecha][0].sensibilidad}}</td>
                     </tbody>
                 </table>
+                {% endif %}
+                {% endif %}
+                <hr><br>
+                <h5>Detalles de la actualización</h5>
+                <p><b>Fecha: </b>{{riesgo.historial[i].fecha}}</p>
+                {% if riesgo.historial[i].probabilidad >= 6 %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Alta </button></p>
+                {% elif riesgo.historial[i].probabilidad >= 3 %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                        style="pointer-events: none;"> Media </button></p>
+                {% else %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                        style="pointer-events: none;"> Baja </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Probabilidad - Factores de amenaza</b></h5>
+                <table class="table table-responsive">
+                    <thead>
+                        <th style="text-align: center;padding: 10px;">Nivel de habilidad</th>
+                        <th style="text-align: center;padding: 10px;">Motivacion</th>
+                        <th style="text-align: center;padding: 10px;">Oportunidad</th>
+                        <th style="text-align: center;padding: 10px;">Tamaño</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].nivelHabilidad}}<br>{{factores_de_amenaza['nivel_de_habilidad'][riesgo.historial[i].nivelHabilidad]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].motivacion}}<br>{{factores_de_amenaza['motivación'][riesgo.historial[i].motivacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].oportunidad}}<br>{{factores_de_amenaza['oportunidad'][riesgo.historial[i].oportunidad]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ riesgo.historial[i].tamaño}}<br>{{factores_de_amenaza['tamaño'][riesgo.historial[i].tamaño]}}</td>
+                    </tr>
+                </table>
+
+                <h5 class="text-center"><b>Probabilidad - Factores de vulnerabilidad</b></h5>
+                <table class="table table-responsive">
+                    <thead>
+
+                        <th style="text-align: center;padding: 10px;">Facilidad de descubrimiento</th>
+                        <th style="text-align: center;padding: 10px;">Facilidad de explotación</th>
+                        <th style="text-align: center;padding: 10px;">Conciencia</th>
+                        <th style="text-align: center;padding: 10px;">Detección de intrusiones</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].facilidadDescubrimiento}}<br>{{factores_de_vulnerabilidad['facilidad_de_descubrimiento'][riesgo.historial[i].facilidadDescubrimiento]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].facilidadExplotacion}}<br>{{factores_de_vulnerabilidad['facilidad_de_explotación'][riesgo.historial[i].facilidadExplotacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].conciencia}}<br>{{factores_de_vulnerabilidad['conciencia'][riesgo.historial[i].conciencia]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].deteccionIntrusiones}}<br>{{factores_de_vulnerabilidad['detección_de_intrusiones'][riesgo.historial[i].deteccionIntrusiones]}}</td>
+                    </tr>
+                </table>
+
+                {% if riesgo.historial[i].impacto >= 6 %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Alta </button></p>
+                {% elif riesgo.historial[i].impacto >= 3 %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                        style="pointer-events: none;"> Media </button></p>
+                {% else %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                        style="pointer-events: none;"> Baja </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Impacto - Impacto empresarial</b></h5>
+                <table class="table table-responsive">
+                    <thead>
+
+                        <th style="text-align: center;padding: 10px;">Impacto Financiero</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Reputacion</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Legal</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Usuarios</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoFinanciero}}<br>{{factores_de_impacto_empresarial['daño_financiero'][riesgo.historial[i].impactoFinanciero]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoReputacion}}<br>{{factores_de_impacto_empresarial['daño_a_la_reputación'][riesgo.historial[i].impactoReputacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoLegal}}<br>{{factores_de_impacto_empresarial['incumplimiento'][riesgo.historial[i].impactoLegal]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoUsuarios}}<br>{{factores_de_impacto_empresarial['violación_de_la_privacidad'][riesgo.historial[i].impactoUsuarios]}}</td>
+                    </tr>
+                </table>
+                <br>
+                <h5 class="text-center"><b>Detalles de la actualización del riesgo</b></h5>
+                <p>{{riesgo.historial[i].detalles}}</p>
+                {% if riesgo.historial[i].fecha in detalle_activo %}
+                {% if detalle_activo[riesgo.historial[i].fecha][1] in riesgo.historial[i].detalles %}
+                <p><b>Detalles de la actualización del activo.</b></p>
+                <table class="table">
+                    <thead>
+                        <th>Confidencialidad</th>
+                        <th>Disponibilidad</th>
+                        <th>Integridad</th>
+                        <th>Sensibilidad</th>
+                    </thead>
+                    <tbody>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].confidencialidad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].disponibilidad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].integridad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].sensibilidad}}</td>
+                    </tbody>
+                </table>
+                {% endif %}
+                {% endif %}
+                {% else %}
+                <p><b>Fecha: </b>{{riesgo.historial[i-1].fecha}}</p>
+                {% if riesgo.historial[i].probabilidad >= 6 %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Alta </button></p>
+                {% elif riesgo.historial[i].probabilidad >= 3 %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                        style="pointer-events: none;"> Media </button></p>
+                {% else %}
+                <p><b>Probabilidad: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                        style="pointer-events: none;"> Baja </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Probabilidad - Factores de amenaza</b></h5>
+                <table class="table table-responsive">
+                    <thead>
+                        <th style="text-align: center;padding: 10px;">Nivel de habilidad</th>
+                        <th style="text-align: center;padding: 10px;">Motivacion</th>
+                        <th style="text-align: center;padding: 10px;">Oportunidad</th>
+                        <th style="text-align: center;padding: 10px;">Tamaño</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].nivelHabilidad}}<br>{{factores_de_amenaza['nivel_de_habilidad'][riesgo.historial[i].nivelHabilidad]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].motivacion}}<br>{{factores_de_amenaza['motivación'][riesgo.historial[i].motivacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].oportunidad}}<br>{{factores_de_amenaza['oportunidad'][riesgo.historial[i].oportunidad]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{ riesgo.historial[i].tamaño}}<br>{{factores_de_amenaza['tamaño'][riesgo.historial[i].tamaño]}}</td>
+                    </tr>
+                </table>
+
+                <h5 class="text-center"><b>Probabilidad - Factores de vulnerabilidad</b></h5>
+                <table class="table table-responsive">
+                    <thead>
+
+                        <th style="text-align: center;padding: 10px;">Facilidad de descubrimiento</th>
+                        <th style="text-align: center;padding: 10px;">Facilidad de explotación</th>
+                        <th style="text-align: center;padding: 10px;">Conciencia</th>
+                        <th style="text-align: center;padding: 10px;">Detección de intrusiones</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].facilidadDescubrimiento}}<br>{{factores_de_vulnerabilidad['facilidad_de_descubrimiento'][riesgo.historial[i].facilidadDescubrimiento]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].facilidadExplotacion}}<br>{{factores_de_vulnerabilidad['facilidad_de_explotación'][riesgo.historial[i].facilidadExplotacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].conciencia}}<br>{{factores_de_vulnerabilidad['conciencia'][riesgo.historial[i].conciencia]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].deteccionIntrusiones}}<br>{{factores_de_vulnerabilidad['detección_de_intrusiones'][riesgo.historial[i].deteccionIntrusiones]}}</td>
+                    </tr>
+                </table>
+
+                {% if riesgo.historial[i].impacto >= 6 %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Alta </button></p>
+                {% elif riesgo.historial[i].impacto >= 3 %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-warning"
+                        style="pointer-events: none;"> Media </button></p>
+                {% else %}
+                <p><b>Impacto: </b><button type="button" class="btn btn-sm btn-block btn-success"
+                        style="pointer-events: none;"> Baja </button></p>
+                {% endif %}
+                <h5 class="text-center"><b>Impacto - Impacto empresarial</b></h5>
+                <table class="table table-responsive">
+                    <thead>
+
+                        <th style="text-align: center;padding: 10px;">Impacto Financiero</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Reputacion</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Legal</th>
+                        <th style="text-align: center;padding: 10px;">Impacto Usuarios</th>
+                    </thead>
+                    <tr>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoFinanciero}}<br>{{factores_de_impacto_empresarial['daño_financiero'][riesgo.historial[i].impactoFinanciero]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoReputacion}}<br>{{factores_de_impacto_empresarial['daño_a_la_reputación'][riesgo.historial[i].impactoReputacion]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoLegal}}<br>{{factores_de_impacto_empresarial['incumplimiento'][riesgo.historial[i].impactoLegal]}}</td>
+                        <td class="" style="text-align: center;padding: 10px;"> {{
+                            riesgo.historial[i].impactoUsuarios}}<br>{{factores_de_impacto_empresarial['violación_de_la_privacidad'][riesgo.historial[i].impactoUsuarios]}}</td>
+                    </tr>
+                </table>
+                <br>
+                <h5 class="text-center"><b>Detalles de la actualización del riesgo</b></h5>
+                <p>{{riesgo.historial[i].detalles}}</p>
+                {% if riesgo.historial[i].fecha in detalle_activo %}
+                {% if detalle_activo[riesgo.historial[i].fecha][1] in riesgo.historial[i].detalles %}
+                <p><b>Detalles de la actualización del activo.</b></p>
+                <table class="table">
+                    <thead>
+                        <th>Confidencialidad</th>
+                        <th>Disponibilidad</th>
+                        <th>Integridad</th>
+                        <th>Sensibilidad</th>
+                    </thead>
+                    <tbody>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].confidencialidad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].disponibilidad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].integridad}}</td>
+                        <td>{{detalle_activo[riesgo.historial[i].fecha][0].sensibilidad}}</td>
+                    </tbody>
+                </table>
+                {% endif %}
                 {% endif %}
                 {% endif %}
             </div>

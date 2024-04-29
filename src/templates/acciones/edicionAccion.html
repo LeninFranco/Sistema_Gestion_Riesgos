@@ -197,38 +197,46 @@
             
 
             <script>
-                // Obtener la fecha actual
-                var today = new Date();
-                var dd = String(today.getDate()).padStart(2, '0');
-                var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
-                var yyyy = today.getFullYear();
-                var todayString = yyyy + '-' + mm + '-' + dd;
-                // Establecer la fecha mínima para la fecha de inicio
-                document.getElementById('fechaIni').setAttribute('min', todayString);
-                // Asignar una función de validación al cambio de la fecha de inicio
-                document.getElementById('fechaIni').addEventListener('change', function() {
-                    // Obtener el valor de la fecha de inicio y de fin
-                    var fechaIni = new Date(this.value);
-                    var fechaFin = new Date(document.getElementById('fechaFin').value);
-                    // Validar que la fecha de fin sea posterior a la fecha de inicio
-                    if (fechaFin <= fechaIni) {
-                        alert('La fecha de fin debe ser posterior a la fecha de inicio');
-                        document.getElementById('fechaFin').value = ''; // Limpiar el valor
-                    }
-                });
-                // Asignar una función de validación al cambio de la fecha de fin
-                document.getElementById('fechaFin').addEventListener('change', function() {
-                    // Obtener el valor de la fecha de inicio y de fin
-                    var fechaIni = new Date(document.getElementById('fechaIni').value);
-                    var fechaFin = new Date(this.value);
-                    // Validar que la fecha de fin sea posterior a la fecha de inicio
-                    if (fechaFin <= fechaIni) {
-                        alert('La fecha de fin debe ser posterior a la fecha de inicio');
-                        this.value = ''; // Limpiar el valor
-                    }
-                });
+                            // Obtener la fecha actual
+                            var today = new Date();
+                            var dd = String(today.getDate()).padStart(2, '0');
+                            var mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+                            var yyyy = today.getFullYear();
+                            var todayString = yyyy + '-' + mm + '-' + dd;
 
-                document.getElementById('fechaAviso').addEventListener('change', function () {
+                            // Establecer la fecha mínima para la fecha de inicio
+                            document.getElementById('fechaIni').setAttribute('min', todayString);
+
+                            // Asignar una función de validación al cambio de la fecha de inicio
+                            document.getElementById('fechaIni').addEventListener('change', function () {
+                                // Obtener el valor de la fecha de inicio y de fin
+                                var fechaIni = new Date(this.value);
+                                var fechaFin = new Date(document.getElementById('fechaFin').value);
+
+
+
+                                // Validar que la fecha de fin sea posterior a la fecha de inicio
+                                if (fechaFin <= fechaIni) {
+                                    alert('La fecha de fin debe ser posterior a la fecha de inicio');
+                                    document.getElementById('fechaFin').value = ''; // Limpiar el valor
+                                }
+                            });
+
+                            // Asignar una función de validación al cambio de la fecha de fin
+                            document.getElementById('fechaFin').addEventListener('change', function () {
+                                // Obtener el valor de la fecha de inicio y de fin
+                                var fechaIni = new Date(document.getElementById('fechaIni').value);
+                                var fechaFin = new Date(this.value);
+
+                                // Validar que la fecha de fin sea posterior a la fecha de inicio
+                                if (fechaFin <= fechaIni) {
+                                    alert('La fecha de fin debe ser posterior a la fecha de inicio');
+                                    this.value = ''; // Limpiar el valor
+                                }
+                            });
+
+
+                            document.getElementById('fechaAviso').addEventListener('change', function () {
                                 // Obtener el valor de la fecha de inicio y de fin
                                 var fechaFin = new Date(document.getElementById('fechaFin').value);
                                 var fechaAviso = new Date(this.value);
@@ -239,7 +247,8 @@
                                     this.value = ''; // Limpiar el valor
                                 }
                             });
-            </script>
+
+                        </script>
 
             <div class="row">
                 <div class="mb-3">
