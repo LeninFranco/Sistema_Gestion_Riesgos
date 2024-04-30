@@ -1,6 +1,7 @@
 from src.utils.db import db
 from src.models.historialAcciones import HistorialAccion
 from uuid import uuid4
+from sqlalchemy import TEXT
 
 def getDefaultID() -> str:
     return uuid4().hex
@@ -8,17 +9,17 @@ def getDefaultID() -> str:
 class Accion(db.Model):
     __tablename__ = 'Acciones'
     idAccion = db.Column(db.String(32), primary_key=True, default=getDefaultID)
-    clave = db.Column(db.String(15), nullable=False, unique=True)
-    nombre = db.Column(db.String(45), nullable=False)
-    descripcion = db.Column(db.String(100), nullable=False)
+    clave = db.Column(db.String(255), nullable=False, unique=True)
+    nombre = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(TEXT, nullable=False)
     fechaIni = db.Column(db.Date, nullable=False)
     fechaFin = db.Column(db.Date, nullable=False)
-    objetivo = db.Column(db.String(20), nullable=False)
-    categoria = db.Column(db.String(100), nullable=False)
-    control = db.Column(db.String(45), nullable=False)
+    objetivo = db.Column(db.String(255), nullable=False)
+    categoria = db.Column(db.String(255), nullable=False)
+    control = db.Column(db.String(255), nullable=False)
     porcentaje = db.Column(db.Float, nullable=False)
-    estado = db.Column(db.String(20), nullable=False)
-    detalles = db.Column(db.String(100), nullable=True)
+    estado = db.Column(db.String(255), nullable=False)
+    detalles = db.Column(TEXT, nullable=True)
     enTiempo = db.Column(db.Integer, nullable=True)
     fechaAviso = db.Column(db.Date, nullable=False)
     idParticipante = db.Column(db.Integer, db.ForeignKey('Participantes.id'))

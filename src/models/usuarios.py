@@ -8,14 +8,14 @@ def getDefaultID() -> str:
 class Usuario(db.Model):
     __tablename__ = 'Usuarios'
     idUsuario = db.Column(db.String(32), primary_key=True, default=getDefaultID)
-    nombre = db.Column(db.String(50), nullable=False)
-    apellidoPaterno = db.Column(db.String(50), nullable=False)
-    apellidoMaterno = db.Column(db.String(50), nullable=False)
-    correo = db.Column(db.String(50), unique=True, nullable=False)
-    telefono = db.Column(db.String(15), unique=True, nullable=False)
-    contrasena = db.Column(db.String(50), nullable=False)
-    departamento = db.Column(db.String(30), nullable=False)
-    cargo = db.Column(db.String(30), nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    apellidoPaterno = db.Column(db.String(255), nullable=False)
+    apellidoMaterno = db.Column(db.String(255), nullable=False)
+    correo = db.Column(db.String(255), unique=True, nullable=False)
+    telefono = db.Column(db.String(255), unique=True, nullable=False)
+    contrasena = db.Column(db.String(255), nullable=False)
+    departamento = db.Column(db.String(255), nullable=False)
+    cargo = db.Column(db.String(255), nullable=False)
     rol = db.Column(db.Integer, nullable=False)
     idJefe = db.Column(db.String(32), db.ForeignKey('Usuarios.idUsuario'))
 

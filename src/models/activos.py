@@ -1,6 +1,7 @@
 from src.utils.db import db
 from src.models.historialActivos import HistorialActivo
 from uuid import uuid4
+from sqlalchemy import TEXT
 
 def getDefaultID() -> str:
     return uuid4().hex
@@ -8,16 +9,16 @@ def getDefaultID() -> str:
 class Activo(db.Model):
     __tablename__ = 'Activos'
     idActivo = db.Column(db.String(32), primary_key=True, default=getDefaultID)
-    clave = db.Column(db.String(15), nullable=False, unique=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    descripcion = db.Column(db.String(250), nullable=False)
-    propietario = db.Column(db.String(30), nullable=False)
-    ubicacion = db.Column(db.String(30), nullable=False)
-    frecMantenimiento = db.Column(db.String(20), nullable=True)
-    frecRenovacion = db.Column(db.String(20), nullable=True)
+    clave = db.Column(db.String(255), nullable=False, unique=True)
+    nombre = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(TEXT, nullable=False)
+    propietario = db.Column(db.String(255), nullable=False)
+    ubicacion = db.Column(db.String(255), nullable=False)
+    frecMantenimiento = db.Column(db.String(255), nullable=True)
+    frecRenovacion = db.Column(db.String(255), nullable=True)
     fechaAdquisicion = db.Column(db.Date, nullable=False)
-    tipoActivo = db.Column(db.String(20), nullable=False)
-    estatus = db.Column(db.String(20), nullable=False)
+    tipoActivo = db.Column(db.String(255), nullable=False)
+    estatus = db.Column(db.String(255), nullable=False)
     confidencialidad = db.Column(db.Integer, nullable=False)
     disponibilidad = db.Column(db.Integer, nullable=False)
     integridad = db.Column(db.Integer, nullable=False)

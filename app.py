@@ -25,10 +25,17 @@ import secrets
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__, template_folder='src/templates', static_folder='src/static')
+
+app = Flask(__name__, template_folder='src/templates', static_folder='src/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'src', 'database', 'database.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = secrets.token_hex(16)
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:P0L1m4s7er@localhost:3306/riskprotego'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_ECHO'] = True
+# app.config['SECRET_KEY'] = secrets.token_hex(16)
 
 app.config['MAIL_SERVER'] = 'smtp.office365.com'  # Cambia esto al servidor SMTP que estés utilizando
 app.config['MAIL_PORT'] = 587  # Puerto del servidor SMTP (usualmente 587 para TLS)

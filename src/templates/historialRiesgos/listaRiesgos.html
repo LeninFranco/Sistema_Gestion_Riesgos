@@ -155,13 +155,10 @@
                     </tr>
                 </table>
 
-                {% if dictRiesgos[clave]['activos'][0][3] == "Crítico" %}
+                {% if dictRiesgos[clave]['activos'][0][2] == "Alto" %}
                 <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-danger"
-                        style="pointer-events: none;"> Crítico </button></p>
-                {% elif dictRiesgos[clave]['activos'][0][3] == "Alto" %}
-                <p><b>Umbral total: </b><button type="button" style="background-color: rgb(255, 145, 0); color: black;" class="btn btn-sm btn-block"
                         style="pointer-events: none;"> Alto </button></p>
-                {% elif dictRiesgos[clave]['activos'][0][3] == "Medio" %}
+                {% elif dictRiesgos[clave]['activos'][0][2] == "Medio" %}
                 <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-warning"
                         style="pointer-events: none;"> Medio </button></p>
                 {% else %}
@@ -208,8 +205,11 @@
                     </tr>
                 </table>
 
-                {% if dictRiesgos[clave]['activos'][0][3] == "Alto" %}
+                {% if dictRiesgos[clave]['activos'][0][3] == "Crítico" %}
                 <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-danger"
+                        style="pointer-events: none;"> Crítico </button></p>
+                {% elif dictRiesgos[clave]['activos'][0][3] == "Alto" %}
+                <p><b>Umbral total: </b><button type="button" style="background-color: rgb(255, 145, 0); color: black;" class="btn btn-sm btn-block"
                         style="pointer-events: none;"> Alto </button></p>
                 {% elif dictRiesgos[clave]['activos'][0][3] == "Medio" %}
                 <p><b>Umbral total: </b><button type="button" class="btn btn-sm btn-block btn-warning"

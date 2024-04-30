@@ -2,6 +2,7 @@ from src.utils.db import db
 from src.models.acciones import Accion
 from src.models.historialRiesgos import HistorialRiesgo
 from uuid import uuid4
+from sqlalchemy import TEXT
 
 def getDefaultID() -> str:
     return uuid4().hex
@@ -17,16 +18,16 @@ def definirUmbral(factor: float) -> str:
 class Riesgo(db.Model):
     __tablename__ = 'Riesgos'
     idRiesgo = db.Column(db.String(32), primary_key=True, default=getDefaultID)
-    clave = db.Column(db.String(15), nullable=False)
-    nombre = db.Column(db.String(45), nullable=False)
-    descripcion = db.Column(db.String(100), nullable=False)
-    tipoRiesgo = db.Column(db.String(20), nullable=False)
-    amenaza = db.Column(db.String(45), nullable=False)
+    clave = db.Column(db.String(255), nullable=False)
+    nombre = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(TEXT, nullable=False)
+    tipoRiesgo = db.Column(db.String(255), nullable=False)
+    amenaza = db.Column(db.String(255), nullable=False)
     nivelHabilidad = db.Column(db.Integer, nullable=False)
     motivacion = db.Column(db.Integer, nullable=False)
     oportunidad = db.Column(db.Integer, nullable=False)
     tamaño = db.Column(db.Integer, nullable=False)
-    vulnerabilidad = db.Column(db.String(45), nullable=False)
+    vulnerabilidad = db.Column(db.String(255), nullable=False)
     facilidadDescubrimiento = db.Column(db.Integer, nullable=False)
     facilidadExplotacion = db.Column(db.Integer, nullable=False)
     conciencia = db.Column(db.Integer, nullable=False)

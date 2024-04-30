@@ -1,6 +1,7 @@
 from src.utils.db import db
 from src.models.activos import Activo
 from uuid import uuid4
+from sqlalchemy import TEXT
 
 def getDefaultID() -> str:
     return uuid4().hex
@@ -8,9 +9,9 @@ def getDefaultID() -> str:
 class Proyecto(db.Model):
     __tablename__ = "Proyectos"
     idProyecto = db.Column(db.String(32), primary_key=True, default=getDefaultID)
-    clave = db.Column(db.String(100), nullable=False, unique=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    descripcion = db.Column(db.String(255), nullable=False)
+    clave = db.Column(db.String(255), nullable=False, unique=True)
+    nombre = db.Column(db.String(255), nullable=False)
+    descripcion = db.Column(TEXT, nullable=False)
     activos = db.relationship('Activo', backref='proyectoActivo', cascade='all, delete-orphan')
 
     def __init__(self, nombre, clave, descripcion) -> None:

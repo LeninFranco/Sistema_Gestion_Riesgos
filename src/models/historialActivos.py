@@ -1,5 +1,6 @@
 from src.utils.db import db
 from datetime import datetime
+from sqlalchemy import TEXT
 
 def getFechaActual():
     return datetime.now().date()
@@ -12,7 +13,7 @@ class HistorialActivo(db.Model):
     disponibilidad = db.Column(db.Integer, nullable=False)
     integridad = db.Column(db.Integer, nullable=False)
     sensibilidad = db.Column(db.Integer, nullable=False)
-    detalles = db.Column(db.String(255), nullable=False)
+    detalles = db.Column(TEXT, nullable=False)
     idActivo = db.Column(db.String(32), db.ForeignKey('Activos.idActivo', ondelete='CASCADE'), nullable=False)
 
     def __init__(self, confidencialidad, disponibilidad, integridad, detalles,idActivo) -> None:

@@ -1,5 +1,6 @@
 from src.utils.db import db
 from datetime import datetime
+from sqlalchemy import TEXT
 
 def getFechaActual():
     return datetime.now().date()
@@ -23,8 +24,8 @@ class HistorialRiesgo(db.Model):
     probabilidad = db.Column(db.Float, nullable=False)
     impacto = db.Column(db.Float, nullable=False)
     total = db.Column(db.Float, nullable=False)
-    umbral = db.Column(db.String(10), nullable=False)
-    detalles = db.Column(db.String(255), nullable=False)
+    umbral = db.Column(db.String(255), nullable=False)
+    detalles = db.Column(TEXT, nullable=False)
     idRiesgo = db.Column(db.String(32), db.ForeignKey('Riesgos.idRiesgo', ondelete='CASCADE'), nullable=False)
 
     def __init__(self, nivelHabilidad, motivacion, oportunidad, tamaño, facilidadDescubrimiento, facilidadExplotacion, conciencia, deteccionIntrusiones, impactoFinanciero, impactoReputacion, impactoLegal, impactoUsuarios, probabilidad, impacto, total, umbral, detalles, idRiesgo):
