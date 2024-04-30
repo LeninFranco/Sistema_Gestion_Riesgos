@@ -128,6 +128,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-justify">
+                <p><b>Clave: </b>{{accion[0].clave}}</p>
+                <p><b>Nombre: </b>{{accion[0].nombre}}</p>
                 <p><b>Porcentaje: </b>{{accion[0].porcentaje}}%</p>
                 <table class="table">
                     <thead>
@@ -143,7 +145,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <p><b>Objetivo: </b>{{accion[0].objetivo}}</p>
+                <p><b>Fecha de Notificacion: </b>{{accion[0].fechaAviso}}</p>
+                <p><b>Objetivo: </b>{{accion[0].objetivo}}: {{objetivos[accion[0].objetivo]}}</p>
                 <p><b>Descripción: </b>{{accion[0].descripcion}}</p>
                 <p><b>Categoria: </b>{{accion[0].categoria}}: {{categoriasISO27001[accion[0].categoria]}}</p>
                 <p><b>Control: </b>{{accion[0].control}}: {{controlesISO27001[accion[0].categoria][accion[0].control]}}
@@ -153,51 +156,6 @@
 </div>
 {% endfor %}
 
-{% for accion in acciones %}
-<div class="modal fade" id="Ventana{{accion[0].idAccion}}_H" data-bs-backdrop="static" data-bs-keyboard="false"
-    tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Historial de la Acción</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-justify">
-                {% if accion[0].historial %}
-                <table class="table">
-                    <thead>
-                        <th>Fecha</th>
-                        <th>Porcentaje</th>
-                        <th>Estado</th>
-                        <th>Detalles</th>
-                    </thead>
-                    <tbody>
-                        {% for registro in accion[0].historial %}
-                        <tr>
-                            <td>{{registro.fecha}}</td>
-                            <td>{{registro.porcentaje}}%</td>
-                            <td>{{registro.estado}}</td>
-                            <td>{{registro.detalles}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
-<style>
-    .table-main td {
-        white-space: nowrap;
-        /* Evita que el texto se divida en varias líneas */
-        overflow: hidden;
-        /* Oculta el contenido que excede el ancho de la celda */
-        text-overflow: ellipsis;
-        /* Agrega puntos suspensivos (...) si el texto es demasiado largo */
-    }
-</style>
 <script>
     $(document).ready(function () {
         var customSortType = $.fn.dataTable.ext.type.order['custom-sort'];
@@ -212,7 +170,6 @@
         };
 
         $('.table-main').DataTable({
-            "scrollX": true,
             "lengthChange": false,
             "paging": false,
             "info": false,

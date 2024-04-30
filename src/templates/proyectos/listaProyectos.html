@@ -57,6 +57,7 @@
                 <thead>
                     <tr>
                         <th>Clave del Proyecto</th>
+                        <th>Nombre del Proyecto</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -64,6 +65,7 @@
                     {% for proyecto in proyectos %}
                     <tr>
                         <td>{{proyecto.clave}}</td>
+                        <td>{{proyecto.nombre}}</td>
                         <td>
                             <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                                 data-bs-target="#Ventana{{proyecto.idProyecto}}"><i class="fa fa-eye"></i></button>
@@ -88,7 +90,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-justify">
-                    <h4>Descripción del proyecto</h4>
+                    <h5>Descripción del proyecto</h5>
                     <p>{{proyecto.descripcion}}</p>
                 </div>
             </div>

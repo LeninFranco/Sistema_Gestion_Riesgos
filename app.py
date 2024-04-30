@@ -79,7 +79,7 @@ def enviar_correo():
 
 # Configurar el planificador de tareas
 scheduler = BackgroundScheduler()
-scheduler.add_job(enviar_correo, trigger='cron', hour=11, minute=18)  
+scheduler.add_job(enviar_correo, trigger='cron', hour=6, minute=0)  
 scheduler.start()
 
 if __name__ == "__main__":

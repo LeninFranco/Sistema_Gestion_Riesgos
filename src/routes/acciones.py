@@ -587,7 +587,7 @@ def vistaListaAccionesSinAsignar():
             if accion.idParticipante == None:
                 risk = Riesgo.query.filter_by(idRiesgo = accion.idRiesgo).first()
                 acciones.append(((accion,risk)))
-    return render_template('acciones/listaAccionesSinA.html', usuario=usuario, usuarios_listado=usuarios_listado, acciones=acciones, dictRiesgos = dictRiesgos)
+    return render_template('acciones/listaAccionesSinA.html', usuario=usuario, usuarios_listado=usuarios_listado, acciones=acciones, dictRiesgos = dictRiesgos, objetivos = objetivos, controlesISO27001 = controlesISO27001, categoriasISO27001 = categoriasISO27001)
 
 @acciones.route('/asignar-participante', methods=['POST'])
 def asignarNuevoParticipante():
