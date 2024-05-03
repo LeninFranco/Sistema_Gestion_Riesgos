@@ -97,11 +97,10 @@
                             asignadas</h2>
                         <hr>
                         <p class="mb-2">La tarea con código de identificación <span
-                                class="strong">{{accion.clave}}</span> finaliza en la fecha <span
-                                class="strong">{{accion.fechaFin}}</span></p>
+                                class="strong">{{accion.clave}}</span> ({{accion.nombre}}) finaliza en la fecha <span class="strong">{{accion.fechaFin}}</span></p>
                         <p class="mb-4">Esta tarea pertenece al proyecto con nombre <span class="strong">{{proyecto.nombre}}</span> y
                             tiene como objetivo <span class="strong">{{accion.objetivo}}</span> el riesgo con clave
-                            <span class="strong">{{riesgo.clave}}</span></p>
+                            <span class="strong">{{riesgo.clave}}</span> ({{riesgo.nombre}})</p>
                         <hr>
                         <br>
                         <a href="http://localhost:5000" class="btn">Acceder a RiskProtego</a>
