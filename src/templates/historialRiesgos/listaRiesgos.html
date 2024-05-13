@@ -14,15 +14,16 @@
 {% endif %}
 {% endwith %}
 
-<div class="row pt-2">
+<div class="row pt-2 text-justify">
     <h2>Historial de cambios en los Riesgos</h2>
+    <p>En este espacio, puedes observar la bitácora de cambios en la evaluación de cada riesgo del proyecto a lo largo del tiempo, lo que te permite ver la evolución de cada riesgo.</p>
 </div>
 <div class="row">
-    <div class="col-4">
+    <div class="col-3">
         <input type="text" class="form-control w-100" id="search" name="search" placeholder="Buscar (Clave o Nombre)"
             autocomplete="off">
     </div>
-    <div class="col-4">
+    <div class="col-3">
         <select id="filter-tipo" class="form-select">
             <option value="">Filtrar por Tipo</option>
             {% for tipoRiesgo in tiposRiesgo %}
@@ -30,7 +31,7 @@
             {% endfor %}
         </select>
     </div>
-    <div class="col-4">
+    <div class="col-3">
         <select id="filter-umbral" class="form-select">
             <option value="">Filtrar por Umbral</option>
             <option value="Insignificante">Insignificante</option>
@@ -38,6 +39,13 @@
             <option value="Medio">Medio</option>
             <option value="Alto">Alto</option>
             <option value="Crítico">Crítico</option>
+        </select>
+    </div>
+    <div class="col-3">
+        <select id="filter-historial" class="form-select">
+            <option value="">Filtrar por Cambios</option>
+            <option value="Sin Cambios">Sin Cambios</option>
+            <option value="Con Cambios">Con Cambios</option>
         </select>
     </div>
 </div>
@@ -51,6 +59,7 @@
                 <th>Nombre</th>
                 <th>Tipo</th>
                 <th class="custom-sort">Umbral Actual</th>
+                <th>Historial</th>
                 <th>Acciones</th>
             </thead>
             <tbody>
@@ -73,6 +82,13 @@
                     {% else %}
                     <td class="bg-danger">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% endif %}
+                    <td>
+                        {% if dictRiesgos[clave]['riesgo'].historial|length > 1 %}
+                        Con Cambios
+                        {% else %}
+                        Sin Cambios
+                        {% endif %}
+                    </td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{dictRiesgos[clave]['riesgo'].idRiesgo}}"><i
@@ -315,6 +331,11 @@
                 },
                 {
                     "orderable": false, // Deshabilitar ordenamiento
+                    "searchable": true, // Permitir búsqueda
+                    "targets": [4] // Primera columna
+                },
+                {
+                    "orderable": false, // Deshabilitar ordenamiento
                     "searchable": false, // Deshabilitar búsqueda
                     "targets": [-1] // Última columna
                 }
@@ -332,6 +353,11 @@
         $('#filter-umbral').on('change', function () {
             var umbral = $(this).val();
             table.column(3).search(umbral, true, false).draw();
+        });
+
+        $('#filter-historial').on('change', function () {
+            var cambio = $(this).val();
+            table.column(4).search(cambio, true, false).draw();
         });
 
         $('.dataTables_filter').css('display', 'none')

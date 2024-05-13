@@ -17,7 +17,8 @@
         <div class="card">
             <div class="card-body">
                 <div class="mb-3">
-                    <img src="{{url_for('static', filename='img/logo_login.png')}}" class="rounded mx-auto d-block" style="height: 250px; width: 250px;">
+                    <img src="{{url_for('static', filename='img/logo_login.png')}}" class="rounded mx-auto d-block"
+                        style="height: 250px; width: 250px;">
                 </div>
                 <div class="mb-3 text-center">
                     <h2>Iniciar Sesión</h2>
@@ -27,16 +28,47 @@
                         <input type="email" name="email" class="form-control" placeholder="E-Mail" required autofocus>
                     </div>
                     <div class="mb-3">
-                        <input type="password" name="password" class="form-control password" placeholder="Contraseña" required>
+                        <input type="password" name="password" class="form-control password" placeholder="Contraseña"
+                            required>
                         <span class="fa fa-fw fa-eye password-icon show-password"></span>
                     </div>
                     <div class="mb-3">
                         <button type="submit" class="btn btn-dark w-100 bg-black">Ingresar</button>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-light w-100" data-bs-toggle="modal"
+                            data-bs-target="#VentanaWho">¿Quiénes somos?</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
     <div class="col-3"></div>
+</div>
+<div class="modal fade" id="VentanaWho" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Somos RiskProtego</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-justify">
+                <p>RiskProtego es una herramienta para la gestión de riesgos de proyectos de software web.
+                    Nuestra plataforma está diseñada para ofrecer una experiencia de usuario intuitiva y completa en la
+                    gestión de riesgos. Desde la identificación hasta la mitigación y el monitoreo continuo, cada paso
+                    del proceso se integra de manera fluida en nuestra interfaz fácil de usar. Además, nos enfocamos en
+                    proporcionar módulos que te ayuden a anticipar los riesgos de manera proactiva, asegurando así la
+                    viabilidad y el éxito de tus proyectos.</p>
+                <p>Al elegir RiskProtego, obtienes una solución integral respaldada por estándares de la industria:</p>
+                <ul>
+                    <li>Familia de las ISO 27000 especializadas en seguridad de la información</li>
+                    <li>Estándar de prácticas de gestión de riesgos del PMI</li>
+                    <li>Valoración de Riesgos del OWASP</li>
+                </ul>
+                <p>Nuestro objetivo es brindarte las herramientas y el soporte necesarios para gestionar tus proyectos web de manera eficaz y segura en un entorno en constante cambio.</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
