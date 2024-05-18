@@ -31,6 +31,7 @@
             <thead>
                 <th>Clave</th>
                 <th>Nombre</th>
+                <th style="display: none;">Tipo</th>
                 <th class="custom-sort">Confid</th>
                 <th class="custom-sort">Disp</th>
                 <th class="custom-sort">Integ</th>
@@ -42,6 +43,7 @@
                 <tr>
                     <td>{{ activo.clave }}</td>
                     <td>{{ activo.nombre }}</td>
+                    <td style="display: none;">{{ activo.tipoActivo }}</td>
                     <td>{{ activo.confidencialidad }}</td>
                     <td>{{ activo.disponibilidad }}</td>
                     <td>{{ activo.integridad }}</td>
@@ -175,6 +177,42 @@
                     "orderable": false,
                     "searchable": false,
                     "targets": [-1]
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'print',
+                    text: 'Vista previa de impresión',
+                    title: 'Evaluación de los Activos del Proyecto {{proyecto.nombre}}', // Cambia esto al título que desees
+                    exportOptions: {
+                        columns: ':not(:last-child)' // Excluir la última columna
+                    },
+                    customize: function (win) {
+                        $(win.document.body)
+                            .css('font-size', '10pt')
+                            .prepend(
+                                '<style>' +
+                                '@page { size: landscape; }' +
+                                'table { border-collapse: collapse; width: 100%; }' +
+                                'table, th, td { border: 1px solid black; }' +
+                                'th, td { padding: 8px; text-align: left; }' +
+                                '</style>'
+                            );
+                    },
+                    init: function (api, node, config) {
+                        $(node).css({
+                            'background-color': 'black',
+                            'color': 'white',
+                            'border': 'none',
+                            'padding': '6px 12px',
+                            'margin': '5px',
+                            'cursor': 'pointer'
+                        }).hover(function () {
+                            $(this).css('background-color', 'black');
+                            $(this).css('color', 'white');
+                        });
+                    }
                 }
             ]
         });

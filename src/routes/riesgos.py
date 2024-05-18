@@ -336,7 +336,7 @@ def vistaListaRiesgos():
         dictRiesgos[clave]['activos'] = sorted(dictRiesgos[clave]['activos'], key=lambda a: a[4], reverse=True)
     
     claveSig = f'{proyecto.clave}:R-{str(len(dictRiesgos.keys())+1).zfill(4)}'
-    return render_template('riesgos/listaRiesgos.html', usuario=usuario, claveSig=claveSig, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
+    return render_template('riesgos/listaRiesgos.html', usuario=usuario, proyecto=proyecto, claveSig=claveSig, dictRiesgos=dictRiesgos, riesgos=riesgos, riesgos_umbrales=riesgos_umbrales, umbrales=umbrales, tiposRiesgo=tiposRiesgo, tiposActivo=tiposActivo, estatus=estatus, cdi=cdi, frecuencia=frecuencia, activos=proyecto.activos, factores_de_amenaza=factores_de_amenaza, factores_de_impacto_empresarial=factores_de_impacto_empresarial, factores_de_vulnerabilidad=factores_de_vulnerabilidad, agentes_amenaza=agentes_amenaza)
 
 @riesgos.route('/modificar-riesgo/<string:idRiesgo>')
 def vistaModificacionRiesgo(idRiesgo):

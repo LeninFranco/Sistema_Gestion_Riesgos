@@ -117,7 +117,7 @@ def vistaListaActivos():
     proyecto = Proyecto.query.filter_by(idProyecto = session['proyecto_id']).first()
     activos = proyecto.activos
     claveSig = f'{proyecto.clave}:A-{str(len(activos)+1).zfill(4)}'
-    return render_template('activos/listaActivosI.html', usuario=usuario, claveSig=claveSig, activos=activos, frecuencia=frecuencia, tiposActivo=tiposActivo, estatus=estatus)
+    return render_template('activos/listaActivosI.html', usuario=usuario, proyecto=proyecto, claveSig=claveSig, activos=activos, frecuencia=frecuencia, tiposActivo=tiposActivo, estatus=estatus)
 
 @activos.route('/modificar-activo/<string:idActivo>')
 def vistaModificacionActivos(idActivo):
@@ -233,7 +233,7 @@ def vistaListaEvaluaciones():
     for activo in proyecto.activos:
         if activo.estatus == "En uso":
             activos.append(activo)
-    return render_template('activos/listaActivosE.html', usuario=usuario, activos=activos, cdi=cdi)
+    return render_template('activos/listaActivosE.html', usuario=usuario, proyecto=proyecto, activos=activos, cdi=cdi)
 
 @activos.route('/evaluar-activo/<string:idActivo>')
 def vistaEvaluacionActivos(idActivo):

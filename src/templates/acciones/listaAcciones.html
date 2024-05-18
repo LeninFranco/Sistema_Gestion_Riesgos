@@ -328,6 +328,7 @@
                     <th class="custom-sort">Umbral</th>
                     <th>Estatus</th>
                     <th>%</th>
+                    <th style="display: none;">Responsable</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -360,6 +361,7 @@
 
                     <td>{{ accion[0].estado }}</td>
                     <td>{{ accion[0].porcentaje }}</td>
+                    <td style="display: none;">{{accion[1].nombre}} - {{accion[1].departamento}}</td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
                             data-bs-target="#Ventana{{ accion[0].idAccion }}"><i class="fa fa-eye"></i></button>
@@ -610,6 +612,42 @@
                     "orderable": false, // Deshabilitar ordenamiento
                     "searchable": false, // Deshabilitar búsqueda
                     "targets": [-1] // Última columna
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'print',
+                    text: 'Vista previa de impresión',
+                    title: 'Acciones programadas del Proyecto {{proyecto.nombre}}', // Cambia esto al título que desees
+                    exportOptions: {
+                        columns: ':not(:nth-child(5)):not(:nth-child(6)):not(:nth-child(7)):not(:nth-child(11))' // Excluir la última columna
+                    },
+                    customize: function (win) {
+                        $(win.document.body)
+                            .css('font-size', '10pt')
+                            .prepend(
+                                '<style>' +
+                                '@page { size: landscape; }' +
+                                'table { border-collapse: collapse; width: 100%; }' +
+                                'table, th, td { border: 1px solid black; }' +
+                                'th, td { padding: 8px; text-align: left; }' +
+                                '</style>'
+                            );
+                    },
+                    init: function (api, node, config) {
+                        $(node).css({
+                            'background-color': 'black',
+                            'color': 'white',
+                            'border': 'none',
+                            'padding': '6px 12px',
+                            'margin': '5px',
+                            'cursor': 'pointer'
+                        }).hover(function () {
+                            $(this).css('background-color', 'black');
+                            $(this).css('color', 'white');
+                        });
+                    }
                 }
             ]
         });
