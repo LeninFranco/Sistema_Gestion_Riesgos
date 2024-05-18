@@ -18,6 +18,7 @@ from src.routes.acciones import acciones
 from src.models.acciones import Accion
 from src.models.responsables import Participantes
 from src.models.riesgo import Riesgo
+from src.models.historialAcciones import HistorialAccion
 from datetime import datetime
 import os
 import secrets
@@ -27,15 +28,15 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, template_folder='src/templates', static_folder='src/static')
 
 app = Flask(__name__, template_folder='src/templates', static_folder='src/static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'src', 'database', 'database.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = secrets.token_hex(16)
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:P0L1m4s7er@localhost:3306/riskprotego'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'src', 'database', 'database.db')
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_ECHO'] = True
 # app.config['SECRET_KEY'] = secrets.token_hex(16)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:P0L1m4s7er@localhost:3306/riskprotego'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = True
+app.config['SECRET_KEY'] = secrets.token_hex(16)
 
 app.config['MAIL_SERVER'] = 'smtp.office365.com'  # Cambia esto al servidor SMTP que estés utilizando
 app.config['MAIL_PORT'] = 587  # Puerto del servidor SMTP (usualmente 587 para TLS)
@@ -76,6 +77,13 @@ def enviar_correo():
             msg = Message("Recordatorio: Tarea Pendiente", recipients=[usuario.correo])
             msg.html = msg_html
             mail.send(msg)
+        acciones_caducadas = Accion.query.filter(Accion.fechaFin < datetime.today().date(), Accion.estado == 'En Proceso').all()
+        for accion in acciones_caducadas:
+            accion.estado = 'Cancelado'
+            accion.detalles = 'La acción ha sido cancelada debido a que ha superado su fecha límite establecida por el gestor.'
+            histAcc = HistorialAccion(accion.porcentaje, accion.estado, accion.detalles, f'RiskProtego', accion.idAccion)
+            db.session.add(histAcc)
+            db.session.commit()
 
 # Configurar el planificador de tareas
 scheduler = BackgroundScheduler()

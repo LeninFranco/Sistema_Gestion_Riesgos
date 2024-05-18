@@ -15,7 +15,9 @@
 {% endwith %}
 <div class="row pt-2 text-justify">
     <h2>Activos</h2>
-    <p>Aquí podrás registrar todos los activos informáticos que estás utilizando o planeas utilizar en tu proyecto. Podrás incluir todos los detalles técnicos de cada activo, buscar y filtrarlos fácilmente según tus necesidades.</p>
+    <p>Aquí podrás registrar todos los activos informáticos que estás utilizando o planeas utilizar en tu proyecto.
+        Podrás incluir todos los detalles técnicos de cada activo, buscar y filtrarlos fácilmente según tus necesidades.
+    </p>
 </div>
 <div class="row pt-2">
     <div class="row">
@@ -49,8 +51,8 @@
                     <form action="/anadir-activos" method="post" autocomplete="off">
                         <div class="row">
                             <div class="mb-3">
-                                <input type="text" name="clave" value="{{claveSig}}" class="form-control" placeholder="Clave del Activo"
-                                    required autofocus>
+                                <input type="text" name="clave" value="{{claveSig}}" class="form-control"
+                                    placeholder="Clave del Activo" required autofocus>
                             </div>
                         </div>
                         <div class="row">
@@ -141,6 +143,10 @@
                 <th>Clave</th>
                 <th>Nombre</th>
                 <th>Tipo</th>
+                <th style="display: none;">Propietario</th>
+                <th style="display: none;">Ubicación</th>
+                <th style="display: none;">Mantenimiento</th>
+                <th style="display: none;">Renovación</th>
                 <th>Estatus</th>
                 <th>Acciones</th>
             </thead>
@@ -150,6 +156,10 @@
                     <td>{{ activo.clave }}</td>
                     <td>{{ activo.nombre }}</td>
                     <td>{{ activo.tipoActivo }}</td>
+                    <td style="display: none;">{{ activo.propietario }}</td>
+                    <td style="display: none;">{{ activo.ubicacion }}</td>
+                    <td style="display: none;">{{ activo.frecMantenimiento }}</td>
+                    <td style="display: none;">{{ activo.frecRenovacion }}</td>
                     <td>{{ activo.estatus }}</td>
                     <td>
                         <button type="button" class="btn btn-light btn-more" data-bs-toggle="modal"
@@ -213,6 +223,42 @@
                     "orderable": false,
                     "searchable": false,
                     "targets": [-1]
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'print',
+                    text: 'Vista previa de impresión',
+                    title: 'Inventario de Activos del Proyecto {{proyecto.nombre}}', // Cambia esto al título que desees
+                    exportOptions: {
+                        columns: ':not(:nth-child(8)):not(:nth-child(9))' // Excluir la última columna
+                    },
+                    customize: function (win) {
+                        $(win.document.body)
+                            .css('font-size', '10pt')
+                            .prepend(
+                                '<style>' +
+                                '@page { size: landscape; }' +
+                                'table { border-collapse: collapse; width: 100%; }' +
+                                'table, th, td { border: 1px solid black; }' +
+                                'th, td { padding: 8px; text-align: left; }' +
+                                '</style>'
+                            );
+                    },
+                    init: function (api, node, config) {
+                        $(node).css({
+                            'background-color': 'black',
+                            'color': 'white',
+                            'border': 'none',
+                            'padding': '6px 12px',
+                            'margin': '5px',
+                            'cursor': 'pointer'
+                        }).hover(function () {
+                            $(this).css('background-color', 'black');
+                            $(this).css('color', 'white');
+                        });
+                    }
                 }
             ]
         });

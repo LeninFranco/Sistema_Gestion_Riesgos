@@ -401,7 +401,7 @@ def vistaListaAcciones():
 
     claveSig = f'{proyecto.clave}:PA-{str(len(acciones)+1).zfill(4)}'
 
-    return render_template('acciones/listaAcciones.html', usuario=usuario, claveSig=claveSig, acciones=acciones, dictRiesgos = dictRiesgos, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto)
+    return render_template('acciones/listaAcciones.html', usuario=usuario, proyecto=proyecto, claveSig=claveSig, acciones=acciones, dictRiesgos = dictRiesgos, estadosAccion = estadosAccion, objetivos = objetivos, usuarios_listado = usuarios_listado, controlesISO27001 = controlesISO27001,categoriasISO27001 = categoriasISO27001, participantes_proyecto = participantes_proyecto)
 
 @acciones.route('/modificar-accion/<string:idAccion>')
 def vistaModificacionAccion(idAccion):

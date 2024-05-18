@@ -834,6 +834,8 @@
                 <th>Clave</th>
                 <th>Nombre</th>
                 <th>Tipo</th>
+                <th style="display: none;">Probabilidad</th>
+                <th style="display: none;">Impacto</th>
                 <th class="custom-sort">Umbral Total</th>
                 <th>No. Acciones</th>
                 <th>Funciones</th>
@@ -845,6 +847,8 @@
                     <td>{{ dictRiesgos[clave]['riesgo'].clave }}</td>
                     <td>{{ dictRiesgos[clave]['riesgo'].nombre }}</td>
                     <td>{{ dictRiesgos[clave]['riesgo'].tipoRiesgo}}</td>
+                    <td style="display: none;">{{dictRiesgos[clave]['activos'][0][1]}}</td>
+                    <td style="display: none;">{{dictRiesgos[clave]['activos'][0][2]}}</td>
                     {% if dictRiesgos[clave]['activos'][0][3] == 'Insignificante' %}
                     <td class="bg-info">{{ dictRiesgos[clave]['activos'][0][3] }}</td>
                     {% elif dictRiesgos[clave]['activos'][0][3] == 'Bajo' %}
@@ -1126,6 +1130,42 @@
                     "searchable": false, // Deshabilitar búsqueda
                     "targets": [-1] // Última columna
                 }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'print',
+                    text: 'Vista previa de impresión',
+                    title: 'Riesgos identificados en el Proyecto {{proyecto.nombre}}', // Cambia esto al título que desees
+                    exportOptions: {
+                        columns: ':not(:nth-child(8))' // Excluir la última columna
+                    },
+                    customize: function (win) {
+                        $(win.document.body)
+                            .css('font-size', '10pt')
+                            .prepend(
+                                '<style>' +
+                                '@page { size: landscape; }' +
+                                'table { border-collapse: collapse; width: 100%; }' +
+                                'table, th, td { border: 1px solid black; }' +
+                                'th, td { padding: 8px; text-align: left; }' +
+                                '</style>'
+                            );
+                    },
+                    init: function (api, node, config) {
+                        $(node).css({
+                            'background-color': 'black',
+                            'color': 'white',
+                            'border': 'none',
+                            'padding': '6px 12px',
+                            'margin': '5px',
+                            'cursor': 'pointer'
+                        }).hover(function () {
+                            $(this).css('background-color', 'black');
+                            $(this).css('color', 'white');
+                        });
+                    }
+                }
             ]
         });
 
@@ -1136,16 +1176,16 @@
 
         $('#filter-umbral').on('change', function () {
             var umbral = $(this).val();
-            table.column(3).search(umbral, true, false).draw();
+            table.column(5).search(umbral, true, false).draw();
         });
 
         $('#filter-accion').on('change', function () {
             var filtro = $(this).val();
             if(filtro == 'si'){
-                table.column(4).search('\\d', true, false).draw();
+                table.column(6).search('\\d', true, false).draw();
             }
             else{
-                table.column(4).search('Sin Acciones', true, false).draw();
+                table.column(6).search('Sin Acciones', true, false).draw();
             }
         });
 
